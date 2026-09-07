@@ -1,0 +1,17 @@
+{
+  "name": "PawSociety — Gestión de Spa",
+  "short_name": "PawSociety",
+  "description": "Sistema de gestión de citas y clientes para PawSociety Pet Store",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D3D2E",
+  "theme_color": "#0D3D2E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%230D3D2E'/><text y='130' x='96' font-size='110' text-anchor='middle'>🐾</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
