@@ -521,9 +521,10 @@ var BtnP = function BtnP(_ref4) {
     style: _objectSpread({
       flex: 1,
       padding: 14,
-      background: disabled ? "#9CA3AF" : "#1A5C47",
+      background: disabled ? "#9CA3AF" : "linear-gradient(135deg,#1A5C47,#0D3D2E)",
       color: "#fff",
-      borderRadius: 12,
+      borderRadius: 14,
+      boxShadow: disabled ? "none" : "0 4px 14px rgba(13,61,46,.35)",
       fontSize: 15,
       fontWeight: 700,
       border: "none",
@@ -542,9 +543,10 @@ var BtnS = function BtnS(_ref5) {
     onClick: onClick,
     style: {
       padding: "14px 20px",
-      background: "#F3F4F6",
-      color: "#4B5563",
-      borderRadius: 12,
+      background: "#F8F9FA",
+      color: "#374151",
+      borderRadius: 14,
+      border: "1px solid #E5E7EB",
       fontSize: 14,
       fontWeight: 600,
       border: "none",
@@ -686,7 +688,7 @@ function Modal(_ref1) {
       background: "#fff",
       width: "100%",
       maxWidth: 640,
-      borderRadius: "24px 24px 0 0",
+      borderRadius: "28px 28px 0 0",
       maxHeight: "93vh",
       overflowY: "auto",
       paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)"
@@ -808,7 +810,7 @@ function Sidebar(_ref11) {
       left: 0,
       bottom: 0,
       width: 265,
-      background: "#0D3D2E",
+      background: "linear-gradient(180deg,#071e14 0%,#0D3D2E 100%)",
       zIndex: 300,
       transform: open ? "translateX(0)" : "translateX(-100%)",
       transition: "transform .28s cubic-bezier(.4,0,.2,1)",
@@ -818,7 +820,7 @@ function Sidebar(_ref11) {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      padding: "calc(env(safe-area-inset-top)+20px) 20px 16px"
+      padding: "calc(env(safe-area-inset-top)+24px) 20px 20px", borderBottom: "1px solid rgba(242,196,206,.08)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -853,7 +855,8 @@ function Sidebar(_ref11) {
         padding: "11px 14px",
         borderRadius: 12,
         border: "none",
-        background: active ? "rgba(242,196,206,.15)" : "transparent",
+        background: active ? "rgba(242,196,206,.2)" : "transparent",
+        borderLeft: active ? "3px solid #F2C4CE" : "3px solid transparent",
         color: active ? "#F2C4CE" : "rgba(242,196,206,.55)",
         fontSize: 14,
         fontWeight: active ? 700 : 400,
@@ -985,17 +988,17 @@ function Login(_ref12) {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "linear-gradient(160deg,#0D3D2E,#1A5C47)",
+      background: "linear-gradient(145deg,#071e14 0%,#0D3D2E 50%,#155240 100%)",
       padding: 20
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
       borderRadius: 24,
-      padding: "32px 28px",
+      padding: "40px 32px",
       width: "100%",
-      maxWidth: 340,
-      boxShadow: "0 20px 60px rgba(0,0,0,.3)"
+      maxWidth: 360,
+      boxShadow: "0 32px 80px rgba(0,0,0,.5)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1009,9 +1012,11 @@ function Login(_ref12) {
     }
   }, "\uD83D\uDC3E"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
+      fontSize: 28,
       fontWeight: 800,
-      color: "#0D3D2E"
+      color: "#0D3D2E",
+      fontFamily: "Georgia,serif",
+      letterSpacing: "-0.5px"
     }
   }, "PawSociety"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1040,7 +1045,8 @@ function Login(_ref12) {
         width: 14,
         height: 14,
         borderRadius: "50%",
-        background: pin.length > i ? "#1A5C47" : "#E5E7EB",
+        background: pin.length > i ? "#0D3D2E" : "#E8EDF0",
+      boxShadow: pin.length > i ? "0 2px 8px rgba(13,61,46,.4)" : "none",
         transition: "all .2s"
       }
     });
@@ -3268,8 +3274,9 @@ function DashboardScreen(_ref22) {
   });
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "linear-gradient(135deg,#0D3D2E,#1A5C47)",
-      borderRadius: 16,
+      background: "linear-gradient(135deg,#071e14 0%,#0D3D2E 50%,#1A5C47 100%)",
+      borderRadius: 20,
+      boxShadow: "0 8px 32px rgba(13,61,46,.35)",
       padding: 20,
       marginBottom: 16,
       color: "#fff"
@@ -5383,7 +5390,7 @@ function SpaScreen(_ref31) {
     return upd;
   }();
   var prox = appts.filter(function (a) {
-    return (a.status === "pendiente" || a.estado === "pendiente") && a.date >= today();
+    return a.status === "pendiente" && a.date >= today();
   }).sort(function (a, b) {
     return a.date.localeCompare(b.date) || a.time.localeCompare(b.time);
   });
@@ -5401,11 +5408,11 @@ function SpaScreen(_ref31) {
   }).sort(function (a, b) {
     return (b.date||b.fecha||"").localeCompare(a.date||a.fecha||"");
   }) : filter === "cancelado" ? appts.filter(function (a) {
-    return (a.status === "cancelado" || a.estado === "cancelado");
+    return a.status === "cancelado";
   }).sort(function (a, b) {
     return (b.date||b.fecha||"").localeCompare(a.date||a.fecha||"");
   }) : appts.filter(function (a) {
-    return !dateF || (a.date||a.fecha||"") === dateF;
+    return !dateF || a.date === dateF;
   }).sort(function (a, b) {
     return b.date.localeCompare(a.date) || a.time.localeCompare(b.time);
   });
@@ -8867,8 +8874,9 @@ function App() {
     alertCount: alertCount
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#0D3D2E",
-      padding: "calc(env(safe-area-inset-top)+10px) 16px 10px",
+      background: "linear-gradient(90deg,#071e14,#0D3D2E)",
+      padding: "calc(env(safe-area-inset-top)+12px) 16px 12px",
+      boxShadow: "0 2px 16px rgba(0,0,0,.3)",
       display: "flex",
       alignItems: "center",
       gap: 10,
@@ -8908,12 +8916,13 @@ function App() {
     }
   }, curNav.label), alertCount > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#EF4444",
+      background: "linear-gradient(135deg,#EF4444,#DC2626)",
       color: "#fff",
-      borderRadius: 12,
+      borderRadius: 20,
       padding: "3px 10px",
-      fontSize: 12,
-      fontWeight: 700
+      fontSize: 11,
+      fontWeight: 700,
+      boxShadow: "0 2px 8px rgba(239,68,68,.4)"
     }
   }, alertCount), /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
@@ -9026,8 +9035,9 @@ function App() {
       bottom: 0,
       left: 0,
       right: 0,
-      background: "#0D3D2E",
-      borderTop: "1px solid rgba(242,196,206,.15)",
+      background: "linear-gradient(0deg,#071e14,#0D3D2E)",
+      borderTop: "1px solid rgba(242,196,206,.1)",
+      boxShadow: "0 -4px 20px rgba(0,0,0,.25)",
       display: "flex",
       zIndex: 150,
       paddingBottom: "env(safe-area-inset-bottom)"
