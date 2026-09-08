@@ -115,14 +115,6 @@ var NAV = [{
   icon: "speakerphone",
   label: "Campañas"
 }, {
-  id: "rendimiento",
-  icon: "chart-bar",
-  label: "Rendimiento"
-}, {
-  id: "usuarios",
-  icon: "shield-lock",
-  label: "Usuarios"
-}, {
   id: "config",
   icon: "settings",
   label: "Config"
@@ -848,8 +840,6 @@ function Sidebar(_ref11) {
     }
   }, NAV.map(function (n) {
     var active = view === n.id;
-    var _ao=["finanzas","config","usuarios","rendimiento"].includes(n.id);
-    if(_ao&&userRole!=="admin")return null;
     return /*#__PURE__*/React.createElement("button", {
       key: n.id,
       onClick: function onClick() {
@@ -938,9 +928,10 @@ function Login(_ref12) {
     var em=(email||"").trim();
     if(!em||!pass){setErr("Completa correo y contrasena");return;}
     setLoading(true);setErr("");
-    try{firebase.auth().signInWithEmailAndPassword(em,pass)
-      .then(function(uc){onLogin(uc.user);})
-      .catch(function(e){setLoading(false);var m={"auth/user-not-found":"Correo no registrado","auth/wrong-password":"Contrasena incorrecta","auth/invalid-credential":"Correo o contrasena incorrectos","auth/invalid-email":"Correo invalido","auth/too-many-requests":"Demasiados intentos"};setErr(m[e.code]||e.message);});
+    try{
+      firebase.auth().signInWithEmailAndPassword(em,pass)
+        .then(function(uc){onLogin(uc.user);})
+        .catch(function(e){setLoading(false);var m={"auth/user-not-found":"Correo no registrado","auth/wrong-password":"Contrasena incorrecta","auth/invalid-credential":"Correo o contrasena incorrectos","auth/invalid-email":"Correo invalido","auth/too-many-requests":"Demasiados intentos"};setErr(m[e.code]||e.message);});
     }catch(ex){setLoading(false);setErr("Error de conexion");}
   };
   return /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"linear-gradient(145deg,#071e14,#0D3D2E,#155240)",padding:"24px 20px"}},
@@ -967,9 +958,7 @@ function Login(_ref12) {
         err?/*#__PURE__*/React.createElement("div",{style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",fontSize:13,display:"flex",alignItems:"center",gap:8}},
           /*#__PURE__*/React.createElement("i",{className:"ti ti-alert-circle",style:{fontSize:18,flexShrink:0}}),err
         ):null,
-        /*#__PURE__*/React.createElement("button",{onClick:doLogin,disabled:loading,style:{padding:16,marginTop:4,background:loading?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",borderRadius:14,fontSize:16,fontWeight:700,border:"none",cursor:"pointer",boxShadow:loading?"none":"0 4px 16px rgba(13,61,46,.35)"}},
-          loading?"Ingresando...":"Ingresar"
-        )
+        /*#__PURE__*/React.createElement("button",{onClick:doLogin,disabled:loading,style:{padding:16,marginTop:4,background:loading?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",borderRadius:14,fontSize:16,fontWeight:700,border:"none",cursor:"pointer",boxShadow:loading?"none":"0 4px 16px rgba(13,61,46,.35)"}},loading?"Ingresando...":"Ingresar")
       ),
       /*#__PURE__*/React.createElement("div",{style:{textAlign:"center",marginTop:24,fontSize:11,color:"#D1D5DB",borderTop:"1px solid #F3F4F6",paddingTop:16}},"PawSociety Pet Store - Armenia, Quindio")
     )
@@ -994,8 +983,7 @@ function PetModal(_ref14) {
       weight: et ? et.weight || "" : "",
       concentrado: et ? et.concentrado || "" : "",
       birthday: et ? et.birthday || "" : "",
-      notes: et ? et.notes || "" : "",
-      assignedTo: et ? et.assignedTo || "" : ""
+      notes: et ? et.notes || "" : ""
     }),
     _useState0 = _slicedToArray(_useState9, 2),
     f = _useState0[0],
@@ -1177,9 +1165,7 @@ function PetModal(_ref14) {
       minHeight: 70,
       fontFamily: "inherit"
     })
-  })),
-  /*#__PURE__*/React.createElement(Inp,{label:"Asignado a"},/*#__PURE__*/React.createElement("input",{value:f.assignedTo||"",placeholder:"Nombre del groomer",onChange:function(e){return u("assignedTo",e.target.value);},style:IS}))
-  ));
+  })));
 }
 function ClientModal(_ref15) {
   var et = _ref15.et,
@@ -1341,13 +1327,12 @@ function ClientModal(_ref15) {
     label: "Notas"
   }, /*#__PURE__*/React.createElement("textarea", {
     value: f.notes,
-    placeholder: "Ej: No le gusta el secador, usar shampoo medicado...",
     onChange: function onChange(e) {
       return u("notes", e.target.value);
     },
     style: _objectSpread(_objectSpread({}, IS), {}, {
       resize: "vertical",
-      minHeight: 70,
+      minHeight: 60,
       fontFamily: "inherit"
     })
   })), !ie && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(STit, null, "Mascota"), /*#__PURE__*/React.createElement("div", {
@@ -5266,7 +5251,7 @@ function SpaScreen(_ref31) {
     return upd;
   }();
   var prox = appts.filter(function (a) {
-    return a.status === "pendiente" && a.date >= today();
+    return (a.status === "pendiente" || a.estado === "pendiente") && a.date >= today();
   }).sort(function (a, b) {
     return a.date.localeCompare(b.date) || a.time.localeCompare(b.time);
   });
@@ -5279,16 +5264,16 @@ function SpaScreen(_ref31) {
   var masL = prox.filter(function (a) {
     return dBetween(today(), a.date) >= 7;
   });
-  var list = filter === "semana" ? [] : filter === "proximas" ? prox : filter === "completado" ? appts.filter(function (a) {
+  var list = filter === "proximas" ? prox : filter === "completado" ? appts.filter(function (a) {
     return (a.status === "completado" || a.estado === "completado");
   }).sort(function (a, b) {
     return (b.date||b.fecha||"").localeCompare(a.date||a.fecha||"");
   }) : filter === "cancelado" ? appts.filter(function (a) {
-    return a.status === "cancelado";
+    return (a.status === "cancelado" || a.estado === "cancelado");
   }).sort(function (a, b) {
     return (b.date||b.fecha||"").localeCompare(a.date||a.fecha||"");
   }) : appts.filter(function (a) {
-    return !dateF || a.date === dateF;
+    return !dateF || (a.date||a.fecha||"") === dateF;
   }).sort(function (a, b) {
     return b.date.localeCompare(a.date) || a.time.localeCompare(b.time);
   });
@@ -5389,10 +5374,7 @@ function SpaScreen(_ref31) {
         color: "#9CA3AF",
         marginTop: 2
       }
-    }, a.services.join(", "))),
-    a.notes?/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#D4945A",marginTop:3,display:"flex",alignItems:"center",gap:4,fontStyle:"italic"}},/*#__PURE__*/React.createElement("i",{className:"ti ti-note",style:{fontSize:12}}),a.notes):null,
-    a.assignedTo?/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginTop:2,display:"flex",alignItems:"center",gap:4}},/*#__PURE__*/React.createElement("i",{className:"ti ti-user-check",style:{fontSize:12}}),a.assignedTo):null,
-    /*#__PURE__*/React.createElement("div", {
+    }, a.services.join(", "))), /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "right",
         flexShrink: 0
@@ -5638,8 +5620,7 @@ function SpaScreen(_ref31) {
     onClick: function onClick() {
       return setFilter("fecha");
     }
-  }, "Por fecha"), /*#__PURE__*/React.createElement("span",{style:tabS(filter==="semana"),onClick:function(){return setFilter("semana");}}, "Semana")
-  ), filter === "fecha" && /*#__PURE__*/React.createElement("div", {
+  }, "Por fecha")), filter === "fecha" && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -5668,42 +5649,7 @@ function SpaScreen(_ref31) {
       fontWeight: 600,
       cursor: "pointer"
     }
-  }, "Limpiar filtro")), filter === "semana" ? (function(){
-    var _now=new Date();var _dow=_now.getDay();
-    var _mon=new Date(_now);_mon.setDate(_now.getDate()-(_dow===0?6:_dow-1));_mon.setHours(0,0,0,0);
-    var _days=[];
-    for(var _di=0;_di<7;_di++){
-      var _d=new Date(_mon);_d.setDate(_mon.getDate()+_di);
-      var _ds=_d.toISOString().slice(0,10);
-      var _da=appts.filter(function(a){return(a.date||a.fecha||"")=== _ds;});
-      var _comp=_da.filter(function(a){return(a.status||a.estado||"")==="completado";}).length;
-      var _pend=_da.filter(function(a){return(a.status||a.estado||"")==="pendiente";}).length;
-      _days.push({date:_ds,label:["Dom","Lun","Mar","Mie","Jue","Vie","Sab"][_d.getDay()],num:_d.getDate(),appts:_da,comp:_comp,pend:_pend,isToday:_ds===today()});
-    }
-    return /*#__PURE__*/React.createElement("div",null,
-      /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,marginBottom:16}},
-        _days.map(function(_dy){
-          return /*#__PURE__*/React.createElement("div",{key:_dy.date,style:{borderRadius:12,padding:"10px 4px",textAlign:"center",
-            background:_dy.isToday?"linear-gradient(135deg,#1A5C47,#0D3D2E)":_dy.appts.length>0?"#F0FDF4":"#F9FAFB",
-            border:_dy.isToday?"none":"1.5px solid "+(_dy.appts.length>0?"#86EFAC":"#F3F4F6"),
-            boxShadow:_dy.isToday?"0 4px 12px rgba(13,61,46,.3)":"none"}},
-            /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:_dy.isToday?"rgba(242,196,206,.7)":"#9CA3AF",textTransform:"uppercase"}},_dy.label),
-            /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800,color:_dy.isToday?"#fff":_dy.appts.length>0?"#1A5C47":"#374151",margin:"4px 0"}},_dy.num),
-            _dy.comp>0?/*#__PURE__*/React.createElement("div",{style:{fontSize:10,background:_dy.isToday?"rgba(242,196,206,.2)":"#1A5C47",color:_dy.isToday?"#F2C4CE":"#fff",borderRadius:6,padding:"1px 4px",fontWeight:700}},_dy.comp+" OK"):null,
-            _dy.pend>0?/*#__PURE__*/React.createElement("div",{style:{fontSize:10,background:"#FEF3C7",color:"#92400E",borderRadius:6,padding:"1px 4px",fontWeight:700,marginTop:2}},_dy.pend+" pen"):null
-          );
-        })
-      ),
-      _days.filter(function(_dy){return _dy.appts.length>0;}).map(function(_dy){
-        return /*#__PURE__*/React.createElement("div",{key:_dy.date,style:{marginBottom:12}},
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,fontWeight:700,color:"#6B7280",marginBottom:6,textTransform:"uppercase",letterSpacing:"0.5px"}},
-            _dy.label+" "+_dy.num+(_dy.isToday?" (Hoy)":"")+" - "+_dy.appts.length+" cita"+(_dy.appts.length!==1?"s":"")
-          ),
-          _dy.appts.map(function(a){return /*#__PURE__*/React.createElement(ACard,{key:a.id,a:a});})
-        );
-      })
-    );
-  })() : filter === "proximas" ? list.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "Limpiar filtro")), filter === "proximas" ? list.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: "48px",
@@ -7225,7 +7171,16 @@ function AlertasScreen(_ref42) {
     }
   });
   var preSoon = [];
-  try { preSoon = pets.filter(function(p) { try { var _lb=lastBath(p.id); if(!_lb)return false; var _d2=dBetween(_lb,today()); return _d2>=22&&_d2<28; } catch(e){return false;} }); } catch(e){ preSoon=[]; }
+  try {
+    preSoon = pets.filter(function(p) {
+      try {
+        var _lb = lastBath(p.id);
+        if (!_lb) return false;
+        var _d2 = dBetween(_lb, today());
+        return _d2 >= 22 && _d2 < 28;
+      } catch(e) { return false; }
+    });
+  } catch(e) { preSoon = []; }
   return /*#__PURE__*/React.createElement("div", null, loyal.length > 0 && /*#__PURE__*/React.createElement(Card, {
     style: {
       background: "#FBE9D6",
@@ -8542,236 +8497,12 @@ function ConfigScreen(_ref44) {
     }
   }, "Guardar precios")));
 }
-function UsuariosScreen(_ref_us) {
-  var currentUser=_ref_us.currentUser, toast=_ref_us.toast;
-  var _a=useState([]),_aa=_slicedToArray(_a,2),usuarios=_aa[0],setUsuarios=_aa[1];
-  var _b=useState(false),_ba=_slicedToArray(_b,2),showNew=_ba[0],setShowNew=_ba[1];
-  var _c=useState(false),_ca=_slicedToArray(_c,2),saving=_ca[0],setSaving=_ca[1];
-  var _d=useState(""),_da=_slicedToArray(_d,2),nEmail=_da[0],setNEmail=_da[1];
-  var _e=useState(""),_ea=_slicedToArray(_e,2),nPass=_ea[0],setNPass=_ea[1];
-  var _f=useState(""),_fa=_slicedToArray(_f,2),nName=_fa[0],setNName=_fa[1];
-  var _g=useState("empleado"),_ga=_slicedToArray(_g,2),nRole=_ga[0],setNRole=_ga[1];
-  var _h=useState(""),_ha=_slicedToArray(_h,2),errU=_ha[0],setErrU=_ha[1];
-  useEffect(function(){
-    if(!db)return;
-    return db.collection("users").onSnapshot(function(s){
-      setUsuarios(s.docs.map(function(d){return Object.assign({id:d.id},d.data());}));
-    });
-  },[]);
-  var IS2={width:"100%",padding:"11px 14px",border:"1.5px solid #E5E7EB",borderRadius:10,fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
-  var createUser=function(){
-    if(!nName.trim()||!nEmail.trim()||!nPass){setErrU("Completa todos los campos");return;}
-    if(nPass.length<6){setErrU("Contrasena minimo 6 caracteres");return;}
-    setSaving(true);setErrU("");
-    var adminEmail=currentUser?currentUser.email:"";
-    var adminPass=window.prompt("Confirma tu contrasena de administrador:");
-    if(!adminPass){setSaving(false);return;}
-    var sec;
-    try{sec=firebase.app("sec");}catch(e){sec=firebase.initializeApp(firebase.app().options,"sec");}
-    sec.auth().createUserWithEmailAndPassword(nEmail.trim(),nPass)
-      .then(function(uc){
-        return db.collection("users").doc(uc.user.uid).set({
-          name:nName.trim(),email:nEmail.trim(),role:nRole,createdAt:today(),active:true
-        }).then(function(){return sec.auth().signOut();});
-      })
-      .then(function(){
-        toast("Usuario "+nName.trim()+" creado!");
-        setNEmail("");setNPass("");setNName("");setNRole("empleado");
-        setShowNew(false);setSaving(false);
-        firebase.auth().signInWithEmailAndPassword(adminEmail,adminPass).catch(function(){});
-      })
-      .catch(function(e){
-        setSaving(false);
-        var m={"auth/email-already-in-use":"Ese correo ya tiene cuenta","auth/weak-password":"Contrasena muy debil"};
-        setErrU(m[e.code]||e.message);
-      });
-  };
-  var toggleActive=function(u){
-    if(!db)return;
-    db.collection("users").doc(u.id).update({active:!u.active})
-      .then(function(){toast(u.active?"Usuario desactivado":"Usuario activado");});
-  };
-  var roleLabel=function(r){return r==="admin"?"Admin":"Empleado";};
-  var roleBg=function(r){return r==="admin"?"#FEF3C7":"#E8F5EB";};
-  var roleColor=function(r){return r==="admin"?"#92400E":"#065F46";};
-  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
-    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
-      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Seguridad"),
-      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Usuarios"),
-      /*#__PURE__*/React.createElement("div",{style:{fontSize:13,color:"rgba(242,196,206,.6)",marginTop:4}},currentUser?currentUser.email:""),
-      /*#__PURE__*/React.createElement("div",{style:{marginTop:10,background:"rgba(242,196,206,.12)",borderRadius:10,padding:"6px 12px",display:"inline-flex",alignItems:"center",gap:6}},
-        /*#__PURE__*/React.createElement("i",{className:"ti ti-shield-check",style:{color:"#F2C4CE",fontSize:16}}),
-        /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"rgba(242,196,206,.8)"}},usuarios.length+" usuario"+(usuarios.length!==1?"s":"")+" registrado"+(usuarios.length!==1?"s":""))
-      )
-    ),
-    /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(true);setErrU("");},style:{width:"100%",padding:15,background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:16,boxShadow:"0 4px 14px rgba(13,61,46,.3)"}},
-      /*#__PURE__*/React.createElement("i",{className:"ti ti-user-plus",style:{fontSize:20}}),"Crear usuario"
-    ),
-    usuarios.length===0
-      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}},
-          /*#__PURE__*/React.createElement("i",{className:"ti ti-users",style:{fontSize:44,display:"block",marginBottom:12}}),
-          "No hay usuarios registrados"
-        )
-      :/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:16,border:"1px solid #F0F0F0",boxShadow:"0 2px 8px rgba(0,0,0,.05)",overflow:"hidden"}},
-          usuarios.map(function(u){
-            var isMe=currentUser&&currentUser.email===u.email;
-            return /*#__PURE__*/React.createElement("div",{key:u.id,style:{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",borderBottom:"1px solid #F3F4F6",opacity:u.active===false?0.5:1}},
-              /*#__PURE__*/React.createElement("div",{style:{width:44,height:44,borderRadius:"50%",background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},
-                /*#__PURE__*/React.createElement("i",{className:"ti ti-user",style:{color:"#F2C4CE",fontSize:20}})
-              ),
-              /*#__PURE__*/React.createElement("div",{style:{flex:1,minWidth:0}},
-                /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,display:"flex",alignItems:"center",gap:6}},
-                  u.name||u.email,
-                  isMe&&/*#__PURE__*/React.createElement("span",{style:{fontSize:10,background:"#E8F5EB",color:"#065F46",borderRadius:6,padding:"2px 6px",fontWeight:700}},"Tu")
-                ),
-                /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280",marginTop:1}},u.email),
-                /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:roleBg(u.role),color:roleColor(u.role),borderRadius:6,padding:"2px 8px",fontWeight:700,marginTop:4,display:"inline-block"}},roleLabel(u.role))
-              ),
-              !isMe&&/*#__PURE__*/React.createElement("button",{onClick:function(){toggleActive(u);},style:{padding:"7px 12px",background:u.active===false?"#E8F5EB":"#FEE2E2",color:u.active===false?"#065F46":"#DC2626",border:"none",borderRadius:10,fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0}},
-                u.active===false?"Activar":"Desactivar"
-              )
-            );
-          })
-        ),
-    showNew&&/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",flexDirection:"column",justifyContent:"flex-end"}},
-      /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:"28px 28px 0 0",padding:"28px 20px 40px",maxHeight:"85vh",overflowY:"auto"}},
-        /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800}},"Nuevo usuario"),
-          /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);setErrU("");},style:{background:"#F3F4F6",border:"none",borderRadius:10,padding:"8px 12px",cursor:"pointer",fontSize:16}},
-            /*#__PURE__*/React.createElement("i",{className:"ti ti-x"})
-          )
-        ),
-        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:12}},
-          /*#__PURE__*/React.createElement("div",null,
-            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Nombre completo"),
-            /*#__PURE__*/React.createElement("input",{value:nName,onChange:function(e){setNName(e.target.value);},placeholder:"Ana Gomez",style:IS2})
-          ),
-          /*#__PURE__*/React.createElement("div",null,
-            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Correo electronico"),
-            /*#__PURE__*/React.createElement("input",{type:"email",value:nEmail,onChange:function(e){setNEmail(e.target.value);},placeholder:"ana@pawsociety.co",style:IS2})
-          ),
-          /*#__PURE__*/React.createElement("div",null,
-            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Contrasena inicial"),
-            /*#__PURE__*/React.createElement("input",{type:"password",value:nPass,onChange:function(e){setNPass(e.target.value);},placeholder:"Minimo 6 caracteres",style:IS2})
-          ),
-          /*#__PURE__*/React.createElement("div",null,
-            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Rol"),
-            /*#__PURE__*/React.createElement("select",{value:nRole,onChange:function(e){setNRole(e.target.value);},style:IS2},
-              /*#__PURE__*/React.createElement("option",{value:"admin"},"Admin - acceso total"),
-              /*#__PURE__*/React.createElement("option",{value:"empleado"},"Empleado - sin Finanzas ni Config")
-            )
-          ),
-          errU?/*#__PURE__*/React.createElement("div",{style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",fontSize:13,display:"flex",alignItems:"center",gap:8}},
-            /*#__PURE__*/React.createElement("i",{className:"ti ti-alert-circle",style:{fontSize:18}}),errU
-          ):null,
-          /*#__PURE__*/React.createElement("div",{style:{background:"#FFFBEB",border:"1px solid #F59E0B",borderRadius:10,padding:"10px 14px",fontSize:12,color:"#92400E"}},
-            /*#__PURE__*/React.createElement("i",{className:"ti ti-info-circle",style:{marginRight:6}}),"Se pedira tu contrasena para confirmar la creacion."
-          ),
-          /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:10,marginTop:4}},
-            /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);setErrU("");},style:{flex:1,padding:14,background:"#F3F4F6",color:"#374151",border:"1px solid #E5E7EB",borderRadius:14,fontSize:14,fontWeight:600,cursor:"pointer"}},"Cancelar"),
-            /*#__PURE__*/React.createElement("button",{onClick:createUser,disabled:saving,style:{flex:2,padding:14,background:saving?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",boxShadow:saving?"none":"0 4px 14px rgba(13,61,46,.3)"}},saving?"Creando...":"Crear usuario")
-          )
-        )
-      )
-    )
-  );
-}
-
-function RendimientoScreen(_ref_rend) {
-  var appts=_ref_rend.appts,clients=_ref_rend.clients,pets=_ref_rend.pets;
-  var _m=useState(thisM()),_ma=_slicedToArray(_m,2),mth=_ma[0],setMth=_ma[1];
-  var completed=appts.filter(function(a){
-    var st=a.status||a.estado||"";
-    var dt=a.date||a.fecha||"";
-    return st==="completado"&&dt.startsWith(mth);
-  });
-  var byEmp={};
-  completed.forEach(function(a){
-    var emp=a.assignedTo||"Sin asignar";
-    if(!byEmp[emp])byEmp[emp]={name:emp,baths:0,income:0,petSet:{}};
-    byEmp[emp].baths++;
-    byEmp[emp].income+=Number(a.price||a.precio||0);
-    if(a.petId)byEmp[emp].petSet[a.petId]=1;
-  });
-  var empList=Object.values(byEmp).map(function(e){return Object.assign({},e,{pets:Object.keys(e.petSet).length});}).sort(function(a,b){return b.baths-a.baths;});
-  var totalBaths=completed.length;
-  var totalIncome=completed.reduce(function(s,a){return s+Number(a.price||a.precio||0);},0);
-  var cols=["#1A5C47","#D4945A","#F2C4CE","#86EFAC","#FCD34D"];
-  var months=[];
-  var now=new Date();
-  for(var i=0;i<6;i++){var d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(d.toISOString().slice(0,7));}
-  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
-    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
-      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Equipo"),
-      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Rendimiento"),
-      /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:12}},
-        /*#__PURE__*/React.createElement("div",{style:{background:"rgba(242,196,206,.12)",borderRadius:10,padding:"10px 14px"}},
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)"}},"Banos del mes"),
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800,color:"#fff"}},totalBaths)
-        ),
-        /*#__PURE__*/React.createElement("div",{style:{background:"rgba(242,196,206,.12)",borderRadius:10,padding:"10px 14px"}},
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)"}},"Ingresos spa"),
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800,color:"#F2C4CE"}},fmtM(totalIncome))
-        )
-      )
-    ),
-    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginBottom:14,overflowX:"auto",paddingBottom:4}},
-      months.map(function(m){return /*#__PURE__*/React.createElement("span",{key:m,onClick:function(){setMth(m);},style:{padding:"6px 12px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,background:mth===m?"#1A5C47":"#F3F4F6",color:mth===m?"#fff":"#6B7280",border:"1.5px solid "+(mth===m?"#1A5C47":"#E5E7EB")}},m);})
-    ),
-    empList.length===0
-      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}},
-          /*#__PURE__*/React.createElement("i",{className:"ti ti-users",style:{fontSize:44,display:"block",marginBottom:12}}),
-          "Sin datos este mes.",
-          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,marginTop:8,color:"#D1D5DB"}},"Asigna un empleado en cada cita para ver el rendimiento.")
-        )
-      :/*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:12}},
-          empList.map(function(emp,idx){
-            var pct=totalBaths>0?Math.round(emp.baths/totalBaths*100):0;
-            var col=cols[idx%cols.length];
-            return /*#__PURE__*/React.createElement("div",{key:emp.name,style:{background:"#fff",borderRadius:16,border:"1px solid #F0F0F0",padding:16,boxShadow:"0 2px 8px rgba(0,0,0,.05)"}},
-              /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:12}},
-                /*#__PURE__*/React.createElement("div",{style:{width:44,height:44,borderRadius:"50%",background:col,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},
-                  /*#__PURE__*/React.createElement("i",{className:"ti ti-user",style:{color:"#fff",fontSize:20}})
-                ),
-                /*#__PURE__*/React.createElement("div",{style:{flex:1}},
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:700}},emp.name),
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},emp.baths+" bano"+(emp.baths!==1?"s":"")+" - "+emp.pets+" mascota"+(emp.pets!==1?"s":""))
-                ),
-                /*#__PURE__*/React.createElement("div",{style:{textAlign:"right"}},
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800,color:col}},fmtM(emp.income)),
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#9CA3AF"}},pct+"% del total")
-                )
-              ),
-              /*#__PURE__*/React.createElement("div",{style:{background:"#F3F4F6",borderRadius:8,height:8,overflow:"hidden"}},
-                /*#__PURE__*/React.createElement("div",{style:{width:pct+"%",height:"100%",background:col,borderRadius:8,transition:"width .5s"}})
-              ),
-              /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginTop:12}},
-                /*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:10,padding:"8px 10px",textAlign:"center"}},
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800}},emp.baths),
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#9CA3AF",textTransform:"uppercase"}},"Banos")
-                ),
-                /*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:10,padding:"8px 10px",textAlign:"center"}},
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:800,color:"#1A5C47"}},fmtM(emp.baths>0?Math.round(emp.income/emp.baths):0)),
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#9CA3AF",textTransform:"uppercase"}},"Ticket")
-                ),
-                /*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:10,padding:"8px 10px",textAlign:"center"}},
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800,color:"#D4945A"}},emp.pets),
-                  /*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#9CA3AF",textTransform:"uppercase"}},"Mascotas")
-                )
-              )
-            );
-          })
-        )
-  );
-}
-
 function App() {
   var _useState153 = useState(false),
     _useState154 = _slicedToArray(_useState153, 2),
     logged = _useState154[0],
     setLogged = _useState154[1];
   var _uCU=useState(null),_uCUa=_slicedToArray(_uCU,2),currentUser=_uCUa[0],setCurrentUser=_uCUa[1];
-  var _uR=useState("admin"),_uRa=_slicedToArray(_uR,2),userRole=_uRa[0],setUserRole=_uRa[1];
   var _useState155 = useState("dashboard"),
     _useState156 = _slicedToArray(_useState155, 2),
     view = _useState156[0],
@@ -8845,21 +8576,7 @@ function App() {
     toast = _useState190[0],
     setToast = _useState190[1];
   useEffect(function () {
-    var unsub = firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        setCurrentUser(user);
-        setLogged(true);
-        if (db) {
-          db.collection("users").doc(user.uid).get()
-            .then(function(d){ setUserRole(d.exists && d.data().role ? d.data().role : "admin"); })
-            .catch(function(){ setUserRole("admin"); });
-        }
-      } else {
-        setCurrentUser(null);
-        setLogged(false);
-        setUserRole("admin");
-      }
-    });
+    var unsub=firebase.auth().onAuthStateChanged(function(user){if(user){setCurrentUser(user);setLogged(true);}else{setCurrentUser(null);setLogged(false);}});
     return unsub;
   }, []);
   useEffect(function () {
@@ -8967,7 +8684,7 @@ function App() {
     setLogged(true);
   };
   var handleLogout = function handleLogout() {
-    try { firebase.auth().signOut(); } catch(e){}
+    try{firebase.auth().signOut();}catch(e){}
     setCurrentUser(null);
     setLogged(false);
     setView("dashboard");
@@ -9146,13 +8863,7 @@ function App() {
     toast: showToast,
     clients: clients,
     pets: pets
-  }), view === "rendimiento" && userRole === "admin" && /*#__PURE__*/React.createElement(RendimientoScreen,{
-      appts:appts,clients:clients,pets:pets
-    }),
-    view === "usuarios" && userRole === "admin" && /*#__PURE__*/React.createElement(UsuariosScreen, {
-      currentUser: currentUser, toast: showToast
-    }),
-    view === "alertas" && /*#__PURE__*/React.createElement(AlertasScreen, {
+  }), view === "alertas" && /*#__PURE__*/React.createElement(AlertasScreen, {
     pets: pets,
     clients: clients,
     appts: appts,
@@ -9212,10 +8923,8 @@ function App() {
     id: "finanzas",
     icon: "chart-pie",
     label: "Finanzas"
-  }].filter(function(n){ return userRole==="admin"||n.id!=="finanzas"; }).map(function (n) {
+  }].map(function (n) {
     var active = view === n.id;
-    var isAdminOnly = ["finanzas","config","usuarios"].includes(n.id);
-    if (isAdminOnly && userRole !== "admin") return null;
     return /*#__PURE__*/React.createElement("button", {
       key: n.id,
       onClick: function onClick() {
