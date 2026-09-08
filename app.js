@@ -115,6 +115,10 @@ var NAV = [{
   icon: "speakerphone",
   label: "Campañas"
 }, {
+  id: "usuarios",
+  icon: "shield-lock",
+  label: "Usuarios"
+}, {
   id: "config",
   icon: "settings",
   label: "Config"
@@ -521,10 +525,9 @@ var BtnP = function BtnP(_ref4) {
     style: _objectSpread({
       flex: 1,
       padding: 14,
-      background: disabled ? "#9CA3AF" : "linear-gradient(135deg,#1A5C47,#0D3D2E)",
+      background: disabled ? "#9CA3AF" : "#1A5C47",
       color: "#fff",
-      borderRadius: 14,
-      boxShadow: disabled ? "none" : "0 4px 14px rgba(13,61,46,.35)",
+      borderRadius: 12,
       fontSize: 15,
       fontWeight: 700,
       border: "none",
@@ -543,10 +546,9 @@ var BtnS = function BtnS(_ref5) {
     onClick: onClick,
     style: {
       padding: "14px 20px",
-      background: "#F8F9FA",
-      color: "#374151",
-      borderRadius: 14,
-      border: "1px solid #E5E7EB",
+      background: "#F3F4F6",
+      color: "#4B5563",
+      borderRadius: 12,
       fontSize: 14,
       fontWeight: 600,
       border: "none",
@@ -688,7 +690,7 @@ function Modal(_ref1) {
       background: "#fff",
       width: "100%",
       maxWidth: 640,
-      borderRadius: "28px 28px 0 0",
+      borderRadius: "24px 24px 0 0",
       maxHeight: "93vh",
       overflowY: "auto",
       paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)"
@@ -810,7 +812,7 @@ function Sidebar(_ref11) {
       left: 0,
       bottom: 0,
       width: 265,
-      background: "linear-gradient(180deg,#071e14 0%,#0D3D2E 100%)",
+      background: "#0D3D2E",
       zIndex: 300,
       transform: open ? "translateX(0)" : "translateX(-100%)",
       transition: "transform .28s cubic-bezier(.4,0,.2,1)",
@@ -820,14 +822,15 @@ function Sidebar(_ref11) {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      padding: "calc(env(safe-area-inset-top)+24px) 20px 20px", borderBottom: "1px solid rgba(242,196,206,.08)"
+      padding: "calc(env(safe-area-inset-top)+20px) 20px 16px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 20,
       fontWeight: 800,
       color: "#F2C4CE",
-      marginBottom: 4
+      marginBottom: 4,
+      fontFamily: "Georgia,serif"
     }
   }, "PawSociety \uD83D\uDC3E"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -840,7 +843,7 @@ function Sidebar(_ref11) {
       overflowY: "auto",
       padding: "0 10px"
     }
-  }, NAV.map(function (n) {
+  }, NAV.filter(function(n){ return userRole === "admin" || !["finanzas","config","usuarios"].includes(n.id); }).map(function (n) {
     var active = view === n.id;
     return /*#__PURE__*/React.createElement("button", {
       key: n.id,
@@ -855,8 +858,7 @@ function Sidebar(_ref11) {
         padding: "11px 14px",
         borderRadius: 12,
         border: "none",
-        background: active ? "rgba(242,196,206,.2)" : "transparent",
-        borderLeft: active ? "3px solid #F2C4CE" : "3px solid transparent",
+        background: active ? "rgba(242,196,206,.15)" : "transparent",
         color: active ? "#F2C4CE" : "rgba(242,196,206,.55)",
         fontSize: 14,
         fontWeight: active ? 700 : 400,
@@ -921,188 +923,119 @@ function Sidebar(_ref11) {
 }
 function Login(_ref12) {
   var onLogin = _ref12.onLogin;
-  var _useState = useState(""),
-    _useState2 = _slicedToArray(_useState, 2),
-    pin = _useState2[0],
-    setPin = _useState2[1];
-  var _useState3 = useState(""),
-    _useState4 = _slicedToArray(_useState3, 2),
-    err = _useState4[0],
-    setErr = _useState4[1];
-  var _useState5 = useState(DEFAULT_PIN),
-    _useState6 = _slicedToArray(_useState5, 2),
-    stored = _useState6[0],
-    setStored = _useState6[1];
-  var _useState7 = useState(false),
-    _useState8 = _slicedToArray(_useState7, 2),
-    ready = _useState8[0],
-    setReady = _useState8[1];
-  useEffect(function () {
-    _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-      var d, _t;
-      return _regenerator().w(function (_context) {
-        while (1) switch (_context.p = _context.n) {
-          case 0:
-            if (!db) {
-              _context.n = 4;
-              break;
-            }
-            _context.p = 1;
-            _context.n = 2;
-            return db.collection("config").doc("pin").get();
-          case 2:
-            d = _context.v;
-            if (d.exists && d.data().value) setStored(d.data().value);
-            _context.n = 4;
-            break;
-          case 3:
-            _context.p = 3;
-            _t = _context.v;
-          case 4:
-            setReady(true);
-          case 5:
-            return _context.a(2);
-        }
-      }, _callee, null, [[1, 3]]);
-    }))();
-  }, []);
-  var press = function press(n) {
-    if (pin.length >= 4) return;
-    var np = pin + n;
-    setPin(np);
-    setErr("");
-    if (np.length === 4) setTimeout(function () {
-      if (np === stored) {
-        saveSession();
-        onLogin();
-      } else {
-        setErr("PIN incorrecto");
-        setPin("");
-      }
-    }, 200);
-  };
-  var rows = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", "⌫"]];
-  return /*#__PURE__*/React.createElement("div", {
-    style: {
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "linear-gradient(145deg,#071e14 0%,#0D3D2E 50%,#155240 100%)",
-      padding: 20
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff",
-      borderRadius: 24,
-      padding: "40px 32px",
-      width: "100%",
-      maxWidth: 360,
-      boxShadow: "0 32px 80px rgba(0,0,0,.5)"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      marginBottom: 24
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 44,
-      marginBottom: 8
-    }
-  }, "\uD83D\uDC3E"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 28,
-      fontWeight: 800,
-      color: "#0D3D2E",
-      fontFamily: "Georgia,serif",
-      letterSpacing: "-0.5px"
-    }
-  }, "PawSociety"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "#9CA3AF",
-      marginTop: 2
-    }
-  }, "CRM & Gesti\xF3n")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      fontSize: 14,
-      color: "#6B7280",
-      marginBottom: 10
-    }
-  }, "Ingresa tu PIN"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 12,
-      justifyContent: "center",
-      marginBottom: 20
-    }
-  }, [0, 1, 2, 3].map(function (i) {
-    return /*#__PURE__*/React.createElement("div", {
-      key: i,
-      style: {
-        width: 14,
-        height: 14,
-        borderRadius: "50%",
-        background: pin.length > i ? "#0D3D2E" : "#E8EDF0",
-      boxShadow: pin.length > i ? "0 2px 8px rgba(13,61,46,.4)" : "none",
-        transition: "all .2s"
-      }
-    });
-  })), ready ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "repeat(3,1fr)",
-      gap: 10
-    }
-  }, rows.map(function (row, ri) {
-    return row.map(function (n, ci) {
-      if (n === "") return /*#__PURE__*/React.createElement("div", {
-        key: ri + "-" + ci
+  var _u1 = useState(""), email = _slicedToArray(_u1,2)[0], setEmail = _slicedToArray(_u1,2)[1];
+  var _u2 = useState(""), pass = _slicedToArray(_u2,2)[0], setPass = _slicedToArray(_u2,2)[1];
+  var _u3 = useState(""), err = _slicedToArray(_u3,2)[0], setErr = _slicedToArray(_u3,2)[1];
+  var _u4 = useState(false), loading = _slicedToArray(_u4,2)[0], setLoading = _slicedToArray(_u4,2)[1];
+  var _u5 = useState(false), showPass = _slicedToArray(_u5,2)[0], setShowPass = _slicedToArray(_u5,2)[1];
+
+  // Re-declare slicedToArray calls properly using useState directly
+  var _su1 = useState(""), _su1a = _slicedToArray(_su1,2); email = _su1a[0]; setEmail = _su1a[1];
+  var _su2 = useState(""), _su2a = _slicedToArray(_su2,2); pass = _su2a[0]; setPass = _su2a[1];
+  var _su3 = useState(""), _su3a = _slicedToArray(_su3,2); err = _su3a[0]; setErr = _su3a[1];
+  var _su4 = useState(false), _su4a = _slicedToArray(_su4,2); loading = _su4a[0]; setLoading = _su4a[1];
+  var _su5 = useState(false), _su5a = _slicedToArray(_su5,2); showPass = _su5a[0]; setShowPass = _su5a[1];
+
+  var inpStyle = {width:"100%",padding:"13px 16px",border:"1.5px solid #E5E7EB",borderRadius:12,fontSize:15,outline:"none",fontFamily:"inherit",background:"#FAFAFA",boxSizing:"border-box"};
+
+  var doLogin = function() {
+    var em = email.trim();
+    if (!em || !pass) { setErr("Completa correo y contrasena"); return; }
+    setLoading(true); setErr("");
+    firebase.auth().signInWithEmailAndPassword(em, pass)
+      .then(function(uc) { onLogin(uc.user); })
+      .catch(function(e) {
+        setLoading(false);
+        var msg = {
+          "auth/user-not-found": "Correo no registrado",
+          "auth/wrong-password": "Contrasena incorrecta",
+          "auth/invalid-credential": "Correo o contrasena incorrectos",
+          "auth/invalid-email": "Correo invalido",
+          "auth/too-many-requests": "Demasiados intentos. Intenta mas tarde."
+        }[e.code] || ("Error: " + e.message);
+        setErr(msg);
       });
-      return /*#__PURE__*/React.createElement("button", {
-        key: n,
-        onClick: function onClick() {
-          return n === "⌫" ? setPin(function (p) {
-            return p.slice(0, -1);
-          }) : press(n);
+  };
+
+  return /*#__PURE__*/React.createElement("div", {
+    style: {display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+      minHeight:"100vh",background:"linear-gradient(145deg,#071e14 0%,#0D3D2E 50%,#155240 100%)",
+      padding:"24px 20px"}
+  },
+    /*#__PURE__*/React.createElement("div", {
+      style: {background:"#fff",borderRadius:28,padding:"40px 32px",width:"100%",maxWidth:380,
+        boxShadow:"0 32px 80px rgba(0,0,0,.45)"}
+    },
+      /*#__PURE__*/React.createElement("div", {style:{textAlign:"center",marginBottom:32}},
+        /*#__PURE__*/React.createElement("div", {style:{fontSize:48,marginBottom:12}}, "\uD83D\uDC3E"),
+        /*#__PURE__*/React.createElement("div", {
+          style:{fontSize:28,fontWeight:800,color:"#0D3D2E",fontFamily:"Georgia,serif",
+            letterSpacing:"-0.5px",marginBottom:4}
+        }, "PawSociety"),
+        /*#__PURE__*/React.createElement("div", {
+          style:{fontSize:11,color:"#9CA3AF",letterSpacing:"2px",textTransform:"uppercase",fontWeight:600}
+        }, "Pet Store \u00B7 CRM")
+      ),
+      /*#__PURE__*/React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:14}},
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("label", {
+            style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block",
+              letterSpacing:"0.3px",textTransform:"uppercase"}
+          }, "Correo"),
+          /*#__PURE__*/React.createElement("input", {
+            type:"email", placeholder:"correo@pawsociety.co", value:email,
+            onChange:function(e){setEmail(e.target.value);setErr("");},
+            onKeyDown:function(e){if(e.key==="Enter")doLogin();},
+            style:inpStyle, autoComplete:"email"
+          })
+        ),
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("label", {
+            style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block",
+              letterSpacing:"0.3px",textTransform:"uppercase"}
+          }, "Contrasena"),
+          /*#__PURE__*/React.createElement("div", {style:{position:"relative"}},
+            /*#__PURE__*/React.createElement("input", {
+              type:showPass?"text":"password", placeholder:"••••••••", value:pass,
+              onChange:function(e){setPass(e.target.value);setErr("");},
+              onKeyDown:function(e){if(e.key==="Enter")doLogin();},
+              style:Object.assign({},inpStyle,{paddingRight:48}),
+              autoComplete:"current-password"
+            }),
+            /*#__PURE__*/React.createElement("button", {
+              onClick:function(){setShowPass(!showPass);},
+              style:{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",
+                background:"none",border:"none",cursor:"pointer",color:"#9CA3AF",fontSize:20,padding:0}
+            }, /*#__PURE__*/React.createElement("i", {className:showPass?"ti ti-eye-off":"ti ti-eye"}))
+          )
+        ),
+        err && /*#__PURE__*/React.createElement("div", {
+          style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",
+            fontSize:13,fontWeight:500,display:"flex",alignItems:"center",gap:8}
         },
-        style: {
-          height: 58,
-          borderRadius: 10,
-          border: "none",
-          fontSize: 22,
-          fontWeight: 700,
-          background: n === "⌫" ? "#FEE2E2" : "#E8F5EB",
-          color: n === "⌫" ? "#DC2626" : "#0D3D2E",
-          cursor: "pointer"
-        }
-      }, n);
-    });
-  })) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      padding: 20,
-      color: "#9CA3AF"
-    }
-  }, "Cargando..."), err && /*#__PURE__*/React.createElement("div", {
-    style: {
-      color: "#DC2626",
-      fontSize: 13,
-      textAlign: "center",
-      marginTop: 10,
-      fontWeight: 600
-    }
-  }, err), /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      marginTop: 12,
-      fontSize: 11,
-      color: "#9CA3AF"
-    }
-  }, "PIN por defecto: 1234")));
+          /*#__PURE__*/React.createElement("i", {className:"ti ti-alert-circle",style:{fontSize:18,flexShrink:0}}),
+          err
+        ),
+        /*#__PURE__*/React.createElement("button", {
+          onClick:doLogin, disabled:loading,
+          style:{padding:16,marginTop:4,
+            background:loading?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",
+            color:"#fff",borderRadius:14,fontSize:16,fontWeight:700,border:"none",cursor:"pointer",
+            boxShadow:loading?"none":"0 4px 16px rgba(13,61,46,.35)",
+            display:"flex",alignItems:"center",justifyContent:"center",gap:8}
+        },
+          loading ? /*#__PURE__*/React.createElement("i", {className:"ti ti-loader",style:{fontSize:20}}) : null,
+          loading ? "Ingresando..." : "Ingresar"
+        )
+      ),
+      /*#__PURE__*/React.createElement("div", {
+        style:{textAlign:"center",marginTop:24,fontSize:11,color:"#D1D5DB",borderTop:"1px solid #F3F4F6",paddingTop:16}
+      }, "PawSociety Pet Store \u00B7 Armenia, Quind\u00EDo")
+    )
+  );
 }
+
+
 function PetModal(_ref14) {
   var clientId = _ref14.clientId,
     et = _ref14.et,
@@ -3274,9 +3207,8 @@ function DashboardScreen(_ref22) {
   });
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "linear-gradient(135deg,#071e14 0%,#0D3D2E 50%,#1A5C47 100%)",
-      borderRadius: 20,
-      boxShadow: "0 8px 32px rgba(13,61,46,.35)",
+      background: "linear-gradient(135deg,#0D3D2E,#1A5C47)",
+      borderRadius: 16,
       padding: 20,
       marginBottom: 16,
       color: "#fff"
@@ -8636,11 +8568,234 @@ function ConfigScreen(_ref44) {
     }
   }, "Guardar precios")));
 }
+
+function UsuariosScreen(_ref_us) {
+  var currentUser = _ref_us.currentUser, toast = _ref_us.toast;
+  var _u1 = useState([]), _u1a = _slicedToArray(_u1,2), usuarios = _u1a[0], setUsuarios = _u1a[1];
+  var _u2 = useState(false), _u2a = _slicedToArray(_u2,2), showNew = _u2a[0], setShowNew = _u2a[1];
+  var _u3 = useState(false), _u3a = _slicedToArray(_u3,2), loadingU = _u3a[0], setLoadingU = _u3a[1];
+  var _u4 = useState(""), _u4a = _slicedToArray(_u4,2), newEmail = _u4a[0], setNewEmail = _u4a[1];
+  var _u5 = useState(""), _u5a = _slicedToArray(_u5,2), newPass = _u5a[0], setNewPass = _u5a[1];
+  var _u6 = useState(""), _u6a = _slicedToArray(_u6,2), newName = _u6a[0], setNewName = _u6a[1];
+  var _u7 = useState("empleado"), _u7a = _slicedToArray(_u7,2), newRole = _u7a[0], setNewRole = _u7a[1];
+  var _u8 = useState(""), _u8a = _slicedToArray(_u8,2), errU = _u8a[0], setErrU = _u8a[1];
+
+  useEffect(function() {
+    if (!db) return;
+    return db.collection("users").onSnapshot(function(s) {
+      setUsuarios(s.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }));
+    });
+  }, []);
+
+  var createUser = function() {
+    if (!newEmail.trim() || !newPass || !newName.trim()) { setErrU("Completa todos los campos"); return; }
+    if (newPass.length < 6) { setErrU("La contrasena debe tener minimo 6 caracteres"); return; }
+    setLoadingU(true); setErrU("");
+    var adminEmail = currentUser ? currentUser.email : "";
+    var adminPass = prompt("Confirma tu contrasena de admin para continuar:");
+    if (!adminPass) { setLoadingU(false); return; }
+
+    // Use secondary Firebase app to create user without signing out current admin
+    var secondApp;
+    try { secondApp = firebase.app("secondary"); }
+    catch(e) {
+      secondApp = firebase.initializeApp(firebase.app().options, "secondary");
+    }
+    secondApp.auth().createUserWithEmailAndPassword(newEmail.trim(), newPass)
+      .then(function(uc) {
+        return db.collection("users").doc(uc.user.uid).set({
+          name: newName.trim(), email: newEmail.trim(), role: newRole, createdAt: today(), active: true
+        }).then(function() {
+          return secondApp.auth().signOut();
+        });
+      })
+      .then(function() {
+        toast("Usuario " + newName.trim() + " creado!");
+        setNewEmail(""); setNewPass(""); setNewName(""); setNewRole("empleado");
+        setShowNew(false); setLoadingU(false);
+        // Re-sign in admin
+        firebase.auth().signInWithEmailAndPassword(adminEmail, adminPass).catch(function(){});
+      })
+      .catch(function(e) {
+        setLoadingU(false);
+        var msg = {
+          "auth/email-already-in-use": "Ese correo ya tiene cuenta",
+          "auth/invalid-email": "Correo invalido",
+          "auth/weak-password": "La contrasena es muy debil"
+        }[e.code] || e.message;
+        setErrU(msg);
+      });
+  };
+
+  var toggleActive = function(u) {
+    if (!db) return;
+    db.collection("users").doc(u.id).update({active: !u.active})
+      .then(function(){ toast(u.active ? "Usuario desactivado" : "Usuario activado"); })
+      .catch(function(e){ toast("Error: " + e.message); });
+  };
+
+  var IS_inp = {width:"100%",padding:"11px 14px",border:"1.5px solid #E5E7EB",borderRadius:10,fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
+
+  var roleColors = {admin:{bg:"#FEF3C7",color:"#92400E",label:"Admin"},empleado:{bg:"#E8F5EB",color:"#065F46",label:"Empleado"}};
+
+  return /*#__PURE__*/React.createElement("div", {style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div", {
+      style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,
+        marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}
+    },
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:12,color:"rgba(242,196,206,.6)",marginBottom:4,textTransform:"uppercase",letterSpacing:"1px"}}, "Gestion"),
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}}, "Usuarios"),
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:13,color:"rgba(242,196,206,.7)",marginTop:4}}, currentUser ? currentUser.email : ""),
+      /*#__PURE__*/React.createElement("div", {
+        style:{marginTop:12,background:"rgba(242,196,206,.12)",borderRadius:10,padding:"8px 14px",
+          display:"inline-flex",alignItems:"center",gap:8}
+      },
+        /*#__PURE__*/React.createElement("i", {className:"ti ti-shield-check",style:{color:"#F2C4CE",fontSize:16}}),
+        /*#__PURE__*/React.createElement("span", {style:{fontSize:12,color:"rgba(242,196,206,.8)"}}, usuarios.length + " usuarios registrados")
+      )
+    ),
+    /*#__PURE__*/React.createElement("button", {
+      onClick:function(){ setShowNew(true); setErrU(""); },
+      style:{width:"100%",padding:15,background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",
+        color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",
+        display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:16,
+        boxShadow:"0 4px 14px rgba(13,61,46,.35)"}
+    },
+      /*#__PURE__*/React.createElement("i", {className:"ti ti-user-plus",style:{fontSize:20}}),
+      "Crear nuevo usuario"
+    ),
+    usuarios.length === 0
+      ? /*#__PURE__*/React.createElement("div", {
+          style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}
+        },
+          /*#__PURE__*/React.createElement("i", {className:"ti ti-users",style:{fontSize:44,display:"block",marginBottom:12}}),
+          /*#__PURE__*/React.createElement("div", null, "No hay usuarios registrados")
+        )
+      : /*#__PURE__*/React.createElement("div", {
+          style:{background:"#fff",borderRadius:16,border:"1px solid #F0F0F0",
+            boxShadow:"0 2px 8px rgba(0,0,0,.05)",overflow:"hidden"}
+        },
+          usuarios.map(function(u) {
+            var rc = roleColors[u.role] || roleColors.empleado;
+            var isMe = currentUser && currentUser.email === u.email;
+            return /*#__PURE__*/React.createElement("div", {
+              key:u.id,
+              style:{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",
+                borderBottom:"1px solid #F3F4F6",opacity:u.active===false?0.5:1}
+            },
+              /*#__PURE__*/React.createElement("div", {
+                style:{width:42,height:42,borderRadius:"50%",
+                  background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",
+                  display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}
+              },
+                /*#__PURE__*/React.createElement("i", {className:"ti ti-user",style:{color:"#F2C4CE",fontSize:20}})
+              ),
+              /*#__PURE__*/React.createElement("div", {style:{flex:1,minWidth:0}},
+                /*#__PURE__*/React.createElement("div", {
+                  style:{fontSize:14,fontWeight:700,color:"#111827",display:"flex",alignItems:"center",gap:6}
+                },
+                  u.name || u.email,
+                  isMe && /*#__PURE__*/React.createElement("span", {
+                    style:{fontSize:10,background:"#E8F5EB",color:"#065F46",borderRadius:6,
+                      padding:"2px 6px",fontWeight:700}
+                  }, "Tu")
+                ),
+                /*#__PURE__*/React.createElement("div", {style:{fontSize:12,color:"#6B7280",marginTop:2}}, u.email),
+                /*#__PURE__*/React.createElement("div", {style:{marginTop:4,display:"flex",gap:6,alignItems:"center"}},
+                  /*#__PURE__*/React.createElement("span", {
+                    style:{fontSize:11,background:rc.bg,color:rc.color,borderRadius:6,
+                      padding:"2px 8px",fontWeight:700}
+                  }, rc.label),
+                  u.active === false && /*#__PURE__*/React.createElement("span", {
+                    style:{fontSize:11,background:"#F3F4F6",color:"#9CA3AF",borderRadius:6,padding:"2px 8px"}
+                  }, "Inactivo")
+                )
+              ),
+              !isMe && /*#__PURE__*/React.createElement("button", {
+                onClick:function(){ toggleActive(u); },
+                style:{padding:"7px 12px",background:u.active===false?"#E8F5EB":"#FEE2E2",
+                  color:u.active===false?"#065F46":"#DC2626",
+                  border:"none",borderRadius:10,fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0}
+              }, u.active===false ? "Activar" : "Desactivar")
+            );
+          })
+        ),
+    showNew && /*#__PURE__*/React.createElement("div", {
+      style:{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:400,
+        display:"flex",flexDirection:"column",justifyContent:"flex-end"}
+    },
+      /*#__PURE__*/React.createElement("div", {
+        style:{background:"#fff",borderRadius:"28px 28px 0 0",padding:"28px 20px 40px",maxHeight:"85vh",overflowY:"auto"}
+      },
+        /*#__PURE__*/React.createElement("div", {
+          style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}
+        },
+          /*#__PURE__*/React.createElement("div", {style:{fontSize:18,fontWeight:800,color:"#111827"}}, "Nuevo usuario"),
+          /*#__PURE__*/React.createElement("button", {
+            onClick:function(){setShowNew(false);setErrU("");},
+            style:{background:"#F3F4F6",border:"none",borderRadius:10,padding:"8px 12px",cursor:"pointer",fontSize:16}
+          }, /*#__PURE__*/React.createElement("i", {className:"ti ti-x"}))
+        ),
+        /*#__PURE__*/React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:12}},
+          /*#__PURE__*/React.createElement("div", null,
+            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Nombre completo"),
+            /*#__PURE__*/React.createElement("input", {value:newName,onChange:function(e){setNewName(e.target.value);},placeholder:"Ana Gomez",style:IS_inp})
+          ),
+          /*#__PURE__*/React.createElement("div", null,
+            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Correo electronico"),
+            /*#__PURE__*/React.createElement("input", {type:"email",value:newEmail,onChange:function(e){setNewEmail(e.target.value);},placeholder:"ana@pawsociety.co",style:IS_inp})
+          ),
+          /*#__PURE__*/React.createElement("div", null,
+            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Contrasena inicial"),
+            /*#__PURE__*/React.createElement("input", {type:"password",value:newPass,onChange:function(e){setNewPass(e.target.value);},placeholder:"Minimo 6 caracteres",style:IS_inp})
+          ),
+          /*#__PURE__*/React.createElement("div", null,
+            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Rol"),
+            /*#__PURE__*/React.createElement("select", {value:newRole,onChange:function(e){setNewRole(e.target.value);},style:IS_inp},
+              /*#__PURE__*/React.createElement("option", {value:"admin"}, "Admin (acceso total)"),
+              /*#__PURE__*/React.createElement("option", {value:"empleado"}, "Empleado (sin Finanzas ni Config)")
+            )
+          ),
+          errU && /*#__PURE__*/React.createElement("div", {
+            style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",
+              fontSize:13,display:"flex",alignItems:"center",gap:8}
+          },
+            /*#__PURE__*/React.createElement("i", {className:"ti ti-alert-circle",style:{fontSize:18}}), errU
+          ),
+          /*#__PURE__*/React.createElement("div", {
+            style:{background:"#FFF8E1",border:"1px solid #F59E0B",borderRadius:10,padding:"10px 14px",fontSize:12,color:"#92400E"}
+          },
+            /*#__PURE__*/React.createElement("i", {className:"ti ti-info-circle",style:{marginRight:6}}),
+            "Se te pedira tu contrasena para confirmar la creacion del nuevo usuario."
+          ),
+          /*#__PURE__*/React.createElement("div", {style:{display:"flex",gap:10,marginTop:4}},
+            /*#__PURE__*/React.createElement("button", {
+              onClick:function(){setShowNew(false);setErrU("");},
+              style:{flex:1,padding:14,background:"#F3F4F6",color:"#374151",border:"1px solid #E5E7EB",borderRadius:14,fontSize:14,fontWeight:600,cursor:"pointer"}
+            }, "Cancelar"),
+            /*#__PURE__*/React.createElement("button", {
+              onClick:createUser, disabled:loadingU,
+              style:{flex:2,padding:14,background:loadingU?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",
+                color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",
+                boxShadow:loadingU?"none":"0 4px 14px rgba(13,61,46,.35)"}
+            }, loadingU ? "Creando..." : "Crear usuario")
+          )
+        )
+      )
+    )
+  );
+}
+
+
 function App() {
   var _useState153 = useState(false),
     _useState154 = _slicedToArray(_useState153, 2),
     logged = _useState154[0],
     setLogged = _useState154[1];
+  var _uCU = useState(null), _uCUa = _slicedToArray(_uCU, 2),
+    currentUser = _uCUa[0], setCurrentUser = _uCUa[1];
+  var _uRole = useState("admin"), _uRolea = _slicedToArray(_uRole, 2),
+    userRole = _uRolea[0], setUserRole = _uRolea[1];
   var _useState155 = useState("dashboard"),
     _useState156 = _slicedToArray(_useState155, 2),
     view = _useState156[0],
@@ -8714,7 +8869,18 @@ function App() {
     toast = _useState190[0],
     setToast = _useState190[1];
   useEffect(function () {
-    setLogged(checkSession());
+    var unsub = firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        setCurrentUser(user);
+        setLogged(true);
+        if (db) {
+          db.collection("users").doc(user.uid).get()
+            .then(function(d){ if(d.exists && d.data().role) setUserRole(d.data().role); else setUserRole("admin"); })
+            .catch(function(){ setUserRole("admin"); });
+        }
+      } else { setCurrentUser(null); setLogged(false); setUserRole("admin"); }
+    });
+    return unsub;
   }, []);
   useEffect(function () {
     if (!logged) return;
@@ -8816,12 +8982,13 @@ function App() {
       return 0;
     }
   }();
-  var handleLogin = function handleLogin() {
-    saveSession();
+  var handleLogin = function handleLogin(user) {
+    setCurrentUser(user);
     setLogged(true);
   };
   var handleLogout = function handleLogout() {
-    clearSession();
+    firebase.auth().signOut().catch(function(){});
+    setCurrentUser(null);
     setLogged(false);
     setView("dashboard");
     setLoaded(false);
@@ -8874,9 +9041,8 @@ function App() {
     alertCount: alertCount
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "linear-gradient(90deg,#071e14,#0D3D2E)",
-      padding: "calc(env(safe-area-inset-top)+12px) 16px 12px",
-      boxShadow: "0 2px 16px rgba(0,0,0,.3)",
+      background: "#0D3D2E",
+      padding: "calc(env(safe-area-inset-top)+10px) 16px 10px",
       display: "flex",
       alignItems: "center",
       gap: 10,
@@ -8916,13 +9082,12 @@ function App() {
     }
   }, curNav.label), alertCount > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "linear-gradient(135deg,#EF4444,#DC2626)",
+      background: "#EF4444",
       color: "#fff",
-      borderRadius: 20,
+      borderRadius: 12,
       padding: "3px 10px",
-      fontSize: 11,
-      fontWeight: 700,
-      boxShadow: "0 2px 8px rgba(239,68,68,.4)"
+      fontSize: 12,
+      fontWeight: 700
     }
   }, alertCount), /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
@@ -9001,6 +9166,8 @@ function App() {
     toast: showToast,
     clients: clients,
     pets: pets
+  }), view === "usuarios" && userRole === "admin" && /*#__PURE__*/React.createElement(UsuariosScreen, {
+    currentUser: currentUser, toast: showToast
   }), view === "alertas" && /*#__PURE__*/React.createElement(AlertasScreen, {
     pets: pets,
     clients: clients,
@@ -9035,9 +9202,8 @@ function App() {
       bottom: 0,
       left: 0,
       right: 0,
-      background: "linear-gradient(0deg,#071e14,#0D3D2E)",
-      borderTop: "1px solid rgba(242,196,206,.1)",
-      boxShadow: "0 -4px 20px rgba(0,0,0,.25)",
+      background: "#0D3D2E",
+      borderTop: "1px solid rgba(242,196,206,.15)",
       display: "flex",
       zIndex: 150,
       paddingBottom: "env(safe-area-inset-bottom)"
@@ -9062,7 +9228,7 @@ function App() {
     id: "finanzas",
     icon: "chart-pie",
     label: "Finanzas"
-  }].map(function (n) {
+  }].filter(function(n){ return userRole === "admin" || n.id !== "finanzas"; }).map(function (n) {
     var active = view === n.id;
     return /*#__PURE__*/React.createElement("button", {
       key: n.id,
