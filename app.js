@@ -829,8 +829,7 @@ function Sidebar(_ref11) {
       fontSize: 20,
       fontWeight: 800,
       color: "#F2C4CE",
-      marginBottom: 4,
-      fontFamily: "Georgia,serif"
+      marginBottom: 4
     }
   }, "PawSociety \uD83D\uDC3E"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -843,7 +842,7 @@ function Sidebar(_ref11) {
       overflowY: "auto",
       padding: "0 10px"
     }
-  }, NAV.filter(function(n){ return userRole === "admin" || !["finanzas","config","usuarios"].includes(n.id); }).map(function (n) {
+  }, NAV.map(function (n) {
     var active = view === n.id;
     return /*#__PURE__*/React.createElement("button", {
       key: n.id,
@@ -923,118 +922,53 @@ function Sidebar(_ref11) {
 }
 function Login(_ref12) {
   var onLogin = _ref12.onLogin;
-  var _u1 = useState(""), email = _slicedToArray(_u1,2)[0], setEmail = _slicedToArray(_u1,2)[1];
-  var _u2 = useState(""), pass = _slicedToArray(_u2,2)[0], setPass = _slicedToArray(_u2,2)[1];
-  var _u3 = useState(""), err = _slicedToArray(_u3,2)[0], setErr = _slicedToArray(_u3,2)[1];
-  var _u4 = useState(false), loading = _slicedToArray(_u4,2)[0], setLoading = _slicedToArray(_u4,2)[1];
-  var _u5 = useState(false), showPass = _slicedToArray(_u5,2)[0], setShowPass = _slicedToArray(_u5,2)[1];
-
-  // Re-declare slicedToArray calls properly using useState directly
-  var _su1 = useState(""), _su1a = _slicedToArray(_su1,2); email = _su1a[0]; setEmail = _su1a[1];
-  var _su2 = useState(""), _su2a = _slicedToArray(_su2,2); pass = _su2a[0]; setPass = _su2a[1];
-  var _su3 = useState(""), _su3a = _slicedToArray(_su3,2); err = _su3a[0]; setErr = _su3a[1];
-  var _su4 = useState(false), _su4a = _slicedToArray(_su4,2); loading = _su4a[0]; setLoading = _su4a[1];
-  var _su5 = useState(false), _su5a = _slicedToArray(_su5,2); showPass = _su5a[0]; setShowPass = _su5a[1];
-
-  var inpStyle = {width:"100%",padding:"13px 16px",border:"1.5px solid #E5E7EB",borderRadius:12,fontSize:15,outline:"none",fontFamily:"inherit",background:"#FAFAFA",boxSizing:"border-box"};
-
-  var doLogin = function() {
-    var em = email.trim();
-    if (!em || !pass) { setErr("Completa correo y contrasena"); return; }
-    setLoading(true); setErr("");
-    firebase.auth().signInWithEmailAndPassword(em, pass)
-      .then(function(uc) { onLogin(uc.user); })
-      .catch(function(e) {
-        setLoading(false);
-        var msg = {
-          "auth/user-not-found": "Correo no registrado",
-          "auth/wrong-password": "Contrasena incorrecta",
-          "auth/invalid-credential": "Correo o contrasena incorrectos",
-          "auth/invalid-email": "Correo invalido",
-          "auth/too-many-requests": "Demasiados intentos. Intenta mas tarde."
-        }[e.code] || ("Error: " + e.message);
-        setErr(msg);
-      });
+  var _s1=useState(""),_s1a=_slicedToArray(_s1,2),email=_s1a[0],setEmail=_s1a[1];
+  var _s2=useState(""),_s2a=_slicedToArray(_s2,2),pass=_s2a[0],setPass=_s2a[1];
+  var _s3=useState(""),_s3a=_slicedToArray(_s3,2),err=_s3a[0],setErr=_s3a[1];
+  var _s4=useState(false),_s4a=_slicedToArray(_s4,2),loading=_s4a[0],setLoading=_s4a[1];
+  var _s5=useState(false),_s5a=_slicedToArray(_s5,2),showPass=_s5a[0],setShowPass=_s5a[1];
+  var IS={width:"100%",padding:"13px 16px",border:"1.5px solid #E5E7EB",borderRadius:12,fontSize:15,outline:"none",fontFamily:"inherit",background:"#FAFAFA",boxSizing:"border-box"};
+  var doLogin=function(){
+    var em=(email||"").trim();
+    if(!em||!pass){setErr("Completa correo y contrasena");return;}
+    setLoading(true);setErr("");
+    try{firebase.auth().signInWithEmailAndPassword(em,pass)
+      .then(function(uc){onLogin(uc.user);})
+      .catch(function(e){setLoading(false);var m={"auth/user-not-found":"Correo no registrado","auth/wrong-password":"Contrasena incorrecta","auth/invalid-credential":"Correo o contrasena incorrectos","auth/invalid-email":"Correo invalido","auth/too-many-requests":"Demasiados intentos"};setErr(m[e.code]||e.message);});
+    }catch(ex){setLoading(false);setErr("Error de conexion");}
   };
-
-  return /*#__PURE__*/React.createElement("div", {
-    style: {display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-      minHeight:"100vh",background:"linear-gradient(145deg,#071e14 0%,#0D3D2E 50%,#155240 100%)",
-      padding:"24px 20px"}
-  },
-    /*#__PURE__*/React.createElement("div", {
-      style: {background:"#fff",borderRadius:28,padding:"40px 32px",width:"100%",maxWidth:380,
-        boxShadow:"0 32px 80px rgba(0,0,0,.45)"}
-    },
-      /*#__PURE__*/React.createElement("div", {style:{textAlign:"center",marginBottom:32}},
-        /*#__PURE__*/React.createElement("div", {style:{fontSize:48,marginBottom:12}}, "\uD83D\uDC3E"),
-        /*#__PURE__*/React.createElement("div", {
-          style:{fontSize:28,fontWeight:800,color:"#0D3D2E",fontFamily:"Georgia,serif",
-            letterSpacing:"-0.5px",marginBottom:4}
-        }, "PawSociety"),
-        /*#__PURE__*/React.createElement("div", {
-          style:{fontSize:11,color:"#9CA3AF",letterSpacing:"2px",textTransform:"uppercase",fontWeight:600}
-        }, "Pet Store \u00B7 CRM")
+  return /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"linear-gradient(145deg,#071e14,#0D3D2E,#155240)",padding:"24px 20px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:28,padding:"40px 32px",width:"100%",maxWidth:380,boxShadow:"0 32px 80px rgba(0,0,0,.45)"}},
+      /*#__PURE__*/React.createElement("div",{style:{textAlign:"center",marginBottom:32}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:48,marginBottom:12}},"\uD83D\uDC3E"),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:28,fontWeight:800,color:"#0D3D2E",fontFamily:"Georgia,serif",letterSpacing:"-0.5px",marginBottom:4}},"PawSociety"),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#9CA3AF",letterSpacing:"2px",textTransform:"uppercase",fontWeight:600}},"Pet Store CRM")
       ),
-      /*#__PURE__*/React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:14}},
-        /*#__PURE__*/React.createElement("div", null,
-          /*#__PURE__*/React.createElement("label", {
-            style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block",
-              letterSpacing:"0.3px",textTransform:"uppercase"}
-          }, "Correo"),
-          /*#__PURE__*/React.createElement("input", {
-            type:"email", placeholder:"correo@pawsociety.co", value:email,
-            onChange:function(e){setEmail(e.target.value);setErr("");},
-            onKeyDown:function(e){if(e.key==="Enter")doLogin();},
-            style:inpStyle, autoComplete:"email"
-          })
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:14}},
+        /*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Correo"),
+          /*#__PURE__*/React.createElement("input",{type:"email",placeholder:"tu@correo.com",value:email,onChange:function(e){setEmail(e.target.value);setErr("");},onKeyDown:function(e){if(e.key==="Enter")doLogin();},style:IS,autoComplete:"email"})
         ),
-        /*#__PURE__*/React.createElement("div", null,
-          /*#__PURE__*/React.createElement("label", {
-            style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block",
-              letterSpacing:"0.3px",textTransform:"uppercase"}
-          }, "Contrasena"),
-          /*#__PURE__*/React.createElement("div", {style:{position:"relative"}},
-            /*#__PURE__*/React.createElement("input", {
-              type:showPass?"text":"password", placeholder:"••••••••", value:pass,
-              onChange:function(e){setPass(e.target.value);setErr("");},
-              onKeyDown:function(e){if(e.key==="Enter")doLogin();},
-              style:Object.assign({},inpStyle,{paddingRight:48}),
-              autoComplete:"current-password"
-            }),
-            /*#__PURE__*/React.createElement("button", {
-              onClick:function(){setShowPass(!showPass);},
-              style:{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",
-                background:"none",border:"none",cursor:"pointer",color:"#9CA3AF",fontSize:20,padding:0}
-            }, /*#__PURE__*/React.createElement("i", {className:showPass?"ti ti-eye-off":"ti ti-eye"}))
+        /*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Contrasena"),
+          /*#__PURE__*/React.createElement("div",{style:{position:"relative"}},
+            /*#__PURE__*/React.createElement("input",{type:showPass?"text":"password",placeholder:"",value:pass,onChange:function(e){setPass(e.target.value);setErr("");},onKeyDown:function(e){if(e.key==="Enter")doLogin();},style:Object.assign({},IS,{paddingRight:48}),autoComplete:"current-password"}),
+            /*#__PURE__*/React.createElement("button",{onClick:function(){setShowPass(!showPass);},style:{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"#9CA3AF",fontSize:20,padding:0}},
+              /*#__PURE__*/React.createElement("i",{className:showPass?"ti ti-eye-off":"ti ti-eye"})
+            )
           )
         ),
-        err && /*#__PURE__*/React.createElement("div", {
-          style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",
-            fontSize:13,fontWeight:500,display:"flex",alignItems:"center",gap:8}
-        },
-          /*#__PURE__*/React.createElement("i", {className:"ti ti-alert-circle",style:{fontSize:18,flexShrink:0}}),
-          err
-        ),
-        /*#__PURE__*/React.createElement("button", {
-          onClick:doLogin, disabled:loading,
-          style:{padding:16,marginTop:4,
-            background:loading?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",
-            color:"#fff",borderRadius:14,fontSize:16,fontWeight:700,border:"none",cursor:"pointer",
-            boxShadow:loading?"none":"0 4px 16px rgba(13,61,46,.35)",
-            display:"flex",alignItems:"center",justifyContent:"center",gap:8}
-        },
-          loading ? /*#__PURE__*/React.createElement("i", {className:"ti ti-loader",style:{fontSize:20}}) : null,
-          loading ? "Ingresando..." : "Ingresar"
+        err?/*#__PURE__*/React.createElement("div",{style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",fontSize:13,display:"flex",alignItems:"center",gap:8}},
+          /*#__PURE__*/React.createElement("i",{className:"ti ti-alert-circle",style:{fontSize:18,flexShrink:0}}),err
+        ):null,
+        /*#__PURE__*/React.createElement("button",{onClick:doLogin,disabled:loading,style:{padding:16,marginTop:4,background:loading?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",borderRadius:14,fontSize:16,fontWeight:700,border:"none",cursor:"pointer",boxShadow:loading?"none":"0 4px 16px rgba(13,61,46,.35)"}},
+          loading?"Ingresando...":"Ingresar"
         )
       ),
-      /*#__PURE__*/React.createElement("div", {
-        style:{textAlign:"center",marginTop:24,fontSize:11,color:"#D1D5DB",borderTop:"1px solid #F3F4F6",paddingTop:16}
-      }, "PawSociety Pet Store \u00B7 Armenia, Quind\u00EDo")
+      /*#__PURE__*/React.createElement("div",{style:{textAlign:"center",marginTop:24,fontSize:11,color:"#D1D5DB",borderTop:"1px solid #F3F4F6",paddingTop:16}},"PawSociety Pet Store - Armenia, Quindio")
     )
   );
 }
-
 
 function PetModal(_ref14) {
   var clientId = _ref14.clientId,
@@ -7242,16 +7176,7 @@ function AlertasScreen(_ref42) {
     }
   });
   var preSoon = [];
-  try {
-    preSoon = pets.filter(function(p) {
-      try {
-        var _lb = lastBath(p.id);
-        if (!_lb) return false;
-        var _d2 = dBetween(_lb, today());
-        return _d2 >= 22 && _d2 < 28;
-      } catch(e) { return false; }
-    });
-  } catch(e) { preSoon = []; }
+  try { preSoon = pets.filter(function(p) { try { var _lb=lastBath(p.id); if(!_lb)return false; var _d2=dBetween(_lb,today()); return _d2>=22&&_d2<28; } catch(e){return false;} }); } catch(e){ preSoon=[]; }
   return /*#__PURE__*/React.createElement("div", null, loyal.length > 0 && /*#__PURE__*/React.createElement(Card, {
     style: {
       background: "#FBE9D6",
@@ -8568,217 +8493,134 @@ function ConfigScreen(_ref44) {
     }
   }, "Guardar precios")));
 }
-
 function UsuariosScreen(_ref_us) {
-  var currentUser = _ref_us.currentUser, toast = _ref_us.toast;
-  var _u1 = useState([]), _u1a = _slicedToArray(_u1,2), usuarios = _u1a[0], setUsuarios = _u1a[1];
-  var _u2 = useState(false), _u2a = _slicedToArray(_u2,2), showNew = _u2a[0], setShowNew = _u2a[1];
-  var _u3 = useState(false), _u3a = _slicedToArray(_u3,2), loadingU = _u3a[0], setLoadingU = _u3a[1];
-  var _u4 = useState(""), _u4a = _slicedToArray(_u4,2), newEmail = _u4a[0], setNewEmail = _u4a[1];
-  var _u5 = useState(""), _u5a = _slicedToArray(_u5,2), newPass = _u5a[0], setNewPass = _u5a[1];
-  var _u6 = useState(""), _u6a = _slicedToArray(_u6,2), newName = _u6a[0], setNewName = _u6a[1];
-  var _u7 = useState("empleado"), _u7a = _slicedToArray(_u7,2), newRole = _u7a[0], setNewRole = _u7a[1];
-  var _u8 = useState(""), _u8a = _slicedToArray(_u8,2), errU = _u8a[0], setErrU = _u8a[1];
-
-  useEffect(function() {
-    if (!db) return;
-    return db.collection("users").onSnapshot(function(s) {
-      setUsuarios(s.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }));
+  var currentUser=_ref_us.currentUser, toast=_ref_us.toast;
+  var _a=useState([]),_aa=_slicedToArray(_a,2),usuarios=_aa[0],setUsuarios=_aa[1];
+  var _b=useState(false),_ba=_slicedToArray(_b,2),showNew=_ba[0],setShowNew=_ba[1];
+  var _c=useState(false),_ca=_slicedToArray(_c,2),saving=_ca[0],setSaving=_ca[1];
+  var _d=useState(""),_da=_slicedToArray(_d,2),nEmail=_da[0],setNEmail=_da[1];
+  var _e=useState(""),_ea=_slicedToArray(_e,2),nPass=_ea[0],setNPass=_ea[1];
+  var _f=useState(""),_fa=_slicedToArray(_f,2),nName=_fa[0],setNName=_fa[1];
+  var _g=useState("empleado"),_ga=_slicedToArray(_g,2),nRole=_ga[0],setNRole=_ga[1];
+  var _h=useState(""),_ha=_slicedToArray(_h,2),errU=_ha[0],setErrU=_ha[1];
+  useEffect(function(){
+    if(!db)return;
+    return db.collection("users").onSnapshot(function(s){
+      setUsuarios(s.docs.map(function(d){return Object.assign({id:d.id},d.data());}));
     });
-  }, []);
-
-  var createUser = function() {
-    if (!newEmail.trim() || !newPass || !newName.trim()) { setErrU("Completa todos los campos"); return; }
-    if (newPass.length < 6) { setErrU("La contrasena debe tener minimo 6 caracteres"); return; }
-    setLoadingU(true); setErrU("");
-    var adminEmail = currentUser ? currentUser.email : "";
-    var adminPass = prompt("Confirma tu contrasena de admin para continuar:");
-    if (!adminPass) { setLoadingU(false); return; }
-
-    // Use secondary Firebase app to create user without signing out current admin
-    var secondApp;
-    try { secondApp = firebase.app("secondary"); }
-    catch(e) {
-      secondApp = firebase.initializeApp(firebase.app().options, "secondary");
-    }
-    secondApp.auth().createUserWithEmailAndPassword(newEmail.trim(), newPass)
-      .then(function(uc) {
+  },[]);
+  var IS2={width:"100%",padding:"11px 14px",border:"1.5px solid #E5E7EB",borderRadius:10,fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
+  var createUser=function(){
+    if(!nName.trim()||!nEmail.trim()||!nPass){setErrU("Completa todos los campos");return;}
+    if(nPass.length<6){setErrU("Contrasena minimo 6 caracteres");return;}
+    setSaving(true);setErrU("");
+    var adminEmail=currentUser?currentUser.email:"";
+    var adminPass=window.prompt("Confirma tu contrasena de administrador:");
+    if(!adminPass){setSaving(false);return;}
+    var sec;
+    try{sec=firebase.app("sec");}catch(e){sec=firebase.initializeApp(firebase.app().options,"sec");}
+    sec.auth().createUserWithEmailAndPassword(nEmail.trim(),nPass)
+      .then(function(uc){
         return db.collection("users").doc(uc.user.uid).set({
-          name: newName.trim(), email: newEmail.trim(), role: newRole, createdAt: today(), active: true
-        }).then(function() {
-          return secondApp.auth().signOut();
-        });
+          name:nName.trim(),email:nEmail.trim(),role:nRole,createdAt:today(),active:true
+        }).then(function(){return sec.auth().signOut();});
       })
-      .then(function() {
-        toast("Usuario " + newName.trim() + " creado!");
-        setNewEmail(""); setNewPass(""); setNewName(""); setNewRole("empleado");
-        setShowNew(false); setLoadingU(false);
-        // Re-sign in admin
-        firebase.auth().signInWithEmailAndPassword(adminEmail, adminPass).catch(function(){});
+      .then(function(){
+        toast("Usuario "+nName.trim()+" creado!");
+        setNEmail("");setNPass("");setNName("");setNRole("empleado");
+        setShowNew(false);setSaving(false);
+        firebase.auth().signInWithEmailAndPassword(adminEmail,adminPass).catch(function(){});
       })
-      .catch(function(e) {
-        setLoadingU(false);
-        var msg = {
-          "auth/email-already-in-use": "Ese correo ya tiene cuenta",
-          "auth/invalid-email": "Correo invalido",
-          "auth/weak-password": "La contrasena es muy debil"
-        }[e.code] || e.message;
-        setErrU(msg);
+      .catch(function(e){
+        setSaving(false);
+        var m={"auth/email-already-in-use":"Ese correo ya tiene cuenta","auth/weak-password":"Contrasena muy debil"};
+        setErrU(m[e.code]||e.message);
       });
   };
-
-  var toggleActive = function(u) {
-    if (!db) return;
-    db.collection("users").doc(u.id).update({active: !u.active})
-      .then(function(){ toast(u.active ? "Usuario desactivado" : "Usuario activado"); })
-      .catch(function(e){ toast("Error: " + e.message); });
+  var toggleActive=function(u){
+    if(!db)return;
+    db.collection("users").doc(u.id).update({active:!u.active})
+      .then(function(){toast(u.active?"Usuario desactivado":"Usuario activado");});
   };
-
-  var IS_inp = {width:"100%",padding:"11px 14px",border:"1.5px solid #E5E7EB",borderRadius:10,fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
-
-  var roleColors = {admin:{bg:"#FEF3C7",color:"#92400E",label:"Admin"},empleado:{bg:"#E8F5EB",color:"#065F46",label:"Empleado"}};
-
-  return /*#__PURE__*/React.createElement("div", {style:{padding:"16px 16px 80px"}},
-    /*#__PURE__*/React.createElement("div", {
-      style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,
-        marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}
-    },
-      /*#__PURE__*/React.createElement("div", {style:{fontSize:12,color:"rgba(242,196,206,.6)",marginBottom:4,textTransform:"uppercase",letterSpacing:"1px"}}, "Gestion"),
-      /*#__PURE__*/React.createElement("div", {style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}}, "Usuarios"),
-      /*#__PURE__*/React.createElement("div", {style:{fontSize:13,color:"rgba(242,196,206,.7)",marginTop:4}}, currentUser ? currentUser.email : ""),
-      /*#__PURE__*/React.createElement("div", {
-        style:{marginTop:12,background:"rgba(242,196,206,.12)",borderRadius:10,padding:"8px 14px",
-          display:"inline-flex",alignItems:"center",gap:8}
-      },
-        /*#__PURE__*/React.createElement("i", {className:"ti ti-shield-check",style:{color:"#F2C4CE",fontSize:16}}),
-        /*#__PURE__*/React.createElement("span", {style:{fontSize:12,color:"rgba(242,196,206,.8)"}}, usuarios.length + " usuarios registrados")
+  var roleLabel=function(r){return r==="admin"?"Admin":"Empleado";};
+  var roleBg=function(r){return r==="admin"?"#FEF3C7":"#E8F5EB";};
+  var roleColor=function(r){return r==="admin"?"#92400E":"#065F46";};
+  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Seguridad"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Usuarios"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:13,color:"rgba(242,196,206,.6)",marginTop:4}},currentUser?currentUser.email:""),
+      /*#__PURE__*/React.createElement("div",{style:{marginTop:10,background:"rgba(242,196,206,.12)",borderRadius:10,padding:"6px 12px",display:"inline-flex",alignItems:"center",gap:6}},
+        /*#__PURE__*/React.createElement("i",{className:"ti ti-shield-check",style:{color:"#F2C4CE",fontSize:16}}),
+        /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"rgba(242,196,206,.8)"}},usuarios.length+" usuario"+(usuarios.length!==1?"s":"")+" registrado"+(usuarios.length!==1?"s":""))
       )
     ),
-    /*#__PURE__*/React.createElement("button", {
-      onClick:function(){ setShowNew(true); setErrU(""); },
-      style:{width:"100%",padding:15,background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",
-        color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",
-        display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:16,
-        boxShadow:"0 4px 14px rgba(13,61,46,.35)"}
-    },
-      /*#__PURE__*/React.createElement("i", {className:"ti ti-user-plus",style:{fontSize:20}}),
-      "Crear nuevo usuario"
+    /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(true);setErrU("");},style:{width:"100%",padding:15,background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:16,boxShadow:"0 4px 14px rgba(13,61,46,.3)"}},
+      /*#__PURE__*/React.createElement("i",{className:"ti ti-user-plus",style:{fontSize:20}}),"Crear usuario"
     ),
-    usuarios.length === 0
-      ? /*#__PURE__*/React.createElement("div", {
-          style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}
-        },
-          /*#__PURE__*/React.createElement("i", {className:"ti ti-users",style:{fontSize:44,display:"block",marginBottom:12}}),
-          /*#__PURE__*/React.createElement("div", null, "No hay usuarios registrados")
+    usuarios.length===0
+      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}},
+          /*#__PURE__*/React.createElement("i",{className:"ti ti-users",style:{fontSize:44,display:"block",marginBottom:12}}),
+          "No hay usuarios registrados"
         )
-      : /*#__PURE__*/React.createElement("div", {
-          style:{background:"#fff",borderRadius:16,border:"1px solid #F0F0F0",
-            boxShadow:"0 2px 8px rgba(0,0,0,.05)",overflow:"hidden"}
-        },
-          usuarios.map(function(u) {
-            var rc = roleColors[u.role] || roleColors.empleado;
-            var isMe = currentUser && currentUser.email === u.email;
-            return /*#__PURE__*/React.createElement("div", {
-              key:u.id,
-              style:{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",
-                borderBottom:"1px solid #F3F4F6",opacity:u.active===false?0.5:1}
-            },
-              /*#__PURE__*/React.createElement("div", {
-                style:{width:42,height:42,borderRadius:"50%",
-                  background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",
-                  display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}
-              },
-                /*#__PURE__*/React.createElement("i", {className:"ti ti-user",style:{color:"#F2C4CE",fontSize:20}})
+      :/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:16,border:"1px solid #F0F0F0",boxShadow:"0 2px 8px rgba(0,0,0,.05)",overflow:"hidden"}},
+          usuarios.map(function(u){
+            var isMe=currentUser&&currentUser.email===u.email;
+            return /*#__PURE__*/React.createElement("div",{key:u.id,style:{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",borderBottom:"1px solid #F3F4F6",opacity:u.active===false?0.5:1}},
+              /*#__PURE__*/React.createElement("div",{style:{width:44,height:44,borderRadius:"50%",background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},
+                /*#__PURE__*/React.createElement("i",{className:"ti ti-user",style:{color:"#F2C4CE",fontSize:20}})
               ),
-              /*#__PURE__*/React.createElement("div", {style:{flex:1,minWidth:0}},
-                /*#__PURE__*/React.createElement("div", {
-                  style:{fontSize:14,fontWeight:700,color:"#111827",display:"flex",alignItems:"center",gap:6}
-                },
-                  u.name || u.email,
-                  isMe && /*#__PURE__*/React.createElement("span", {
-                    style:{fontSize:10,background:"#E8F5EB",color:"#065F46",borderRadius:6,
-                      padding:"2px 6px",fontWeight:700}
-                  }, "Tu")
+              /*#__PURE__*/React.createElement("div",{style:{flex:1,minWidth:0}},
+                /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,display:"flex",alignItems:"center",gap:6}},
+                  u.name||u.email,
+                  isMe&&/*#__PURE__*/React.createElement("span",{style:{fontSize:10,background:"#E8F5EB",color:"#065F46",borderRadius:6,padding:"2px 6px",fontWeight:700}},"Tu")
                 ),
-                /*#__PURE__*/React.createElement("div", {style:{fontSize:12,color:"#6B7280",marginTop:2}}, u.email),
-                /*#__PURE__*/React.createElement("div", {style:{marginTop:4,display:"flex",gap:6,alignItems:"center"}},
-                  /*#__PURE__*/React.createElement("span", {
-                    style:{fontSize:11,background:rc.bg,color:rc.color,borderRadius:6,
-                      padding:"2px 8px",fontWeight:700}
-                  }, rc.label),
-                  u.active === false && /*#__PURE__*/React.createElement("span", {
-                    style:{fontSize:11,background:"#F3F4F6",color:"#9CA3AF",borderRadius:6,padding:"2px 8px"}
-                  }, "Inactivo")
-                )
+                /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280",marginTop:1}},u.email),
+                /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:roleBg(u.role),color:roleColor(u.role),borderRadius:6,padding:"2px 8px",fontWeight:700,marginTop:4,display:"inline-block"}},roleLabel(u.role))
               ),
-              !isMe && /*#__PURE__*/React.createElement("button", {
-                onClick:function(){ toggleActive(u); },
-                style:{padding:"7px 12px",background:u.active===false?"#E8F5EB":"#FEE2E2",
-                  color:u.active===false?"#065F46":"#DC2626",
-                  border:"none",borderRadius:10,fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0}
-              }, u.active===false ? "Activar" : "Desactivar")
+              !isMe&&/*#__PURE__*/React.createElement("button",{onClick:function(){toggleActive(u);},style:{padding:"7px 12px",background:u.active===false?"#E8F5EB":"#FEE2E2",color:u.active===false?"#065F46":"#DC2626",border:"none",borderRadius:10,fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0}},
+                u.active===false?"Activar":"Desactivar"
+              )
             );
           })
         ),
-    showNew && /*#__PURE__*/React.createElement("div", {
-      style:{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:400,
-        display:"flex",flexDirection:"column",justifyContent:"flex-end"}
-    },
-      /*#__PURE__*/React.createElement("div", {
-        style:{background:"#fff",borderRadius:"28px 28px 0 0",padding:"28px 20px 40px",maxHeight:"85vh",overflowY:"auto"}
-      },
-        /*#__PURE__*/React.createElement("div", {
-          style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}
-        },
-          /*#__PURE__*/React.createElement("div", {style:{fontSize:18,fontWeight:800,color:"#111827"}}, "Nuevo usuario"),
-          /*#__PURE__*/React.createElement("button", {
-            onClick:function(){setShowNew(false);setErrU("");},
-            style:{background:"#F3F4F6",border:"none",borderRadius:10,padding:"8px 12px",cursor:"pointer",fontSize:16}
-          }, /*#__PURE__*/React.createElement("i", {className:"ti ti-x"}))
+    showNew&&/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",flexDirection:"column",justifyContent:"flex-end"}},
+      /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:"28px 28px 0 0",padding:"28px 20px 40px",maxHeight:"85vh",overflowY:"auto"}},
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800}},"Nuevo usuario"),
+          /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);setErrU("");},style:{background:"#F3F4F6",border:"none",borderRadius:10,padding:"8px 12px",cursor:"pointer",fontSize:16}},
+            /*#__PURE__*/React.createElement("i",{className:"ti ti-x"})
+          )
         ),
-        /*#__PURE__*/React.createElement("div", {style:{display:"flex",flexDirection:"column",gap:12}},
-          /*#__PURE__*/React.createElement("div", null,
-            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Nombre completo"),
-            /*#__PURE__*/React.createElement("input", {value:newName,onChange:function(e){setNewName(e.target.value);},placeholder:"Ana Gomez",style:IS_inp})
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:12}},
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Nombre completo"),
+            /*#__PURE__*/React.createElement("input",{value:nName,onChange:function(e){setNName(e.target.value);},placeholder:"Ana Gomez",style:IS2})
           ),
-          /*#__PURE__*/React.createElement("div", null,
-            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Correo electronico"),
-            /*#__PURE__*/React.createElement("input", {type:"email",value:newEmail,onChange:function(e){setNewEmail(e.target.value);},placeholder:"ana@pawsociety.co",style:IS_inp})
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Correo electronico"),
+            /*#__PURE__*/React.createElement("input",{type:"email",value:nEmail,onChange:function(e){setNEmail(e.target.value);},placeholder:"ana@pawsociety.co",style:IS2})
           ),
-          /*#__PURE__*/React.createElement("div", null,
-            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Contrasena inicial"),
-            /*#__PURE__*/React.createElement("input", {type:"password",value:newPass,onChange:function(e){setNewPass(e.target.value);},placeholder:"Minimo 6 caracteres",style:IS_inp})
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Contrasena inicial"),
+            /*#__PURE__*/React.createElement("input",{type:"password",value:nPass,onChange:function(e){setNPass(e.target.value);},placeholder:"Minimo 6 caracteres",style:IS2})
           ),
-          /*#__PURE__*/React.createElement("div", null,
-            /*#__PURE__*/React.createElement("label", {style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}}, "Rol"),
-            /*#__PURE__*/React.createElement("select", {value:newRole,onChange:function(e){setNewRole(e.target.value);},style:IS_inp},
-              /*#__PURE__*/React.createElement("option", {value:"admin"}, "Admin (acceso total)"),
-              /*#__PURE__*/React.createElement("option", {value:"empleado"}, "Empleado (sin Finanzas ni Config)")
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Rol"),
+            /*#__PURE__*/React.createElement("select",{value:nRole,onChange:function(e){setNRole(e.target.value);},style:IS2},
+              /*#__PURE__*/React.createElement("option",{value:"admin"},"Admin - acceso total"),
+              /*#__PURE__*/React.createElement("option",{value:"empleado"},"Empleado - sin Finanzas ni Config")
             )
           ),
-          errU && /*#__PURE__*/React.createElement("div", {
-            style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",
-              fontSize:13,display:"flex",alignItems:"center",gap:8}
-          },
-            /*#__PURE__*/React.createElement("i", {className:"ti ti-alert-circle",style:{fontSize:18}}), errU
+          errU?/*#__PURE__*/React.createElement("div",{style:{background:"#FEE2E2",color:"#DC2626",borderRadius:10,padding:"10px 14px",fontSize:13,display:"flex",alignItems:"center",gap:8}},
+            /*#__PURE__*/React.createElement("i",{className:"ti ti-alert-circle",style:{fontSize:18}}),errU
+          ):null,
+          /*#__PURE__*/React.createElement("div",{style:{background:"#FFFBEB",border:"1px solid #F59E0B",borderRadius:10,padding:"10px 14px",fontSize:12,color:"#92400E"}},
+            /*#__PURE__*/React.createElement("i",{className:"ti ti-info-circle",style:{marginRight:6}}),"Se pedira tu contrasena para confirmar la creacion."
           ),
-          /*#__PURE__*/React.createElement("div", {
-            style:{background:"#FFF8E1",border:"1px solid #F59E0B",borderRadius:10,padding:"10px 14px",fontSize:12,color:"#92400E"}
-          },
-            /*#__PURE__*/React.createElement("i", {className:"ti ti-info-circle",style:{marginRight:6}}),
-            "Se te pedira tu contrasena para confirmar la creacion del nuevo usuario."
-          ),
-          /*#__PURE__*/React.createElement("div", {style:{display:"flex",gap:10,marginTop:4}},
-            /*#__PURE__*/React.createElement("button", {
-              onClick:function(){setShowNew(false);setErrU("");},
-              style:{flex:1,padding:14,background:"#F3F4F6",color:"#374151",border:"1px solid #E5E7EB",borderRadius:14,fontSize:14,fontWeight:600,cursor:"pointer"}
-            }, "Cancelar"),
-            /*#__PURE__*/React.createElement("button", {
-              onClick:createUser, disabled:loadingU,
-              style:{flex:2,padding:14,background:loadingU?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",
-                color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",
-                boxShadow:loadingU?"none":"0 4px 14px rgba(13,61,46,.35)"}
-            }, loadingU ? "Creando..." : "Crear usuario")
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:10,marginTop:4}},
+            /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);setErrU("");},style:{flex:1,padding:14,background:"#F3F4F6",color:"#374151",border:"1px solid #E5E7EB",borderRadius:14,fontSize:14,fontWeight:600,cursor:"pointer"}},"Cancelar"),
+            /*#__PURE__*/React.createElement("button",{onClick:createUser,disabled:saving,style:{flex:2,padding:14,background:saving?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",boxShadow:saving?"none":"0 4px 14px rgba(13,61,46,.3)"}},saving?"Creando...":"Crear usuario")
           )
         )
       )
@@ -8786,16 +8628,13 @@ function UsuariosScreen(_ref_us) {
   );
 }
 
-
 function App() {
   var _useState153 = useState(false),
     _useState154 = _slicedToArray(_useState153, 2),
     logged = _useState154[0],
     setLogged = _useState154[1];
-  var _uCU = useState(null), _uCUa = _slicedToArray(_uCU, 2),
-    currentUser = _uCUa[0], setCurrentUser = _uCUa[1];
-  var _uRole = useState("admin"), _uRolea = _slicedToArray(_uRole, 2),
-    userRole = _uRolea[0], setUserRole = _uRolea[1];
+  var _uCU=useState(null),_uCUa=_slicedToArray(_uCU,2),currentUser=_uCUa[0],setCurrentUser=_uCUa[1];
+  var _uR=useState("admin"),_uRa=_slicedToArray(_uR,2),userRole=_uRa[0],setUserRole=_uRa[1];
   var _useState155 = useState("dashboard"),
     _useState156 = _slicedToArray(_useState155, 2),
     view = _useState156[0],
@@ -8875,10 +8714,14 @@ function App() {
         setLogged(true);
         if (db) {
           db.collection("users").doc(user.uid).get()
-            .then(function(d){ if(d.exists && d.data().role) setUserRole(d.data().role); else setUserRole("admin"); })
+            .then(function(d){ setUserRole(d.exists && d.data().role ? d.data().role : "admin"); })
             .catch(function(){ setUserRole("admin"); });
         }
-      } else { setCurrentUser(null); setLogged(false); setUserRole("admin"); }
+      } else {
+        setCurrentUser(null);
+        setLogged(false);
+        setUserRole("admin");
+      }
     });
     return unsub;
   }, []);
@@ -8987,7 +8830,7 @@ function App() {
     setLogged(true);
   };
   var handleLogout = function handleLogout() {
-    firebase.auth().signOut().catch(function(){});
+    try { firebase.auth().signOut(); } catch(e){}
     setCurrentUser(null);
     setLogged(false);
     setView("dashboard");
@@ -9167,8 +9010,9 @@ function App() {
     clients: clients,
     pets: pets
   }), view === "usuarios" && userRole === "admin" && /*#__PURE__*/React.createElement(UsuariosScreen, {
-    currentUser: currentUser, toast: showToast
-  }), view === "alertas" && /*#__PURE__*/React.createElement(AlertasScreen, {
+      currentUser: currentUser, toast: showToast
+    }),
+    view === "alertas" && /*#__PURE__*/React.createElement(AlertasScreen, {
     pets: pets,
     clients: clients,
     appts: appts,
@@ -9228,8 +9072,10 @@ function App() {
     id: "finanzas",
     icon: "chart-pie",
     label: "Finanzas"
-  }].filter(function(n){ return userRole === "admin" || n.id !== "finanzas"; }).map(function (n) {
+  }].filter(function(n){ return userRole==="admin"||n.id!=="finanzas"; }).map(function (n) {
     var active = view === n.id;
+    var isAdminOnly = ["finanzas","config","usuarios"].includes(n.id);
+    if (isAdminOnly && userRole !== "admin") return null;
     return /*#__PURE__*/React.createElement("button", {
       key: n.id,
       onClick: function onClick() {
