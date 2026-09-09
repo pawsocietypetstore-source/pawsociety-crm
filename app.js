@@ -1793,7 +1793,7 @@ function ApptModal(_ref16) {
     })
   })),
   /*#__PURE__*/React.createElement(Inp,{label:"Asignado a"},/*#__PURE__*/React.createElement("input",{value:f.assignedTo||"",placeholder:"Nombre del groomer o empleado",onChange:function(e){return u("assignedTo",e.target.value);},style:IS}))
-  ));
+  );
 }
 function ProductModal(_ref17) {
   var et = _ref17.et,
