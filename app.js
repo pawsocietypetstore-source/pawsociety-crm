@@ -1,4 +1,4 @@
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+console.log("PawSociety app.js v12 loaded - emojis fixed");function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regeneratorValues(e) { if (null != e) { var t = e["function" == typeof Symbol && Symbol.iterator || "@@iterator"], r = 0; if (t) return t.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) return { next: function next() { return e && r >= e.length && (e = void 0), { value: e && e[r++], done: !e }; } }; } throw new TypeError(_typeof(e) + " is not iterable"); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -114,6 +114,14 @@ var NAV = [{
   id: "campanas",
   icon: "speakerphone",
   label: "Campañas"
+}, {
+  id: "proveedores",
+  icon: "truck",
+  label: "Proveedores"
+}, {
+  id: "paquetes",
+  icon: "package",
+  label: "Paquetes"
 }, {
   id: "rendimiento",
   icon: "chart-bar",
@@ -981,6 +989,7 @@ function PetModal(_ref14) {
   var ie = !!(et && et.id);
   var _useState9 = useState({
       name: et ? et.name || "" : "",
+      size: et ? et.size || "mediano" : "mediano",
       species: et ? et.species || "perro" : "perro",
       breed: et ? et.breed || "" : "",
       age: et ? et.age || "" : "",
@@ -988,7 +997,8 @@ function PetModal(_ref14) {
       concentrado: et ? et.concentrado || "" : "",
       birthday: et ? et.birthday || "" : "",
       notes: et ? et.notes || "" : "",
-      assignedTo: et ? et.assignedTo || "" : ""
+      assignedTo: et ? et.assignedTo || "" : "",
+      metodoPago: et ? et.metodoPago || "efectivo" : "efectivo"
     }),
     _useState0 = _slicedToArray(_useState9, 2),
     f = _useState0[0],
@@ -1125,6 +1135,18 @@ function PetModal(_ref14) {
     min: 0,
     style: IS
   })), /*#__PURE__*/React.createElement(Inp, {
+    label: "Tama�o"
+  }, /*#__PURE__*/React.createElement("select", {
+    value: f.size || "mediano",
+    onChange: function onChange(e) { return u("size", e.target.value); },
+    style: IS
+  },
+    /*#__PURE__*/React.createElement("option", {value:"pequeno"}, "Peque�o (< 5kg)"),
+    /*#__PURE__*/React.createElement("option", {value:"mediano"}, "Mediano (5-15kg)"),
+    /*#__PURE__*/React.createElement("option", {value:"grande"}, "Grande (15-30kg)"),
+    /*#__PURE__*/React.createElement("option", {value:"gigante"}, "Gigante (> 30kg)")
+  )),
+  /*#__PURE__*/React.createElement(Inp, {
     label: "Peso (kg)"
   }, /*#__PURE__*/React.createElement("input", {
     type: "number",
@@ -1182,7 +1204,9 @@ function ClientModal(_ref15) {
       phone: et ? et.phone || "" : "",
       email: et ? et.email || "" : "",
       address: et ? et.address || "" : "",
-      notes: et ? et.notes || "" : ""
+      notes: et ? et.notes || "" : "",
+      referredBy: et ? et.referredBy || "" : "",
+      internalNotes: et ? et.internalNotes || "" : ""
     }),
     _useState12 = _slicedToArray(_useState11, 2),
     f = _useState12[0],
@@ -1430,7 +1454,16 @@ function ClientModal(_ref15) {
       return pu("birthday", e.target.value);
     },
     style: IS
-  })))));
+  })))),
+  /*#__PURE__*/React.createElement(Inp,{label:"Referido por"},/*#__PURE__*/React.createElement("input",{value:f.referredBy||"",placeholder:"Nombre de quien lo refirio",onChange:function(e){return u("referredBy",e.target.value);},style:IS})),
+  /*#__PURE__*/React.createElement(Inp,{label:"🔒 Notas internas (solo el equipo ve esto)"},
+    /*#__PURE__*/React.createElement("textarea",{value:f.internalNotes||"",
+      placeholder:"Ej: Llega tarde, mascota muerde, cliente VIP...",
+      onChange:function(e){return u("internalNotes",e.target.value);},
+      style:Object.assign({},IS,{minHeight:60,resize:"vertical",background:"#FFFBEB",border:"1.5px solid #F59E0B"})
+    })
+  )
+  );
 }
 function ApptModal(_ref16) {
   var et = _ref16.et,
@@ -1654,7 +1687,23 @@ function ApptModal(_ref16) {
       gridTemplateColumns: "1fr 1fr",
       gap: 12
     }
-  }, /*#__PURE__*/React.createElement(Inp, {
+  }, (function(){
+    var _todayCount=appts.filter(function(a){return(a.date||a.fecha||"")===today()&&(a.status==="pendiente"||a.estado==="pendiente");}).length;
+    var _cap=window._pawCapacity||6;
+    if(_todayCount>=_cap)return /*#__PURE__*/React.createElement("div",{style:{background:"#FEE2E2",border:"1.5px solid #EF4444",borderRadius:10,padding:"10px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:8}},
+      /*#__PURE__*/React.createElement("i",{className:"ti ti-alert-triangle",style:{color:"#DC2626",fontSize:18}}),
+      /*#__PURE__*/React.createElement("div",null,
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,color:"#991B1B"}},"¡Capacidad llena para hoy!"),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#B91C1C"}},"Ya hay "+_todayCount+" citas agendadas para hoy (l�mite: "+_cap+")")
+      )
+    );
+    if(_todayCount>=_cap-1)return /*#__PURE__*/React.createElement("div",{style:{background:"#FEF3C7",border:"1.5px solid #F59E0B",borderRadius:10,padding:"10px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:8}},
+      /*#__PURE__*/React.createElement("i",{className:"ti ti-alert-circle",style:{color:"#D97706",fontSize:18}}),
+      /*#__PURE__*/React.createElement("span",{style:{fontSize:13,color:"#92400E"}},"¡Casi lleno! Quedan "+(_cap-_todayCount)+" espacio"+(_cap-_todayCount!==1?"s":"")+" para hoy.")
+    );
+    return null;
+  })(),
+  /*#__PURE__*/React.createElement(Inp, {
     label: "Fecha *"
   }, /*#__PURE__*/React.createElement("input", {
     type: "date",
@@ -1716,7 +1765,20 @@ function ApptModal(_ref16) {
         fontWeight: 700
       }
     }, "\xBFOfrecer?")) : null;
-  }(), /*#__PURE__*/React.createElement(STit, null, "Servicios ", tot > 0 && /*#__PURE__*/React.createElement("span", {
+  }(), f.petId && (function(){
+    var _cpet = pets.find(function(p){return p.id===f.petId;});
+    if(!_cpet||!_cpet.concentrado) return null;
+    var _cli2 = clients.find(function(c){return c.id===f.clientId;});
+    return /*#__PURE__*/React.createElement("div",{style:{background:"#FBE9D6",border:"1.5px solid #D4945A",borderRadius:10,padding:"10px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:10}},
+      /*#__PURE__*/React.createElement("span",{style:{fontSize:20}},"<Feed>"),
+      /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,color:"#92400E"}},_cpet.name+" consume "+_cpet.concentrado),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#B45309"}},"Consulta si necesita mas en la proxima compra")
+      ),
+      /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:"#D4945A",color:"#fff",borderRadius:8,padding:"3px 8px",fontWeight:700}},"Ofrecer?")
+    );
+  })(),
+  /*#__PURE__*/React.createElement(STit, null, "Servicios ", tot > 0 && /*#__PURE__*/React.createElement("span", {
     style: {
       color: "#1A5C47"
     }
@@ -1792,6 +1854,12 @@ function ApptModal(_ref16) {
       fontFamily: "inherit"
     })
   })),
+  /*#__PURE__*/React.createElement(Inp,{label:"Metodo de pago"},/*#__PURE__*/React.createElement("select",{value:f.metodoPago||"efectivo",onChange:function(e){return u("metodoPago",e.target.value);},style:IS},
+    /*#__PURE__*/React.createElement("option",{value:"efectivo"},"Efectivo"),
+    /*#__PURE__*/React.createElement("option",{value:"transferencia"},"Transferencia"),
+    /*#__PURE__*/React.createElement("option",{value:"nequi"},"Nequi"),
+    /*#__PURE__*/React.createElement("option",{value:"daviplata"},"Daviplata")
+  )),
   /*#__PURE__*/React.createElement(Inp,{label:"Asignado a"},/*#__PURE__*/React.createElement("input",{value:f.assignedTo||"",placeholder:"Nombre del groomer o empleado",onChange:function(e){return u("assignedTo",e.target.value);},style:IS}))
   );
 }
@@ -3093,7 +3161,11 @@ function DashboardScreen(_ref22) {
     setShowGoalEdit = _useState70[1];
   useEffect(function () {
     if (db) {
-      db.collection("config").doc("weekGoals").get().then(function (d) {
+      db.collection("config").doc("capacity").get().then(function(d){
+      if(d.exists&&d.data().daily)window._pawCapacity=Number(d.data().daily)||6;
+      else window._pawCapacity=6;
+    }).catch(function(){window._pawCapacity=6;});
+    db.collection("config").doc("weekGoals").get().then(function (d) {
         if (d.exists) {
           if (d.data().baths) setWeekGoalBaths(Number(d.data().baths));
           if (d.data().sales) setWeekGoalSales(Number(d.data().sales));
@@ -3162,7 +3234,13 @@ function DashboardScreen(_ref22) {
       fontWeight: 800,
       marginBottom: 6
     }
-  }, "PawSociety CRM"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+    "PawSociety CRM",
+    due.length>0&&/*#__PURE__*/React.createElement("span",{
+      onClick:function(){setView("alertas");},
+      style:{background:"#EF4444",color:"#fff",borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4}
+    },/*#__PURE__*/React.createElement("i",{className:"ti ti-bell-ringing",style:{fontSize:13}}),due.length+" alertas")
+  )), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
@@ -3286,6 +3364,18 @@ function DashboardScreen(_ref22) {
     var goalSales = weekGoalSales || 500000;
     var bathPct = Math.min(Math.round(weekBaths / goalBaths * 100), 100);
     var salesPct = Math.min(Math.round((weekSales + weekSpaIncome) / goalSales * 100), 100);
+    var todayBaths = appts.filter(function(a){
+      return (a.status==="completado"||a.estado==="completado")&&(a.date||a.fecha||"")===today();
+    }).length;
+    var todayInc = appts.filter(function(a){
+      return (a.status==="completado"||a.estado==="completado")&&(a.date||a.fecha||"")===today();
+    }).reduce(function(s,a){return s+Number(a.price||a.precio||0);},0)+
+    sales.filter(function(s2){return (s2.date||"")===today();}).reduce(function(s,x){return s+Number(x.total||0);},0);
+    var dayGoalB=Math.max(Math.round(goalBaths/6),1);
+    var dayGoalS=Math.round(goalSales/6);
+    var dayBPct=Math.min(Math.round(todayBaths/dayGoalB*100),100);
+    var dayIPct=Math.min(Math.round(todayInc/dayGoalS*100),100);
+    var dCol=function(p){return p>=100?"#86EFAC":p>=60?"#FCD34D":"#F87171";};
     return /*#__PURE__*/React.createElement(Card, {
       style: {
         background: "#0D3D2E",
@@ -3399,7 +3489,30 @@ function DashboardScreen(_ref22) {
         color: salesPct >= 100 ? "#86EFAC" : "rgba(242,196,206,.6)",
         marginTop: 3
       }
-    }, salesPct >= 100 ? "Meta lograda!" : "Meta: " + fmtM(goalSales)))));
+    }, salesPct >= 100 ? "Meta lograda!" : "Meta: " + fmtM(goalSales))))),
+    /*#__PURE__*/React.createElement("div",{style:{borderTop:"1px solid rgba(242,196,206,.1)",marginTop:12,paddingTop:12}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"rgba(242,196,206,.5)",textTransform:"uppercase",letterSpacing:"1px",marginBottom:8}},"Meta de hoy"),
+      /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
+        /*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"rgba(242,196,206,.6)"}},"Ba�os hoy"),
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,fontWeight:700,color:dCol(dayBPct)}},todayBaths+"/"+dayGoalB)
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{background:"rgba(255,255,255,.15)",borderRadius:4,height:6,overflow:"hidden"}},
+            /*#__PURE__*/React.createElement("div",{style:{width:dayBPct+"%",height:"100%",background:dCol(dayBPct),borderRadius:4}})
+          )
+        ),
+        /*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"rgba(242,196,206,.6)"}},"Ingresos hoy"),
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,fontWeight:700,color:dCol(dayIPct)}},fmtM(todayInc))
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{background:"rgba(255,255,255,.15)",borderRadius:4,height:6,overflow:"hidden"}},
+            /*#__PURE__*/React.createElement("div",{style:{width:dayIPct+"%",height:"100%",background:dCol(dayIPct),borderRadius:4}})
+          )
+        )
+      )
+    );
   }(), showGoalEdit && /*#__PURE__*/React.createElement(Modal, {
     title: "Metas semanales",
     onClose: function onClose() {
@@ -3588,7 +3701,33 @@ function DashboardScreen(_ref22) {
       sub: "por cliente",
       color: "#1A5C47"
     }));
-  }(), ta.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(STit, null, "Citas de hoy (", ta.length, ")"), /*#__PURE__*/React.createElement(Card, {
+  }(),
+  (function(){
+    var _man=new Date(Date.now()+86400000).toISOString().slice(0,10);
+    var _tam=appts.filter(function(a){var st=a.status||a.estado||"";return (a.date||a.fecha||"")=== _man&&st==="pendiente";});
+    if(!_tam.length)return null;
+    return /*#__PURE__*/React.createElement("div",{style:{marginBottom:14}},
+      /*#__PURE__*/React.createElement(STit,null,"📅 Ma�ana ("+_tam.length+")"),
+      /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",overflow:"hidden"}},
+        _tam.map(function(a){
+          var _p=pets.find(function(p){return p.id===a.petId;});
+          var _c=clients.find(function(c){return c.id===a.clientId;});
+          var _wn=_c?"57"+(_c.phone||"").replace(/[^0-9]/g,""):"";
+          var _wm="Hola%20"+encodeURIComponent((_c?_c.name:""))+"%21%20%F0%9F%90%BE%20Recordatorio%20de%20cita%20ma%C3%B1ana%20en%20PawSociety%20para%20"+encodeURIComponent((_p?_p.name:""))+"%20a%20las%20"+encodeURIComponent(a.time)+".%20%F0%9F%93%8D%20Cra%2019%20%2322N-23%20%C2%B7%20Armenia.%20%C2%A1Te%20esperamos%21%20%F0%9F%91%91%F0%9F%92%9A";
+          return /*#__PURE__*/React.createElement("div",{key:a.id,style:{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderBottom:"1px solid #F3F4F6"}},
+            /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700}},_p?_p.name:""),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},(_c?_c.name:"")+" � "+a.time)
+            ),
+            _c&&/*#__PURE__*/React.createElement("a",{href:"https://wa.me/"+_wn+"?text="+_wm,target:"_blank",style:{padding:"6px 12px",background:"#25D366",color:"#fff",textDecoration:"none",borderRadius:8,fontSize:11,fontWeight:700,display:"flex",alignItems:"center",gap:4}},
+              /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp"}),"Recordar"
+            )
+          );
+        })
+      )
+    );
+  })(),
+  ta.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(STit, null, "Citas de hoy (", ta.length, ")"), /*#__PURE__*/React.createElement(Card, {
     style: {
       padding: 0
     }
@@ -5221,6 +5360,7 @@ function SpaScreen(_ref31) {
     cSvcs = _ref31.cSvcs,
     commission = _ref31.commission,
     toast = _ref31.toast;
+  var _spaMes=useState(""),_spaMesa=_slicedToArray(_spaMes,2),spaMes=_spaMesa[0],setSpaMes=_spaMesa[1];
   var _useState105 = useState("proximas"),
     _useState106 = _slicedToArray(_useState105, 2),
     filter = _useState106[0],
@@ -5248,6 +5388,7 @@ function SpaScreen(_ref31) {
             });
           case 1:
             toast("Marcada como " + status + " ✓");
+              if(status==="completado"){try{var _loy=getLoyalty(id,appts);var _cnt=_loy.count||0;if(_loy.hasFree){toast("Bano gratis desbloqueado! "+_cnt+" banos completados");}else if(_cnt>0&&_cnt<6){toast("Lleva "+_cnt+"/6 banos para bano gratis 🐾");}}catch(e){}}
           case 2:
             return _context15.a(2);
         }
@@ -5273,7 +5414,9 @@ function SpaScreen(_ref31) {
     return dBetween(today(), a.date) >= 7;
   });
   var list = filter === "semana" ? [] : filter === "proximas" ? prox : filter === "completado" ? appts.filter(function (a) {
-    return (a.status === "completado" || a.estado === "completado");
+    if(!(a.status === "completado" || a.estado === "completado"))return false;
+    if(spaMes&&!(a.date||a.fecha||"").startsWith(spaMes))return false;
+    return true;
   }).sort(function (a, b) {
     return (b.date||b.fecha||"").localeCompare(a.date||a.fecha||"");
   }) : filter === "cancelado" ? appts.filter(function (a) {
@@ -5603,7 +5746,16 @@ function SpaScreen(_ref31) {
       marginTop: 2,
       fontWeight: 600
     }
-  }, "M\xE1s adelante"))), /*#__PURE__*/React.createElement("div", {
+  }, "M\xE1s adelante"))), /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginBottom:8,overflowX:"auto",paddingBottom:2}},
+    ["Hoy","Semana","Mes"].map(function(_ql){
+      return /*#__PURE__*/React.createElement("button",{key:_ql,onClick:function(){
+        if(_ql==="Hoy"){setDateF(today());setFilter("fecha");}
+        else if(_ql==="Semana"){var _d=new Date();_d.setDate(_d.getDate()-_d.getDay()+1);setDateF(_d.toISOString().slice(0,10));setFilter("fecha");}
+        else{setDateF(thisM()+"-01");setFilter("fecha");}
+      },style:{padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:700,border:"1.5px solid #E5E7EB",background:"#fff",color:"#1A5C47",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},_ql);
+    })
+  ),
+  /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -5632,7 +5784,11 @@ function SpaScreen(_ref31) {
       return setFilter("fecha");
     }
   }, "Por fecha"), /*#__PURE__*/React.createElement("span",{style:tabS(filter==="semana"),onClick:function(){return setFilter("semana");}}, "Semana")
-  ), filter === "fecha" && /*#__PURE__*/React.createElement("div", {
+  ),
+  filter==="completado"&&/*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginTop:8,overflowX:"auto",paddingBottom:4}},
+    /*#__PURE__*/React.createElement("span",{onClick:function(){setSpaMes("");},style:{padding:"4px 10px",borderRadius:16,fontSize:11,fontWeight:700,cursor:"pointer",background:spaMes===""?"#1A5C47":"#F3F4F6",color:spaMes===""?"#fff":"#6B7280",border:"1.5px solid "+(spaMes===""?"#1A5C47":"#E5E7EB"),whiteSpace:"nowrap",flexShrink:0}},"Todos"),
+    (function(){var _mos=[];var _n=new Date();for(var _i=0;_i<6;_i++){var _d=new Date(_n.getFullYear(),_n.getMonth()-_i,1);_mos.push(_d.toISOString().slice(0,7));}return _mos.map(function(m){return /*#__PURE__*/React.createElement("span",{key:m,onClick:function(){setSpaMes(m);},style:{padding:"4px 10px",borderRadius:16,fontSize:11,fontWeight:700,cursor:"pointer",background:spaMes===m?"#1A5C47":"#F3F4F6",color:spaMes===m?"#fff":"#6B7280",border:"1.5px solid "+(spaMes===m?"#1A5C47":"#E5E7EB"),whiteSpace:"nowrap",flexShrink:0}},m);});})()),
+  filter === "fecha" && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -5731,10 +5887,14 @@ function SpaScreen(_ref31) {
       margin: 0
     }
   }, "Sin citas.")) : list.map(function (a) {
-    return /*#__PURE__*/React.createElement(ACard, {
-      key: a.id,
-      a: a
-    });
+    return /*#__PURE__*/React.createElement("div",{key:a.id},
+      /*#__PURE__*/React.createElement(ACard,{a:a}),
+      (a.status==="completado"||a.estado==="completado")&&/*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",marginTop:-6,marginBottom:6,paddingRight:10}},
+        /*#__PURE__*/React.createElement("button",{onClick:function(){setEtA({petId:a.petId,clientId:a.clientId,services:a.services||a.servicios||[],price:a.price||a.precio||"",time:"",notes:"",assignedTo:"",metodoPago:"efectivo"});},style:{padding:"5px 12px",background:"#E8F5EB",color:"#065F46",border:"none",borderRadius:8,fontSize:11,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4}},
+          /*#__PURE__*/React.createElement("i",{className:"ti ti-calendar-plus",style:{fontSize:13}}),"Reagendar igual"
+        )
+      )
+    );
   }), etA && /*#__PURE__*/React.createElement(ApptModal, {
     et: etA,
     clients: clients,
@@ -6494,10 +6654,11 @@ function FinanzasScreen(_ref40) {
     clients = _ref40$clients === void 0 ? [] : _ref40$clients,
     _ref40$pets = _ref40.pets,
     pets = _ref40$pets === void 0 ? [] : _ref40$pets;
-  var _useState127 = useState("gastos"),
+  var _useState127 = useState("caja"),
     _useState128 = _slicedToArray(_useState127, 2),
     tab = _useState128[0],
     setTab = _useState128[1];
+  var _fMon=useState(finMes),_fMona=_slicedToArray(_fMon,2),finMes=_fMona[0],setFinMes=_fMona[1];
   var _useState129 = useState(false),
     _useState130 = _slicedToArray(_useState129, 2),
     showE = _useState130[0],
@@ -6511,15 +6672,15 @@ function FinanzasScreen(_ref40) {
     meta = _useState134[0],
     setMeta = _useState134[1];
   var mExp = expenses.filter(function (e) {
-    return e.date && e.date.startsWith(thisM());
+    return e.date && e.date.startsWith(finMes);
   });
   var spaI = appts.filter(function (a) {
-    return a.status === "completado" && a.date && a.date.startsWith(thisM());
+    return (a.status === "completado"||a.estado==="completado") && (a.date||a.fecha||"") && (a.date||a.fecha||"").startsWith(finMes);
   }).reduce(function (s, a) {
-    return s + Number(a.price || 0);
+    return s + Number(a.price || a.precio || 0);
   }, 0);
   var storeI = sales.filter(function (s) {
-    return s.date && s.date.startsWith(thisM());
+    return s.date && s.date.startsWith(finMes);
   }).reduce(function (s, x) {
     return s + Number(x.total || 0);
   }, 0);
@@ -6546,7 +6707,16 @@ function FinanzasScreen(_ref40) {
       overflowX: "auto",
       paddingBottom: 4
     }
-  }, /*#__PURE__*/React.createElement("span", {
+  }, (function(){
+    var _months=[];var _n=new Date();
+    for(var _i=0;_i<6;_i++){var _d=new Date(_n.getFullYear(),_n.getMonth()-_i,1);_months.push(_d.toISOString().slice(0,7));}
+    return /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginBottom:10,overflowX:"auto",paddingBottom:4}},
+      _months.map(function(m){return /*#__PURE__*/React.createElement("span",{key:m,onClick:function(){setFinMes(m);},
+        style:{padding:"5px 12px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,
+          background:finMes===m?"#1A5C47":"#F3F4F6",color:finMes===m?"#fff":"#6B7280",border:"1.5px solid "+(finMes===m?"#1A5C47":"#E5E7EB")}
+      },m);}));
+  })(),
+  /*#__PURE__*/React.createElement("span", {
     style: tabS(tab === "caja"),
     onClick: function onClick() {
       return setTab("caja");
@@ -6581,7 +6751,13 @@ function FinanzasScreen(_ref40) {
     var todayExp = expenses.filter(function (e) {
       return e.date === today();
     });
-    var spaT = todaySpa.reduce(function (s, a) {
+    var mesSpa=appts.filter(function(a){return (a.status==="completado"||a.estado==="completado")&&(a.date||a.fecha||"").startsWith(finMes);});
+  var mesStore=sales.filter(function(s){return (s.date||"").startsWith(finMes);});
+  var mesExp=expenses.filter(function(e){return (e.date||"").startsWith(finMes);});
+  var mesSpaT=mesSpa.reduce(function(s,a){return s+Number(a.price||a.precio||0);},0);
+  var mesStoreT=mesStore.reduce(function(s,x){return s+Number(x.total||0);},0);
+  var mesExpT=mesExp.reduce(function(s,e){return s+Number(e.amount||0);},0);
+  var spaT = todaySpa.reduce(function (s, a) {
       return s + Number(a.price || 0);
     }, 0);
     var storeT = todayStore.reduce(function (s, x) {
@@ -6635,7 +6811,37 @@ function FinanzasScreen(_ref40) {
       value: fmtM(storeT),
       sub: todayStore.length + " ventas",
       color: "#059669"
-    })), todaySpa.length > 0 && /*#__PURE__*/React.createElement("div", {
+    }),
+    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:14,marginTop:10,boxShadow:"0 2px 8px rgba(0,0,0,.05)"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:10,textTransform:"uppercase",letterSpacing:"0.5px"}},"Desglose por m�todo de pago"),
+      (function(){
+        var _all=[].concat(
+          todaySpa.map(function(a){return{v:Number(a.price||a.precio||0),m:a.metodoPago||"efectivo"};}),
+          todayStore.map(function(s){return{v:Number(s.total||0),m:s.metodoPago||"efectivo"};})
+        );
+        var _methods=["efectivo","transferencia","nequi","daviplata"];
+        var _labels={"efectivo":"Efectivo","transferencia":"Transferencia","nequi":"Nequi","daviplata":"Daviplata"};
+        var _icons={"efectivo":"💵","transferencia":"🏦","nequi":"🟣","daviplata":"🔵"};
+        return /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+          _methods.map(function(m){
+            var _t=_all.filter(function(x){return x.m===m;}).reduce(function(s,x){return s+x.v;},0);
+            var _cnt=_all.filter(function(x){return x.m===m;}).length;
+            if(!_cnt)return null;
+            return /*#__PURE__*/React.createElement("div",{key:m,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 12px",background:"#F9FAFB",borderRadius:10}},
+              /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
+                /*#__PURE__*/React.createElement("span",{style:{fontSize:18}},_icons[m]),
+                /*#__PURE__*/React.createElement("div",null,
+                  /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:600}},_labels[m]),
+                  /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#9CA3AF"}},_cnt+" transacci�n"+(_cnt!==1?"es":""))
+                )
+              ),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:800,color:"#1A5C47"}},fmtM(_t))
+            );
+          })
+        );
+      })()
+    )),
+    todaySpa.length > 0 && /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 10
       }
@@ -6735,7 +6941,24 @@ function FinanzasScreen(_ref40) {
       return s + Number(e.amount || 0);
     }, 0)),
     color: "#DC2626"
-  })), /*#__PURE__*/React.createElement("button", {
+  })), /*#__PURE__*/React.createElement("div",{style:{background:"#FFF8E1",border:"1px solid #F59E0B",borderRadius:12,padding:"14px 16px",marginBottom:12}},
+    /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,color:"#92400E",marginBottom:8}},"🏷️ Descuentos del mes"),
+    (function(){
+      var _ds=sales.filter(function(s){return s.discount>0&&(s.date||"").startsWith(finMes);});
+      var _total=_ds.reduce(function(t,s){return t+Math.round(Number(s.subtotal||s.total||0)*Number(s.discount||0)/100);},0);
+      return /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+        /*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#B45309"}},_ds.length+" venta"+(_ds.length!==1?"s":"")+" con descuento este mes"),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#B45309",marginTop:2}},"Promedio: "+(_ds.length>0?Math.round(_ds.reduce(function(t,s){return t+Number(s.discount||0);},0)/_ds.length):0)+"% de descuento")
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{textAlign:"right"}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800,color:"#DC2626"}},"-"+fmtM(_total)),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#9CA3AF"}},"dejado de cobrar")
+        )
+      );
+    })()
+  ),
+  /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return exportCSV(appts, sales, expenses, clients, pets);
     },
@@ -6777,11 +7000,11 @@ function FinanzasScreen(_ref40) {
   }, /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return exportCSV(appts.filter(function (a) {
-        return a.status === "completado" && a.date && a.date.startsWith(thisM());
+        return a.status === "completado" && a.date && a.date.startsWith(finMes);
       }), sales.filter(function (s) {
-        return s.date && s.date.startsWith(thisM());
+        return s.date && s.date.startsWith(finMes);
       }), expenses.filter(function (e) {
-        return e.date && e.date.startsWith(thisM());
+        return e.date && e.date.startsWith(finMes);
       }), clients, pets);
     },
     style: {
@@ -6810,7 +7033,11 @@ function FinanzasScreen(_ref40) {
       fontWeight: 700,
       cursor: "pointer"
     }
-  }, "CSV completo")))), tab === "gastos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+  }, "CSV completo")),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){generarReportePDF(finMes,appts,sales,expenses,clients,pets);},style:{width:"100%",padding:13,marginTop:10,background:"#DC2626",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+      /*#__PURE__*/React.createElement("i",{className:"ti ti-file-description",style:{fontSize:18}}),"Generar Reporte PDF del mes"
+    )
+  )), tab === "gastos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       setEditE(null);
       setShowE(true);
@@ -7116,7 +7343,7 @@ function FinanzasScreen(_ref40) {
       opacity: .75,
       marginBottom: 4
     }
-  }, "Resultado del mes"), /*#__PURE__*/React.createElement("div", {
+  }, "Resultado " + finMes), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 36,
       fontWeight: 800,
@@ -7167,668 +7394,261 @@ function FinanzasScreen(_ref40) {
   }))));
 }
 function AlertasScreen(_ref42) {
-  var pets = _ref42.pets,
-    clients = _ref42.clients,
-    appts = _ref42.appts,
-    lastBath = _ref42.lastBath,
-    toast = _ref42.toast;
-  var _useState135 = useState(null),
-    _useState136 = _slicedToArray(_useState135, 2),
-    etA = _useState136[0],
-    setEtA = _useState136[1];
-  var due = pets.filter(function (p) {
-    var lb = lastBath(p.id);
-    return !lb || dBetween(lb, today()) >= 28;
+  var pets=_ref42.pets,clients=_ref42.clients,appts=_ref42.appts,sales=_ref42.sales||[],lastBath=_ref42.lastBath,toast=_ref42.toast;
+  var _st=useState({}),_sta=_slicedToArray(_st,2),sent=_st[0],setSent=_sta[1];
+
+  // Load sent status from localStorage
+  var SENT_KEY="paws_alertas_sent";
+  var loadSent=function(){try{return JSON.parse(localStorage.getItem(SENT_KEY)||"{}");}catch(e){return{};}};
+  var markSent=function(pid){var s=Object.assign({},loadSent());s[pid]=today();localStorage.setItem(SENT_KEY,JSON.stringify(s));setSent(s);toast("Marcado como enviado \xe2\x9c\x93");};
+  
+  var sentMap=loadSent();
+
+  var msgSuave=function(cli,pet,days){return "Hola%20"+encodeURIComponent(cli.name)+"%21%20%F0%9F%90%BE%0A%0A"+encodeURIComponent(pet.name)+"%20ya%20lleva%20"+encodeURIComponent(days)+"%20d%C3%ADas%20desde%20su%20%C3%BAltimo%20ba%C3%B1o%20y%20en%20PawSociety%20queremos%20que%20siga%20sinti%C3%A9ndose%20como%20la%20realeza%20que%20es%20%F0%9F%91%91%F0%9F%90%B6%0A%0A%C2%BFLo%20agendamos%20esta%20semana%3F%20Tenemos%20horarios%20disponibles%20y%20estamos%20listos%20para%20mimarlo%20como%20se%20merece%20%E2%9C%A8%F0%9F%9B%81%0A%0A%F0%9F%93%8D%20Cra%2019%20%2322N-23%2C%20Local%204%20%C2%B7%20Armenia%0A%C2%A1Respondenos%20y%20lo%20separamos%21%20%F0%9F%92%9A";};
+  var msgSegunda=function(cli,pet,days){return "Hola%20"+encodeURIComponent(cli.name)+"%21%20%F0%9F%90%BE%F0%9F%90%B6%0A%0A"+encodeURIComponent(pet.name)+"%20lleva%20"+encodeURIComponent(days)+"%20d%C3%ADas%20y%20en%20PawSociety%20ya%20lo%20extra%C3%B1amos%21%20%F0%9F%A5%BA%0A%0ASabemos%20que%20la%20vida%20es%20ocupada%2C%20pero%20su%20pelaje%20y%20su%20bienestar%20nos%20importan%20mucho.%20%C2%A1Agendemos%20esta%20semana%20y%20lo%20dejamos%20impecable%20como%20siempre%21%20%F0%9F%9B%81%E2%9C%A8%0A%0A%F0%9F%93%8D%20PawSociety%20%C2%B7%20Armenia%0A%C2%BFCu%C3%A1ndo%20podemos%20verlos%3F%20%F0%9F%92%9A";};
+  var msgReact=function(cli,pet,days){return "Hola%20"+encodeURIComponent(cli.name)+"%21%20%F0%9F%90%BE%0A%0AHace%20tiempo%20que%20no%20sabemos%20de%20"+encodeURIComponent(pet.name)+"%20y%20la%20verdad...%20%C2%A1los%20extra%C3%B1amos%20mucho%21%20%F0%9F%90%B6%F0%9F%92%9A%0A%0AHan%20pasado%20"+encodeURIComponent(days)+"%20d%C3%ADas%20y%20queremos%20que%20vuelvan%20a%20ser%20parte%20de%20la%20familia%20PawSociety%20%F0%9F%91%91%0A%0A%C2%BFVolvemos%20a%20vernos%3F%20Cuando%20vengas%20tenemos%20una%20sorpresita%20para%20"+encodeURIComponent(pet.name)+"%20%F0%9F%8E%81%0A%0A%F0%9F%93%8D%20Cra%2019%20%2322N-23%20%C2%B7%20Armenia%0ALittle%20kings%2C%20big%20love.%20%F0%9F%92%9A";};
+  var msgBday=function(cli,pet){return "Hola%20"+encodeURIComponent(cli.name)+"%21%20%F0%9F%8E%82%F0%9F%90%BE%0A%0A%C2%A1Hoy%20es%20el%20d%C3%ADa%20m%C3%A1s%20especial%20del%20a%C3%B1o%20para%20"+encodeURIComponent(pet.name)+"%20y%20en%20PawSociety%20lo%20queremos%20celebrar%20contigo%21%20%F0%9F%A5%B3%F0%9F%91%91%0A%0A%F0%9F%8E%81%20REGALO%20DE%20CUMPLEA%C3%91OS%3A%0A%C2%A150%25%20de%20descuento%20en%20el%20ba%C3%B1o%20de%20"+encodeURIComponent(pet.name)+"%20el%20d%C3%ADa%20de%20hoy%21%20%F0%9F%9B%81%E2%9C%A8%0A%0AQueremos%20que%20lo%20celebre%20sinti%C3%A9ndose%20como%20el%20rey%20que%20es%20%F0%9F%91%91%0A%C2%BFLo%20agendamos%20hoy%20mismo%3F%0A%0A%F0%9F%93%8D%20Cra%2019%20%2322N-23%2C%20Local%204%20%C2%B7%20Armenia%0A%C2%A1Feliz%20cumplea%C3%B1os%20"+encodeURIComponent(pet.name)+"%21%20%F0%9F%8E%89%F0%9F%90%BE";};
+  var msgFree=function(cli,pet){return "Hola%20"+encodeURIComponent(cli.name)+"%21%20%F0%9F%90%BE%F0%9F%8E%89%0A%0A%C2%A1"+encodeURIComponent(pet.name)+"%20complet%C3%B3%20sus%206%20ba%C3%B1os%20en%20PawSociety%20y%20tiene%20un%20BA%C3%91O%20GRATIS%20esperando%21%20%F0%9F%8E%81%F0%9F%9B%81%F0%9F%91%91%0A%0A%C2%A1Se%20lo%20merece%20totalmente%21%0A%C2%BFCu%C3%A1ndo%20lo%20agendamos%20para%20reclamar%20su%20premio%3F%0A%0A%F0%9F%93%8D%20Cra%2019%20%2322N-23%20%C2%B7%20Armenia%0ALittle%20kings%2C%20big%20love.%20%F0%9F%92%9A";};
+  var msgPre=function(cli,pet,days){return "Hola%20"+encodeURIComponent(cli.name)+"%21%20%F0%9F%90%BE%0A%0AYa%20casi%20es%20momento%20del%20ba%C3%B1o%20de%20"+encodeURIComponent(pet.name)+"%20%F0%9F%9B%81%E2%9C%A8%0A%0ALleva%20"+encodeURIComponent(days)+"%20d%C3%ADas%20y%20queremos%20tenerlo%20agendado%20antes%20de%20que%20pase%20m%C3%A1s%20tiempo.%0A%C2%BFSeparamos%20un%20espacio%20esta%20semana%3F%20%F0%9F%91%91%F0%9F%90%B6%0A%0A%F0%9F%93%8D%20PawSociety%20%C2%B7%20Armenia%0A%C2%A1Tenemos%20horario%20para%20"+encodeURIComponent(pet.name)+"%21%20%F0%9F%92%9A";};
+  // Compute alert lists
+  var due28=[],due35=[],due60=[];
+  var preSoon=[],loyal=[],bday=[];
+  
+  pets.forEach(function(p){
+    try{
+      var lb=lastBath(p.id);
+      var cli=clients.find(function(c){return c.id===p.clientId;});
+      if(!cli||!cli.phone)return;
+      var days=lb?dBetween(lb,today()):999;
+      var loy=getLoyalty(p.id,appts);
+      var alreadySent=sentMap[p.id]===today();
+      
+      if(loy.hasFree&&!alreadySent)loyal.push({pet:p,cli:cli,days:days});
+      if(p.birthday&&isBdayToday(p.birthday))bday.push({pet:p,cli:cli});
+      if(!lb||days>=60)due60.push({pet:p,cli:cli,days:days,sent:alreadySent});
+      else if(days>=35)due35.push({pet:p,cli:cli,days:days,sent:alreadySent});
+      else if(days>=28)due28.push({pet:p,cli:cli,days:days,sent:alreadySent});
+      else if(days>=22&&days<28)preSoon.push({pet:p,cli:cli,days:days,sent:alreadySent});
+    }catch(e){}
   });
-  var loyal = pets.filter(function (p) {
-    try {
-      return getLoyalty(p.id, appts).hasFree;
-    } catch (e) {
-      return false;
-    }
-  });
-  var bdayToday = pets.filter(function (p) {
-    try {
-      return p.birthday && isBdayToday(p.birthday);
-    } catch (e) {
-      return false;
-    }
-  });
-  var bdaySoon = pets.filter(function (p) {
-    try {
-      var d = bdayDays(p.birthday);
-      return p.birthday && !isBdayToday(p.birthday) && d !== null && d <= 7;
-    } catch (e) {
-      return false;
-    }
-  });
-  var preSoon = [];
-  try {
-    preSoon = pets.filter(function(p) {
-      try {
-        var _lb = lastBath(p.id);
-        if (!_lb) return false;
-        var _d2 = dBetween(_lb, today());
-        return _d2 >= 22 && _d2 < 28;
-      } catch(e) { return false; }
-    });
-  } catch(e) { preSoon = []; }
-  return /*#__PURE__*/React.createElement("div", null, loyal.length > 0 && /*#__PURE__*/React.createElement(Card, {
-    style: {
-      background: "#FBE9D6",
-      border: "1.5px solid #D4945A",
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement(Rt, {
-    icon: "trophy",
-    color: "#D4945A"
-  }, "Ba\xF1os gratis ganados (", loyal.length, ")"), loyal.map(function (p) {
-    var cli = clients.find(function (c) {
-      return c.id === p.clientId;
-    });
-    return /*#__PURE__*/React.createElement("div", {
-      key: p.id,
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "7px 0",
-        borderBottom: "1px solid rgba(212,148,90,.2)"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 18
-      }
-    }, "\uD83D\uDEC1"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        fontWeight: 700
-      }
-    }, p.name, " \u2014 6 ba\xF1os completados"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#92400E"
-      }
-    }, cli ? cli.name + " · " + cli.phone : "")), /*#__PURE__*/React.createElement("span", {
-      style: {
-        background: "#D4945A",
-        color: "#fff",
-        fontSize: 11,
-        padding: "3px 9px",
-        borderRadius: 10,
-        fontWeight: 700
-      }
-    }, "GRATIS"));
-  })), (bdayToday.length > 0 || bdaySoon.length > 0) && /*#__PURE__*/React.createElement(Card, {
-    style: {
-      background: "#FDF2F8",
-      border: "1.5px solid #EC4899",
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement(Rt, {
-    icon: "cake",
-    color: "#EC4899"
-  }, "Cumplea\xF1os \u2014 Ba\xF1o gratis"), [].concat(_toConsumableArray(bdayToday), _toConsumableArray(bdaySoon)).map(function (p) {
-    var cli = clients.find(function (c) {
-      return c.id === p.clientId;
-    });
-    var d = bdayDays(p.birthday);
-    return /*#__PURE__*/React.createElement("div", {
-      key: p.id,
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "7px 0",
-        borderBottom: "1px solid rgba(236,72,153,.2)"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 18
-      }
-    }, isBdayToday(p.birthday) ? "🎉" : "🎂"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        fontWeight: 700
-      }
-    }, p.name, " ", isBdayToday(p.birthday) ? "— HOY!" : "— en " + d + "d"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#9D174D"
-      }
-    }, cli ? cli.name : "")), /*#__PURE__*/React.createElement("span", {
-      style: {
-        background: "#EC4899",
-        color: "#fff",
-        fontSize: 11,
-        padding: "3px 9px",
-        borderRadius: 10,
-        fontWeight: 700
-      }
-    }, "Gratis"));
-  })), preSoon.length > 0 && /*#__PURE__*/React.createElement(Card, {
-    style: {
-      background: "#FFFBEB",
-      border: "1.5px solid #F59E0B",
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement(Rt, {
-    icon: "clock",
-    color: "#F59E0B"
-  }, "Pr\xF3ximos a vencer \u2014 Reagenda ahora (", preSoon.length, ")"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "#92400E",
-      marginBottom: 10
-    }
-  }, "Llevan 22-27 d\xEDas sin ba\xF1o. Cont\xE1ctalos antes de que lleguen a 28."), preSoon.map(function (p) {
-    var lb = lastBath(p.id);
-    var days = lb ? dBetween(lb, today()) : null;
-    var cli = clients.find(function (c) {
-      return c.id === p.clientId;
-    });
-    return /*#__PURE__*/React.createElement("div", {
-      key: p.id,
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "8px 0",
-        borderBottom: "1px solid rgba(245,158,11,.2)"
-      }
-    }, /*#__PURE__*/React.createElement(Av, {
-      name: p.name,
-      size: 36,
-      bg: "#FFFBEB",
-      color: "#D4945A"
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        fontWeight: 700
-      }
-    }, p.name), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#6B7280"
-      }
-    }, cli ? cli.name + " · " + cli.phone : "")), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11,
-        fontWeight: 700,
-        color: "#D97706",
-        marginRight: 6
-      }
-    }, days, "d"), cli && /*#__PURE__*/React.createElement("a", {
-      href: "https://wa.me/57" + cli.phone.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Hola " + cli.name + "! Ya es momento de agendar el baño de " + p.name + " en PawSociety. Nos quedan horarios disponibles esta semana. Lo agendamos? 317 469 9764"),
-      target: "_blank",
-      rel: "noopener noreferrer",
-      style: {
-        padding: "7px 12px",
-        background: "#F59E0B",
-        color: "#fff",
-        textDecoration: "none",
-        borderRadius: 8,
-        fontSize: 11,
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        gap: 4,
-        flexShrink: 0
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-brand-whatsapp"
-    }), "WA"));
-  })), due.length > 0 && /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#FBE9D6",
-      border: "1.5px solid #D4945A",
-      borderRadius: 12,
-      padding: "12px 14px",
-      marginBottom: 14,
-      display: "flex",
-      gap: 12,
-      alignItems: "center"
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-bell",
-    style: {
-      fontSize: 20,
-      color: "#D4945A",
-      flexShrink: 0
-    }
-  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 14,
-      fontWeight: 700,
-      color: "#92400E"
-    }
-  }, due.length, " mascota", due.length !== 1 ? "s necesitan" : " necesita", " ba\xF1o"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "#B45309"
-    }
-  }, "Sin ba\xF1o en m\xE1s de 28 d\xEDas"))), due.length === 0 && loyal.length === 0 && bdayToday.length === 0 && bdaySoon.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      padding: "48px",
-      color: "#9CA3AF"
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-check",
-    style: {
-      fontSize: 44,
-      color: "#22C55E",
-      display: "block",
-      marginBottom: 12
-    }
-  }), /*#__PURE__*/React.createElement("p", {
-    style: {
-      margin: 0
-    }
-  }, "Todo al d\xEDa! Sin alertas.")) : due.map(function (p) {
-    var lb = lastBath(p.id);
-    var days = lb ? dBetween(lb, today()) : null;
-    var cli = clients.find(function (c) {
-      return c.id === p.clientId;
-    });
-    return /*#__PURE__*/React.createElement(Card, {
-      key: p.id,
-      style: {
-        marginBottom: 10
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        marginBottom: 12
-      }
-    }, /*#__PURE__*/React.createElement(Av, {
-      name: p.name,
-      size: 42,
-      bg: "#FBE9D6",
-      color: "#D4945A"
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 14,
-        fontWeight: 700
-      }
-    }, p.name, " ", /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11,
-        color: "#9CA3AF"
-      }
-    }, p.breed)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        color: "#6B7280"
-      }
-    }, cli ? cli.name + " · " + cli.phone : ""), p.concentrado && /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#1A5C47",
-        fontWeight: 600
-      }
-    }, "\uD83E\uDDB4 ", p.concentrado), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#9CA3AF"
-      }
-    }, lb ? "Último: " + fmt(lb) : "Sin historial")), /*#__PURE__*/React.createElement(Bdg, {
-      label: !days ? "Sin historial" : days + "d",
-      type: !days || days > 60 ? "rd" : "am"
-    })), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        gap: 8
-      }
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: function onClick() {
-        return setEtA({
-          clientId: p.clientId,
-          petId: p.id
+
+  var AlCard=function(_ref_alc){
+    var item=_ref_alc.item,msg=_ref_alc.msg,color=_ref_alc.color,label=_ref_alc.label,icon=_ref_alc.icon,urgent=_ref_alc.urgent;
+    var p=item.pet,c=item.cli,days=item.days;
+    var waNum=c&&c.phone?"57"+c.phone.replace(/[^0-9]/g,""):"";
+    var isSent=sentMap[p.id]===today();
+    return /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1.5px solid "+(isSent?"#E5E7EB":color),padding:"12px 14px",marginBottom:10,opacity:isSent?0.6:1,boxShadow:isSent?"none":"0 2px 8px rgba(0,0,0,.06)"}},
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:8}},
+        /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:"50%",background:color+"22",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}},icon),
+        /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,color:"#111827"}},p.name),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},c.name+" \xb7 "+c.phone),
+          /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:color+"22",color:color,borderRadius:8,padding:"2px 8px",fontWeight:700,marginTop:3,display:"inline-block"}},label+(days&&days<900?" \xb7 "+days+" d\xedas":""))
+        ),
+        isSent&&/*#__PURE__*/React.createElement("span",{style:{fontSize:10,background:"#E8F5EB",color:"#065F46",borderRadius:8,padding:"4px 8px",fontWeight:700,flexShrink:0}},"\xe2\x9c\x93 Enviado hoy")
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8}},
+        /*#__PURE__*/React.createElement("a",{href:"https://wa.me/"+waNum+"?text="+msg,target:"_blank",onClick:function(){markSent(p.id);},style:{flex:1,padding:"9px 14px",background:isSent?"#D1FAE5":"#25D366",color:isSent?"#065F46":"#fff",textDecoration:"none",borderRadius:10,fontSize:13,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:6}},
+          /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:18}}),isSent?"Reenviar":"Enviar mensaje"
+        ),
+        /*#__PURE__*/React.createElement("button",{onClick:function(){markSent(p.id);},style:{padding:"9px 14px",background:"#F3F4F6",color:"#6B7280",border:"none",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer"}},"\xbf Ya agend\xf3?")
+      )    );
+  };
+
+  var Section=function(_ref_sec){
+    var title=_ref_sec.title,items=_ref_sec.items,color=_ref_sec.color,icon=_ref_sec.icon,msgFn=_ref_sec.msgFn,label=_ref_sec.label,desc=_ref_sec.desc;
+    if(!items.length)return null;
+    return /*#__PURE__*/React.createElement("div",{style:{marginBottom:20}},
+      /*#__PURE__*/React.createElement("div",{style:{background:color,borderRadius:14,padding:"10px 14px",marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center"}},
+        /*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:800,color:"#fff"}},icon+" "+title),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"rgba(255,255,255,.75)",marginTop:2}},desc)
+        ),
+        /*#__PURE__*/React.createElement("span",{style:{background:"rgba(255,255,255,.25)",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:14,fontWeight:800}},items.length)
+      ),
+      items.map(function(item){return /*#__PURE__*/React.createElement(AlCard,{key:item.pet.id,item:item,msg:msgFn(item.cli,item.pet,item.days),color:color,label:label,icon:icon});})
+    );
+  };
+
+  var totalPendiente=due28.length+due35.length+due60.length+loyal.length+bday.length;
+
+  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Centro de"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Alertas & Mensajes"),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}},
+        totalPendiente>0&&/*#__PURE__*/React.createElement("span",{onClick:function(){setView("alertas");},style:{background:"#EF4444",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4}},/*#__PURE__*/React.createElement("i",{className:"ti ti-bell-ringing",style:{fontSize:14}}),totalPendiente+" alertas pendientes"),
+        preSoon.length>0&&/*#__PURE__*/React.createElement("span",{style:{background:"rgba(242,196,206,.2)",color:"#F2C4CE",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:600}},preSoon.length+" por vencer")
+      )
+    ),
+
+    bday.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Cumplea\xf1os hoy",items:bday,color:"#7C3AED",icon:"\xf0\x9f\x8e\x82",msgFn:function(c,p){return msgBday(c,p);},label:"Cumplea\xf1os",desc:"Env\xedales un saludo especial hoy"}),
+    
+    loyal.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Ba\xf1o gratis desbloqueado",items:loyal,color:"#D4945A",icon:"\xf0\x9f\x8e\x81",msgFn:function(c,p){return msgFree(c,p);},label:"6/6 completados",desc:"\xa1Tienen un ba\xf1o gratis esperando!"}),
+
+    due60.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Reactivar urgente (+60 d\xedas)",items:due60,color:"#DC2626",icon:"\xf0\x9f\x90\xb6",msgFn:function(c,p,d){return msgReact(c,p,d);},label:"En riesgo",desc:"Clientes que podr\xedan perderse"}),
+
+    due35.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Segunda llamada (35-60 d\xedas)",items:due35,color:"#F59E0B",icon:"\xf0\x9f\x90\xbe",msgFn:function(c,p,d){return msgSegunda(c,p,d);},label:"Requiere atenci\xf3n",desc:"Ya es momento de insistir"}),
+
+    due28.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Recordatorio (28-35 d\xedas)",items:due28,color:"#1A5C47",icon:"\xf0\x9f\x9b\x81\xef\xb8\x8f",msgFn:function(c,p,d){return msgSuave(c,p,d);},label:"Sin ba\xf1o reciente",desc:"Momento ideal para reagendar"}),
+
+    preSoon.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Pr\xf3ximos a vencer (22-27 d\xedas)",items:preSoon,color:"#6B7280",icon:"\xe2\x8f\xb0",msgFn:function(c,p,d){return msgPre(c,p,d);},label:"Preventivo",desc:"Ag\xe9ndalos antes de que lleguen a 28"}),
+
+    (function(){
+      var _d20=new Date(Date.now()-20*86400000).toISOString().slice(0,10);
+      var _concAlerts=[];
+      sales.forEach(function(s){
+        if(!(s.date||"").startsWith(thisM())&&(s.date||"")<_d20)return;
+        (s.items||[]).forEach(function(item){
+          if(!item.name)return;
+          var _nm=item.name.toLowerCase();
+          if(!(_nm.includes("concentrado")||_nm.includes("hills")||_nm.includes("royal")||_nm.includes("purina")))return;
+          var _cli=clients.find(function(c){return c.id===s.clientId;});
+          var _pet=pets.find(function(p){return p.clientId===s.clientId;});
+          if(_cli&&_cli.phone&&!sentMap[_cli.id+"_conc"+"_"+today()]){
+            _concAlerts.push({cli:_cli,pet:_pet,product:item.name,date:s.date||""});
+          }
         });
-      },
-      style: {
-        flex: 1,
-        padding: "11px",
-        background: "#1A5C47",
-        color: "#fff",
-        border: "none",
-        borderRadius: 12,
-        fontSize: 13,
-        fontWeight: 700,
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 6
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-calendar-plus"
-    }), "Agendar"), cli && /*#__PURE__*/React.createElement("a", {
-      href: "https://wa.me/57" + cli.phone.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Hola " + cli.name + "! 🐾 " + p.name + " lleva " + (days || "varios") + " días sin baño. Lo agendamos? 📍 Cra 19 #22N-23 · 317 469 9764"),
-      target: "_blank",
-      rel: "noopener noreferrer",
-      style: {
-        padding: "11px 14px",
-        background: "#22C55E",
-        color: "#fff",
-        textDecoration: "none",
-        borderRadius: 10,
-        fontSize: 12,
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        gap: 5
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-brand-whatsapp"
-    }), "WA")));
-  }), etA && /*#__PURE__*/React.createElement(ApptModal, {
-    et: etA,
-    clients: clients,
-    pets: pets,
-    spaprices: [],
-    cSvcs: SVCS,
-    onClose: function onClose() {
-      return setEtA(null);
-    },
-    toast: toast
-  }));
+      });
+      if(!_concAlerts.length)return null;
+      return /*#__PURE__*/React.createElement("div",{style:{marginBottom:20}},
+        /*#__PURE__*/React.createElement("div",{style:{background:"#D4945A",borderRadius:14,padding:"10px 14px",marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center"}},
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:800,color:"#fff"}},"🦴 Seguimiento concentrado"),
+            /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"rgba(255,255,255,.75)"}},"Compras de hace 20+ dias - pueden necesitar mas")
+          ),
+          /*#__PURE__*/React.createElement("span",{style:{background:"rgba(255,255,255,.25)",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:14,fontWeight:800}},_concAlerts.length)
+        ),
+        _concAlerts.map(function(it,i){
+          var _wn="57"+(it.cli.phone||"").replace(/[^0-9]/g,"");
+          var _wm=encodeURIComponent("Hola "+it.cli.name+"! Hace unos dias compraste "+it.product+" para tu mascota. Como va el suministro? Si ya casi se acaba, tenemos disponibilidad en PawSociety! Cra 19 #22N-23 Armenia.");
+          return /*#__PURE__*/React.createElement("div",{key:i,style:{background:"#fff",borderRadius:14,border:"1.5px solid #D4945A44",padding:"12px 14px",marginBottom:8}},
+            /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:8}},
+              /*#__PURE__*/React.createElement("span",{style:{fontSize:20}},"🦴"),
+              /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+                /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700}},it.cli.name),
+                /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},it.product+" � "+it.date)
+              )
+            ),
+            /*#__PURE__*/React.createElement("a",{href:"https://wa.me/"+_wn+"?text="+_wm,target:"_blank",onClick:function(){var s=Object.assign({},loadSent());s[it.cli.id+"_conc"+"_"+today()]=today();localStorage.setItem(SENT_KEY,JSON.stringify(s));},style:{width:"100%",padding:"9px 14px",background:"#D4945A",color:"#fff",textDecoration:"none",borderRadius:10,fontSize:13,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:6}},
+              /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:18}}),"Preguntar si necesita mas"
+            )
+          );
+        })
+      );
+    })(),
+    totalPendiente===0&&preSoon.length===0&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"60px 20px",color:"#9CA3AF"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:48,marginBottom:12}},"\xf0\x9f\x90\xbe"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:16,fontWeight:600,color:"#374151",marginBottom:8}},"Todo al d\xeda"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:13}},"No hay alertas pendientes por ahora.")
+    )
+  );
 }
+
+
 function CampanasScreen(_ref43) {
-  var clients = _ref43.clients,
-    pets = _ref43.pets,
-    appts = _ref43.appts,
-    sales = _ref43.sales;
-  var _useState137 = useState("inact30"),
-    _useState138 = _slicedToArray(_useState137, 2),
-    tab = _useState138[0],
-    setTab = _useState138[1];
-  var d30 = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
-  var d60 = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
-  var lastAct = function lastAct(cid) {
-    var acts = [].concat(_toConsumableArray(appts.filter(function (a) {
-      return a.clientId === cid && a.status === "completado";
-    })), _toConsumableArray(sales.filter(function (s) {
-      return s.clientId === cid;
-    }))).sort(function (a, b) {
-      return (b.date||b.fecha||"").localeCompare(a.date||a.fecha||"");
-    });
-    return acts[0] ? acts[0].date : null;
+  var clients=_ref43.clients,pets=_ref43.pets,appts=_ref43.appts,sales=_ref43.sales;
+  var _t=useState("inact30"),_ta=_slicedToArray(_t,2),tab=_ta[0],setTab=_ta[1];
+  var SENT_KEY="paws_camp_sent";
+  var loadSent=function(){try{return JSON.parse(localStorage.getItem(SENT_KEY)||"{}");}catch(e){return{};}};
+  var markSent=function(cid){var s=Object.assign({},loadSent());s[cid]=today();localStorage.setItem(SENT_KEY,JSON.stringify(s));};
+  var sentMap=loadSent();
+
+  var d30=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+  var d60=new Date(Date.now()-60*86400000).toISOString().slice(0,10);
+  var nowM=thisM();
+
+  var lastAct=function(cid){
+    var dates=[].concat(
+      appts.filter(function(a){return a.clientId===cid&&(a.status==="completado"||a.estado==="completado");}).map(function(a){return a.date||a.fecha||"";}),
+      sales.filter(function(s){return s.clientId===cid;}).map(function(s){return s.date||"";})
+    ).filter(Boolean).sort().reverse();
+    return dates.length>0?dates[0]:null;
   };
-  var i30 = clients.filter(function (c) {
-    var la = lastAct(c.id);
-    return !la || la < d30;
+
+  var inact30=clients.filter(function(c){var la=lastAct(c.id);return c.phone&&(!la||la<d30);});
+  var inact60=clients.filter(function(c){var la=lastAct(c.id);return c.phone&&(!la||la<d60);});
+  var bdayM=pets.filter(function(p){
+    if(!p.birthday)return false;
+    var bm=p.birthday.slice(0,7);
+    return bm.slice(5)===nowM.slice(5);
   });
-  var i60 = clients.filter(function (c) {
-    var la = lastAct(c.id);
-    return !la || la < d60;
-  });
-  var bdayM = pets.filter(function (p) {
-    if (!p.birthday) return false;
-    var m = p.birthday.split("-")[1];
-    return m === thisM().slice(5, 7);
-  });
-  var tabS = function tabS(a) {
-    return {
-      padding: "8px 14px",
-      borderRadius: 20,
-      fontSize: 12,
-      border: "1.5px solid " + (a ? "#1A5C47" : "#E5E7EB"),
-      background: a ? "#1A5C47" : "#fff",
-      color: a ? "#fff" : "#4B5563",
-      cursor: "pointer",
-      fontWeight: a ? 700 : 500,
-      whiteSpace: "nowrap",
-      flexShrink: 0
-    };
+
+  // Message generators for campaigns
+  var msgInact30=function(c){return "Hola%20"+encodeURIComponent(c.name)+"%21%20%F0%9F%90%BE%0A%0AEn%20PawSociety%20te%20extra%C3%B1amos%20y%20queremos%20verte%20pronto%20%F0%9F%90%B6%E2%9C%A8%0A%0A%C2%BFHace%20cu%C3%A1nto%20no%20consentimos%20a%20tu%20peludito%3F%20%C2%A1Es%20el%20momento%20perfecto%20para%20volver%21%20%F0%9F%9B%81%0A%0AEscr%C3%ADbenos%20y%20separamos%20tu%20cita%20%F0%9F%91%91%0A%F0%9F%93%8D%20Cra%2019%20%2322N-23%20%C2%B7%20Armenia%0ALittle%20kings%2C%20big%20love.%20%F0%9F%92%9A";};
+  var msgInact60=function(c){return "Hola%20"+encodeURIComponent(c.name)+"%21%20%F0%9F%90%BE%0A%0AHace%20mucho%20tiempo%20que%20no%20sabemos%20de%20ti%20y%20queremos%20que%20vuelvas%20a%20la%20familia%20PawSociety%20%F0%9F%91%91%F0%9F%90%B6%0A%0ACuando%20vengas%20tenemos%20una%20sorpresita%20esperando%20a%20tu%20peludito%20%F0%9F%8E%81%E2%9C%A8%0A%0A%C2%BFNos%20reencontramos%20esta%20semana%3F%20%F0%9F%92%9A%0A%F0%9F%93%8D%20Cra%2019%20%2322N-23%20%C2%B7%20Armenia%20%C2%B7%20317%20469%209764";};
+  var msgBdayM=function(cli,pet){return "Hola%20"+encodeURIComponent(cli.name)+"%21%20%F0%9F%8E%82%F0%9F%90%BE%0A%0AEste%20mes%20"+encodeURIComponent(pet.name)+"%20est%C3%A1%20de%20cumplea%C3%B1os%20y%20en%20PawSociety%20tenemos%20un%20regalo%20especial%21%20%F0%9F%A5%B3%F0%9F%91%91%0A%0A%F0%9F%8E%81%20REGALO%20DE%20CUMPLEA%C3%91OS%3A%0A%C2%A150%25%20de%20descuento%20en%20el%20ba%C3%B1o%20de%20"+encodeURIComponent(pet.name)+"%20durante%20su%20mes%20especial%21%20%F0%9F%9B%81%E2%9C%A8%0A%0AQueremos%20que%20luzca%20espectacular%20y%20se%20sienta%20como%20el%20rey%20que%20es%20%F0%9F%91%91%0A%C2%BFAgendamos%20su%20ba%C3%B1o%20de%20cumplea%C3%B1os%3F%0A%0A%F0%9F%93%8D%20Cra%2019%20%2322N-23%20%C2%B7%20Armenia%20%C2%B7%20317%20469%209764%0ALittle%20kings%2C%20big%20love.%20%F0%9F%92%9A";};
+
+  var tabStyle=function(a){return{padding:"8px 14px",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer",background:a?"#1A5C47":"#F3F4F6",color:a?"#fff":"#6B7280",border:"1.5px solid "+(a?"#1A5C47":"#E5E7EB"),whiteSpace:"nowrap",flexShrink:0};};
+
+  var CamCard=function(_ref_cc){
+    var c=_ref_cc.cli,p=_ref_cc.pet,msg=_ref_cc.msg,label=_ref_cc.label,color=_ref_cc.color,icon=_ref_cc.icon;
+    var phone=(p?clients.find(function(cl){return cl.id===p.clientId;})||c:c);
+    var isSent=sentMap[c.id]===today();
+    var waNum="57"+(c.phone||"").replace(/[^0-9]/g,"");
+    return /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1.5px solid "+(isSent?"#E5E7EB":color+"44"),padding:"12px 14px",marginBottom:8,opacity:isSent?0.6:1}},
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:isSent?0:8}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:22,flexShrink:0}},icon),
+        /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700}},p?p.name:c.name),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},p?"Due\xf1o: "+c.name+" \xb7 "+c.phone:c.phone),
+          /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:color+"22",color:color,borderRadius:8,padding:"2px 8px",fontWeight:700,marginTop:3,display:"inline-block"}},label)
+        ),
+        isSent&&/*#__PURE__*/React.createElement("span",{style:{fontSize:10,background:"#E8F5EB",color:"#065F46",borderRadius:8,padding:"4px 8px",fontWeight:700}},"\xe2\x9c\x93 Enviado")
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8}},
+        /*#__PURE__*/React.createElement("a",{href:"https://wa.me/"+waNum+"?text="+msg,target:"_blank",onClick:function(){markSent(c.id);},style:{flex:1,padding:"9px 14px",background:isSent?"#D1FAE5":"#25D366",color:isSent?"#065F46":"#fff",textDecoration:"none",borderRadius:10,fontSize:13,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:6}},
+          /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:18}}),isSent?"Reenviar":"Enviar"
+        ),
+        /*#__PURE__*/React.createElement("button",{onClick:function(){markSent(c.id);},style:{padding:"9px 14px",background:"#F3F4F6",color:"#6B7280",border:"none",borderRadius:10,fontSize:12,cursor:"pointer"}},"Omitir")
+      )
+    );
   };
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      marginBottom: 14,
-      overflowX: "auto",
-      paddingBottom: 4
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: tabS(tab === "inact30"),
-    onClick: function onClick() {
-      return setTab("inact30");
-    }
-  }, "+30 d\xEDas (", i30.length, ")"), /*#__PURE__*/React.createElement("span", {
-    style: tabS(tab === "inact60"),
-    onClick: function onClick() {
-      return setTab("inact60");
-    }
-  }, "+60 d\xEDas (", i60.length, ")"), /*#__PURE__*/React.createElement("span", {
-    style: tabS(tab === "bdays"),
-    onClick: function onClick() {
-      return setTab("bdays");
-    }
-  }, "Cumplea\xF1os (", bdayM.length, ")")), tab === "inact30" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#FBE9D6",
-      border: "1px solid #D4945A",
-      borderRadius: 12,
-      padding: "12px 14px",
-      marginBottom: 14,
-      fontSize: 13,
-      color: "#92400E"
-    }
-  }, /*#__PURE__*/React.createElement("strong", null, i30.length, " clientes"), " sin visita en m\xE1s de 30 d\xEDas."), i30.map(function (c) {
-    var la = lastAct(c.id);
-    var days = la ? dBetween(la, today()) : null;
-    return /*#__PURE__*/React.createElement(Card, {
-      key: c.id,
-      style: {
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 12
-      }
-    }, /*#__PURE__*/React.createElement(Av, {
-      name: c.name,
-      size: 40
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 14,
-        fontWeight: 700
-      }
-    }, c.name), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#6B7280"
-      }
-    }, c.phone), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#9CA3AF"
-      }
-    }, la ? "Última visita: " + fmt(la) : "Sin visitas")), /*#__PURE__*/React.createElement("a", {
-      href: waReact(c.name, days || "varios"),
-      target: "_blank",
-      rel: "noopener noreferrer",
-      style: {
-        padding: "10px 14px",
-        background: "#22C55E",
-        color: "#fff",
-        textDecoration: "none",
-        borderRadius: 10,
-        fontSize: 12,
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        flexShrink: 0
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-brand-whatsapp"
-    }), "Reactivar")));
-  })), tab === "inact60" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#FEE2E2",
-      border: "1px solid #EF4444",
-      borderRadius: 12,
-      padding: "12px 14px",
-      marginBottom: 14,
-      fontSize: 13,
-      color: "#991B1B"
-    }
-  }, /*#__PURE__*/React.createElement("strong", null, i60.length, " clientes"), " sin visita en m\xE1s de 60 d\xEDas \u2014 prioridad alta."), i60.map(function (c) {
-    var la = lastAct(c.id);
-    var days = la ? dBetween(la, today()) : null;
-    return /*#__PURE__*/React.createElement(Card, {
-      key: c.id,
-      style: {
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 12
-      }
-    }, /*#__PURE__*/React.createElement(Av, {
-      name: c.name,
-      size: 40
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 14,
-        fontWeight: 700
-      }
-    }, c.name), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#6B7280"
-      }
-    }, c.phone), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#DC2626",
-        fontWeight: 600
-      }
-    }, days ? "Hace " + days + " días" : "Sin visitas")), /*#__PURE__*/React.createElement("a", {
-      href: waReact(c.name, days || "muchos"),
-      target: "_blank",
-      rel: "noopener noreferrer",
-      style: {
-        padding: "10px 14px",
-        background: "#22C55E",
-        color: "#fff",
-        textDecoration: "none",
-        borderRadius: 10,
-        fontSize: 12,
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        flexShrink: 0
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-brand-whatsapp"
-    }), "Contactar")));
-  })), tab === "bdays" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#FDF2F8",
-      border: "1px solid #EC4899",
-      borderRadius: 12,
-      padding: "12px 14px",
-      marginBottom: 14,
-      fontSize: 13,
-      color: "#9D174D"
-    }
-  }, /*#__PURE__*/React.createElement("strong", null, bdayM.length, " mascotas"), " cumplen a\xF1os este mes \u2014 ofr\xE9celes ba\xF1o gratis."), bdayM.map(function (p) {
-    var cli = clients.find(function (c) {
-      return c.id === p.clientId;
-    });
-    var msg = "Hola " + (cli ? cli.name : "") + "! 🎂 Este mes " + p.name + " cumple años! En PawSociety queremos celebrarlo con un *baño gratis* de regalo. Lo agendamos? 📲 317 469 9764";
-    return /*#__PURE__*/React.createElement(Card, {
-      key: p.id,
-      style: {
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 12
-      }
-    }, /*#__PURE__*/React.createElement(Av, {
-      name: p.name,
-      size: 40,
-      bg: "#FDF2F8",
-      color: "#EC4899"
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 14,
-        fontWeight: 700
-      }
-    }, p.name, " \uD83C\uDF82"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#6B7280"
-      }
-    }, cli ? cli.name + " · " + cli.phone : ""), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: "#EC4899"
-      }
-    }, "Cumplea\xF1os: ", fmtBday(p.birthday))), cli && /*#__PURE__*/React.createElement("a", {
-      href: "https://wa.me/57" + cli.phone.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent(msg),
-      target: "_blank",
-      rel: "noopener noreferrer",
-      style: {
-        padding: "10px 14px",
-        background: "#EC4899",
-        color: "#fff",
-        textDecoration: "none",
-        borderRadius: 10,
-        fontSize: 12,
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        flexShrink: 0
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-brand-whatsapp"
-    }), "Felicitar")));
-  })));
+
+  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Marketing"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Campa\xf1as"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:13,color:"rgba(242,196,206,.7)",marginTop:4}},
+        "Mensajes listos para enviar en 1 clic \xf0\x9f\x90\xbe"
+      )
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginBottom:16,overflowX:"auto",paddingBottom:4}},
+      /*#__PURE__*/React.createElement("span",{style:tabStyle(tab==="inact30"),onClick:function(){setTab("inact30");}},"\xf0\x9f\x90\xb6 Inactivos 30d ("+inact30.length+")"),
+      /*#__PURE__*/React.createElement("span",{style:tabStyle(tab==="inact60"),onClick:function(){setTab("inact60");}},"\xf0\x9f\x94\xb4 Inactivos 60d ("+inact60.length+")"),
+      /*#__PURE__*/React.createElement("span",{style:tabStyle(tab==="bday"),onClick:function(){setTab("bday");}},"\xf0\x9f\x8e\x82 Cumplea\xf1os mes ("+bdayM.length+")")
+    ),
+    tab==="inact30"&&(inact30.length===0
+      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}},"\xf0\x9f\x8e\x89 Sin clientes inactivos en 30 d\xedas")
+      :/*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("div",{style:{background:"#E8F5EB",borderRadius:12,padding:"10px 14px",marginBottom:12,fontSize:13,color:"#065F46",fontWeight:600}},
+            "\xf0\x9f\x90\xbe "+inact30.length+" clientes sin visitar en 30 d\xedas \xb7 Toca Enviar en cada uno"
+          ),
+          inact30.map(function(c){return /*#__PURE__*/React.createElement(CamCard,{key:c.id,cli:c,msg:msgInact30(c),label:"Inactivo 30+ d\xedas",color:"#1A5C47",icon:"\xf0\x9f\x90\xbe"});})
+        )
+    ),
+    tab==="inact60"&&(inact60.length===0
+      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}},"\xf0\x9f\x8e\x89 Nadie lleva 60 d\xedas inactivo")
+      :/*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("div",{style:{background:"#FEE2E2",borderRadius:12,padding:"10px 14px",marginBottom:12,fontSize:13,color:"#991B1B",fontWeight:600}},
+            "\xf0\x9f\x94\xb4 "+inact60.length+" clientes en riesgo de perderse \xb7 Contacta hoy"
+          ),
+          inact60.map(function(c){return /*#__PURE__*/React.createElement(CamCard,{key:c.id,cli:c,msg:msgInact60(c),label:"Inactivo 60+ d\xedas",color:"#DC2626",icon:"\xf0\x9f\x94\xb4"});})
+        )
+    ),
+    tab==="bday"&&(bdayM.length===0
+      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}},"\xf0\x9f\x8e\x82 No hay cumplea\xf1os este mes")
+      :/*#__PURE__*/React.createElement("div",null,
+          /*#__PURE__*/React.createElement("div",{style:{background:"#EDE9FE",borderRadius:12,padding:"10px 14px",marginBottom:12,fontSize:13,color:"#5B21B6",fontWeight:600}},
+            "\xf0\x9f\x8e\x82 "+bdayM.length+" mascotas de cumplea\xf1os este mes"
+          ),
+          bdayM.map(function(p){var c=clients.find(function(cl){return cl.id===p.clientId;})||{};return c.phone?/*#__PURE__*/React.createElement(CamCard,{key:p.id,cli:c,pet:p,msg:msgBdayM(c,p),label:"Cumplea\xf1os este mes",color:"#7C3AED",icon:"\xf0\x9f\x8e\x82"}):null;})
+        )
+    )
+  );
 }
+
+
 function ConfigScreen(_ref44) {
   var toast = _ref44.toast,
     commission = _ref44.commission,
@@ -8582,6 +8402,245 @@ function RendimientoScreen(_ref_rend) {
   );
 }
 
+function ProveedoresScreen(_ref_prov) {
+  var toast=_ref_prov.toast;
+  var _a=useState([]),_aa=_slicedToArray(_a,2),provs=_aa[0],setProvs=_aa[1];
+  var _b=useState(false),_ba=_slicedToArray(_b,2),showNew=_ba[0],setShowNew=_ba[1];
+  var _c=useState(null),_ca=_slicedToArray(_c,2),editP=_ca[0],setEditP=_ca[1];
+  var _d=useState({name:"",phone:"",products:"",notes:""}),_da=_slicedToArray(_d,2),pf=_da[0],setPf=_da[1];
+  var _e=useState(false),_ea=_slicedToArray(_e,2),saving=_ea[0],setSaving=_ea[1];
+  var pu=function(k,v){setPf(function(prev){return Object.assign({},prev,(_k={},_k[k]=v,_k));var _k;});};
+  useEffect(function(){if(!db)return;return db.collection("suppliers").onSnapshot(function(s){setProvs(s.docs.map(function(d){return Object.assign({id:d.id},d.data());}));});},[]); 
+  var save=function(){
+    if(!pf.name.trim()){toast("El nombre es obligatorio");return;}
+    setSaving(true);
+    var data={name:pf.name.trim(),phone:pf.phone.trim(),products:pf.products.trim(),notes:pf.notes.trim(),updatedAt:today()};
+    var p=editP?db.collection("suppliers").doc(editP.id).update(data):db.collection("suppliers").add(Object.assign({},data,{createdAt:today()}));
+    p.then(function(){toast(editP?"Proveedor actualizado":"Proveedor creado");setShowNew(false);setEditP(null);setPf({name:"",phone:"",products:"",notes:""});setSaving(false);}).catch(function(e){toast("Error: "+e.message);setSaving(false);});
+  };
+  var del=function(p){if(!window.confirm("Eliminar proveedor "+p.name+"?"))return;db.collection("suppliers").doc(p.id).delete().then(function(){toast("Eliminado");});};
+  var openEdit=function(p){setEditP(p);setPf({name:p.name||"",phone:p.phone||"",products:p.products||"",notes:p.notes||""});setShowNew(true);};
+  var IS2={width:"100%",padding:"11px 14px",border:"1.5px solid #E5E7EB",borderRadius:10,fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
+  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Inventario"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Proveedores"),
+      /*#__PURE__*/React.createElement("div",{style:{marginTop:8,fontSize:13,color:"rgba(242,196,206,.7)"}},provs.length+" proveedor"+(provs.length!==1?"es":"")+" registrado"+(provs.length!==1?"s":""))
+    ),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){setEditP(null);setPf({name:"",phone:"",products:"",notes:""});setShowNew(true);},style:{width:"100%",padding:15,background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:16,boxShadow:"0 4px 14px rgba(13,61,46,.3)"}},
+      /*#__PURE__*/React.createElement("i",{className:"ti ti-plus",style:{fontSize:20}}),"Agregar proveedor"
+    ),
+    provs.length===0
+      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",color:"#9CA3AF"}},
+          /*#__PURE__*/React.createElement("i",{className:"ti ti-truck",style:{fontSize:44,display:"block",marginBottom:12}}),
+          "Sin proveedores registrados"
+        )
+      :/*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+          provs.map(function(p){
+            return /*#__PURE__*/React.createElement("div",{key:p.id,style:{background:"#fff",borderRadius:16,border:"1px solid #F0F0F0",padding:16,boxShadow:"0 2px 8px rgba(0,0,0,.05)"}},
+              /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:12,marginBottom:p.products?10:0}},
+                /*#__PURE__*/React.createElement("div",{style:{width:44,height:44,borderRadius:12,background:"#E8F5EB",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},
+                  /*#__PURE__*/React.createElement("i",{className:"ti ti-truck",style:{color:"#1A5C47",fontSize:22}})
+                ),
+                /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+                  /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:700,color:"#111827"}},p.name),
+                  p.phone&&/*#__PURE__*/React.createElement("a",{href:"https://wa.me/57"+p.phone.replace(/[^0-9]/g,""),target:"_blank",style:{fontSize:13,color:"#1A5C47",textDecoration:"none",display:"flex",alignItems:"center",gap:4,marginTop:2}},
+                    /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:15}}),p.phone
+                  ),
+                  p.products&&/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280",marginTop:4,lineHeight:1.4}},p.products),
+                  p.notes&&/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#9CA3AF",marginTop:4,fontStyle:"italic"}},p.notes)
+                ),
+                /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,flexShrink:0}},
+                  /*#__PURE__*/React.createElement("button",{onClick:function(){openEdit(p);},style:{padding:"7px 10px",background:"#EFF6FF",color:"#1D4ED8",border:"none",borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer"}},/*#__PURE__*/React.createElement("i",{className:"ti ti-edit"})),
+                  /*#__PURE__*/React.createElement("button",{onClick:function(){del(p);},style:{padding:"7px 10px",background:"#FEE2E2",color:"#DC2626",border:"none",borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer"}},/*#__PURE__*/React.createElement("i",{className:"ti ti-trash"}))
+                )
+              )
+            );
+          })
+        ),
+    showNew&&/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",flexDirection:"column",justifyContent:"flex-end"}},
+      /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:"28px 28px 0 0",padding:"28px 20px 40px",maxHeight:"85vh",overflowY:"auto"}},
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800}},editP?"Editar proveedor":"Nuevo proveedor"),
+          /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);setEditP(null);},style:{background:"#F3F4F6",border:"none",borderRadius:10,padding:"8px 12px",cursor:"pointer",fontSize:16}},/*#__PURE__*/React.createElement("i",{className:"ti ti-x"}))
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:12}},
+          /*#__PURE__*/React.createElement("div",null,/*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Nombre *"),/*#__PURE__*/React.createElement("input",{value:pf.name,onChange:function(e){pu("name",e.target.value);},placeholder:"Nombre del proveedor",style:IS2})),
+          /*#__PURE__*/React.createElement("div",null,/*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"WhatsApp / Telefono"),/*#__PURE__*/React.createElement("input",{value:pf.phone,onChange:function(e){pu("phone",e.target.value);},placeholder:"Ej: 3101234567",style:IS2})),
+          /*#__PURE__*/React.createElement("div",null,/*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Productos que vende"),/*#__PURE__*/React.createElement("textarea",{value:pf.products,onChange:function(e){pu("products",e.target.value);},placeholder:"Ej: Hills Science Diet, Royal Canin, accesorios...",style:Object.assign({},IS2,{minHeight:70,resize:"vertical"})})),
+          /*#__PURE__*/React.createElement("div",null,/*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Notas"),/*#__PURE__*/React.createElement("textarea",{value:pf.notes,onChange:function(e){pu("notes",e.target.value);},placeholder:"Condiciones de pago, dias de entrega...",style:Object.assign({},IS2,{minHeight:60,resize:"vertical"})})),
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:10,marginTop:4}},
+            /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);setEditP(null);},style:{flex:1,padding:14,background:"#F3F4F6",color:"#374151",border:"1px solid #E5E7EB",borderRadius:14,fontSize:14,fontWeight:600,cursor:"pointer"}},"Cancelar"),
+            /*#__PURE__*/React.createElement("button",{onClick:save,disabled:saving,style:{flex:2,padding:14,background:saving?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",boxShadow:saving?"none":"0 4px 14px rgba(13,61,46,.3)"}},saving?"Guardando...":editP?"Actualizar":"Agregar")
+          )
+        )
+      )
+    )
+  );
+}
+
+function generarReportePDF(mth,appts,sales,expenses,clients,pets) {
+  var completed=appts.filter(function(a){var st=a.status||a.estado||"";var dt=a.date||a.fecha||"";return st==="completado"&&dt.startsWith(mth);});
+  var mthSales=sales.filter(function(s){return(s.date||"").startsWith(mth);});
+  var mthExp=expenses.filter(function(e){return(e.date||"").startsWith(mth);});
+  var totalSpa=completed.reduce(function(s,a){return s+Number(a.price||a.precio||0);},0);
+  var totalStore=mthSales.reduce(function(s,x){return s+Number(x.total||0);},0);
+  var totalExp=mthExp.reduce(function(s,e){return s+Number(e.amount||0);},0);
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Reporte '+mth+'</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:20px;color:#111;}h1{color:#0D3D2E;border-bottom:3px solid #0D3D2E;padding-bottom:10px;}h2{color:#1A5C47;margin-top:24px;}table{width:100%;border-collapse:collapse;margin:12px 0;}th{background:#0D3D2E;color:#fff;padding:8px 12px;text-align:left;}td{padding:8px 12px;border-bottom:1px solid #eee;}.total{font-weight:700;font-size:18px;}.green{color:#1A5C47;}.red{color:#DC2626;}.header{display:flex;justify-content:space-between;align-items:center;}.badge{background:#F2C4CE;color:#0D3D2E;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}@media print{button{display:none;}}</style></head><body>';
+  html+='<div class="header"><div><h1>PawSociety Pet Store</h1><p>Reporte mensual: '+mth+'</p></div><div class="badge">Little kings, big love.</div></div>';
+  html+='<h2>Resumen financiero</h2><table><tr><th>Concepto</th><th>Monto</th></tr>';
+  html+='<tr><td>Ingresos Spa ('+completed.length+' banos)</td><td class="green">$'+totalSpa.toLocaleString('es-CO')+'</td></tr>';
+  html+='<tr><td>Ingresos Tienda ('+mthSales.length+' ventas)</td><td class="green">$'+totalStore.toLocaleString('es-CO')+'</td></tr>';
+  html+='<tr><td><b>Total ingresos</b></td><td class="total green">$'+(totalSpa+totalStore).toLocaleString('es-CO')+'</td></tr>';
+  html+='<tr><td>Total gastos</td><td class="red">-$'+totalExp.toLocaleString('es-CO')+'</td></tr>';
+  html+='<tr><td><b>Utilidad neta</b></td><td class="total">$'+(totalSpa+totalStore-totalExp).toLocaleString('es-CO')+'</td></tr>';
+  html+='</table>';
+  if(completed.length>0){html+='<h2>Servicios de spa</h2><table><tr><th>Fecha</th><th>Cliente</th><th>Mascota</th><th>Servicios</th><th>Valor</th></tr>';completed.slice(0,30).forEach(function(a){var cli=clients.find(function(c){return c.id===a.clientId;});var pet=pets.find(function(p){return p.id===a.petId;});html+='<tr><td>'+(a.date||a.fecha||"")+'</td><td>'+(cli?cli.name:"")+'</td><td>'+(pet?pet.name:"")+'</td><td>'+((a.services||a.servicios||[]).join(", "))+'</td><td>$'+Number(a.price||a.precio||0).toLocaleString('es-CO')+'</td></tr>';});html+='</table>';}
+  if(mthSales.length>0){html+='<h2>Ventas tienda</h2><table><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Total</th></tr>';mthSales.slice(0,20).forEach(function(s){var cli=clients.find(function(c){return c.id===s.clientId;});html+='<tr><td>'+(s.date||"")+'</td><td>'+(cli?cli.name:"Directo")+'</td><td>'+((s.items||[]).map(function(i){return i.qty+"x "+i.name;}).join(", "))+'</td><td>$'+Number(s.total||0).toLocaleString('es-CO')+'</td></tr>';});html+='</table>';}
+  html+='<p style="margin-top:40px;font-size:11px;color:#9CA3AF;">Generado el '+new Date().toLocaleDateString('es-CO')+' - PawSociety Pet Store - Armenia, Quindio</p>';
+  html+='</body></html>';
+  var w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();setTimeout(function(){w.print();},500);}
+}
+
+function PaquetesScreen(_ref_pkg) {
+  var clients=_ref_pkg.clients,appts=_ref_pkg.appts,toast=_ref_pkg.toast;
+  var _a=useState([]),_aa=_slicedToArray(_a,2),pkgs=_aa[0],setPkgs=_aa[1];
+  var _b=useState(false),_ba=_slicedToArray(_b,2),showNew=_ba[0],setShowNew=_ba[1];
+  var _c=useState(""),_ca=_slicedToArray(_c,2),cliId=_ca[0],setCliId=_ca[1];
+  var _d=useState("3"),_da=_slicedToArray(_d,2),qty=_da[0],setQty=_da[1];
+  var _e=useState(""),_ea=_slicedToArray(_e,2),price=_ea[0],setPrice=_ea[1];
+  var _f=useState(false),_fa=_slicedToArray(_f,2),saving=_fa[0],setSaving=_fa[1];
+  useEffect(function(){
+    if(!db)return;
+    return db.collection("packages").orderBy("createdAt","desc").onSnapshot(function(s){
+      setPkgs(s.docs.map(function(d){return Object.assign({id:d.id},d.data());}));
+    });
+  },[]);
+  var save=function(){
+    if(!cliId||!price){toast("Completa todos los campos");return;}
+    setSaving(true);
+    var n=Number(qty)||3;
+    db.collection("packages").add({
+      clientId:cliId,total:n,remaining:n,price:Number(price),
+      createdAt:today(),status:"activo"
+    }).then(function(){toast("Paquete creado!");setShowNew(false);setCliId("");setPrice("");setQty("3");setSaving(false);})
+    .catch(function(e){toast("Error: "+e.message);setSaving(false);});
+  };
+  var useOne=function(pkg){
+    if(pkg.remaining<=0){toast("Paquete agotado");return;}
+    if(!window.confirm("Usar 1 ba\xf1o del paquete? Quedan "+(pkg.remaining-1)+" despu\xe9s."))return;
+    db.collection("packages").doc(pkg.id).update({
+      remaining:pkg.remaining-1,
+      status:pkg.remaining-1===0?"completado":"activo"
+    }).then(function(){toast("Ba\xf1o usado. Quedan "+(pkg.remaining-1));});
+  };
+  var IS2={width:"100%",padding:"11px 14px",border:"1.5px solid #E5E7EB",borderRadius:10,fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
+  var active=pkgs.filter(function(p){return p.status==="activo";});
+  var done=pkgs.filter(function(p){return p.status!=="activo";});
+  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Fidelizaci\xf3n"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Paquetes Prepagados"),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:10,marginTop:12}},
+        /*#__PURE__*/React.createElement("div",{style:{background:"rgba(242,196,206,.12)",borderRadius:10,padding:"8px 14px",textAlign:"center"}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800,color:"#fff"}},active.length),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)"}},"Activos")
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{background:"rgba(242,196,206,.12)",borderRadius:10,padding:"8px 14px",textAlign:"center"}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800,color:"#F2C4CE"}},fmtM(active.reduce(function(s,p){return s+Number(p.price||0);},0))),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)"}},"Prepagado")
+        )
+      )
+    ),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(true);},style:{width:"100%",padding:15,background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:16,boxShadow:"0 4px 14px rgba(13,61,46,.3)"}},
+      /*#__PURE__*/React.createElement("i",{className:"ti ti-plus",style:{fontSize:20}}),"Vender paquete"
+    ),
+    active.length>0&&/*#__PURE__*/React.createElement("div",{style:{marginBottom:16}},
+      /*#__PURE__*/React.createElement(STit,null,"Activos ("+active.length+")"),
+      active.map(function(pkg){
+        var cli=clients.find(function(c){return c.id===pkg.clientId;});
+        var pct=Math.round((pkg.total-pkg.remaining)/pkg.total*100);
+        return /*#__PURE__*/React.createElement("div",{key:pkg.id,style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:16,marginBottom:10,boxShadow:"0 2px 8px rgba(0,0,0,.05)"}},
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}},
+            /*#__PURE__*/React.createElement("div",null,
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:700}},cli?cli.name:"Cliente"),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},pkg.total+" ba\xf1os \xb7 "+fmtM(pkg.price)+" prepagado")
+            ),
+            /*#__PURE__*/React.createElement("div",{style:{textAlign:"right"}},
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800,color:"#1A5C47"}},pkg.remaining),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#9CA3AF"}},"ba\xf1os restantes")
+            )
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{background:"#F3F4F6",borderRadius:8,height:10,marginBottom:12,overflow:"hidden"}},
+            /*#__PURE__*/React.createElement("div",{style:{width:pct+"%",height:"100%",background:"#1A5C47",borderRadius:8,transition:"width .4s"}})
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8}},
+            /*#__PURE__*/React.createElement("button",{onClick:function(){useOne(pkg);},style:{flex:1,padding:"10px 14px",background:"#E8F5EB",color:"#065F46",border:"none",borderRadius:10,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}},
+              /*#__PURE__*/React.createElement("i",{className:"ti ti-check"}),"Usar 1 ba\xf1o"
+            ),
+            cli&&cli.phone&&/*#__PURE__*/React.createElement("a",{
+              href:"https://wa.me/57"+cli.phone.replace(/[^0-9]/g,"")+"?text="+encodeURIComponent("Hola "+cli.name+"! Te recordamos que tienes "+pkg.remaining+" bano"+(pkg.remaining!==1?"s":"")+" disponible"+(pkg.remaining!==1?"s":"")+" en tu paquete PawSociety. Agendemos cuando quieras! 317 469 9764"),
+              target:"_blank",
+              style:{padding:"10px 14px",background:"#25D366",color:"#fff",textDecoration:"none",borderRadius:10,fontSize:13,fontWeight:700,display:"flex",alignItems:"center",gap:4}
+            },/*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp"}),"WA")
+          )
+        );
+      })
+    ),
+    done.length>0&&/*#__PURE__*/React.createElement("div",null,
+      /*#__PURE__*/React.createElement(STit,null,"Completados ("+done.length+")"),
+      done.slice(0,5).map(function(pkg){
+        var cli=clients.find(function(c){return c.id===pkg.clientId;});
+        return /*#__PURE__*/React.createElement("div",{key:pkg.id,style:{background:"#F9FAFB",borderRadius:12,padding:"12px 14px",marginBottom:8,opacity:0.7,border:"1px solid #E5E7EB"}},
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between"}},
+            /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:600}},cli?cli.name:""),
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:11,background:"#E8F5EB",color:"#065F46",borderRadius:8,padding:"2px 8px",fontWeight:700}},"\xe2\x9c\x93 Completado")
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#9CA3AF",marginTop:2}},pkg.total+" ba\xf1os \xb7 "+fmtM(pkg.price))
+        );
+      })
+    ),
+    showNew&&/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",flexDirection:"column",justifyContent:"flex-end"}},
+      /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:"28px 28px 0 0",padding:"28px 20px 40px"}},
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:800}},"Nuevo paquete prepagado"),
+          /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);},style:{background:"#F3F4F6",border:"none",borderRadius:10,padding:"8px 12px",cursor:"pointer"}},/*#__PURE__*/React.createElement("i",{className:"ti ti-x"}))
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:12}},
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Cliente"),
+            /*#__PURE__*/React.createElement("select",{value:cliId,onChange:function(e){setCliId(e.target.value);},style:IS2},
+              /*#__PURE__*/React.createElement("option",{value:""},"Selecciona cliente..."),
+              clients.map(function(c){return /*#__PURE__*/React.createElement("option",{key:c.id,value:c.id},c.name+" \xb7 "+c.phone);})
+            )
+          ),
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Tipo de paquete"),
+            /*#__PURE__*/React.createElement("select",{value:qty,onChange:function(e){setQty(e.target.value);},style:IS2},
+              /*#__PURE__*/React.createElement("option",{value:"3"},"3 ba\xf1os (10% descuento)"),
+              /*#__PURE__*/React.createElement("option",{value:"5"},"5 ba\xf1os (15% descuento)"),
+              /*#__PURE__*/React.createElement("option",{value:"10"},"10 ba\xf1os (20% descuento)")
+            )
+          ),
+          /*#__PURE__*/React.createElement("div",null,
+            /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",marginBottom:6,display:"block"}},"Precio total cobrado"),
+            /*#__PURE__*/React.createElement("input",{type:"number",value:price,onChange:function(e){setPrice(e.target.value);},placeholder:"Ej: 150000",style:IS2})
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{background:"#E8F5EB",borderRadius:10,padding:"10px 14px",fontSize:12,color:"#065F46"}},
+            /*#__PURE__*/React.createElement("i",{className:"ti ti-info-circle",style:{marginRight:6}}),
+            "Cuando el cliente venga a cada ba\xf1o, toca Usar 1 ba\xf1o para descontarlo del paquete."
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:10}},
+            /*#__PURE__*/React.createElement("button",{onClick:function(){setShowNew(false);},style:{flex:1,padding:14,background:"#F3F4F6",color:"#374151",border:"1px solid #E5E7EB",borderRadius:14,fontSize:14,fontWeight:600,cursor:"pointer"}},"Cancelar"),
+            /*#__PURE__*/React.createElement("button",{onClick:save,disabled:saving,style:{flex:2,padding:14,background:saving?"#9CA3AF":"linear-gradient(135deg,#1A5C47,#0D3D2E)",color:"#fff",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",boxShadow:saving?"none":"0 4px 14px rgba(13,61,46,.3)"}},saving?"Creando...":"Crear paquete")
+          )
+        )
+      )
+    )
+  );
+}
+
 function App() {
   var _useState153 = useState(false),
     _useState154 = _slicedToArray(_useState153, 2),
@@ -8863,15 +8922,20 @@ function App() {
       flex: 1
     }
   }, curNav.label), alertCount > 0 && /*#__PURE__*/React.createElement("div", {
+    onClick: function onClick() { setView("alertas"); },
     style: {
       background: "#EF4444",
       color: "#fff",
       borderRadius: 12,
       padding: "3px 10px",
       fontSize: 12,
-      fontWeight: 700
+      fontWeight: 700,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      gap: 4
     }
-  }, alertCount), /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("i", {className: "ti ti-bell", style: {fontSize: 13}}), alertCount, " alertas"), /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setMod("sale");
     },
@@ -8948,11 +9012,14 @@ function App() {
     toast: showToast,
     clients: clients,
     pets: pets
-  }), view === "rendimiento" && /*#__PURE__*/React.createElement(RendimientoScreen,{appts:appts,clients:clients,pets:pets}),
+  }), view === "paquetes" && /*#__PURE__*/React.createElement(PaquetesScreen,{clients:clients,appts:appts,toast:showToast}),
+  view === "proveedores" && /*#__PURE__*/React.createElement(ProveedoresScreen,{toast:showToast}),
+  view === "rendimiento" && /*#__PURE__*/React.createElement(RendimientoScreen,{appts:appts,clients:clients,pets:pets}),
   view === "alertas" && /*#__PURE__*/React.createElement(AlertasScreen, {
     pets: pets,
     clients: clients,
     appts: appts,
+    sales: sales,
     lastBath: lastBath,
     toast: showToast
   }), view === "campanas" && /*#__PURE__*/React.createElement(CampanasScreen, {
