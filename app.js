@@ -7523,11 +7523,11 @@ function AlertasScreen(_ref42) {
       
       if(loy.hasFree&&!alreadySent&&!hasUpcomingAppt)loyal.push({pet:p,cli:cli,days:days});
       if(p.birthday&&isBdayToday(p.birthday))bday.push({pet:p,cli:cli});
-      if(!hasUpcomingAppt){
-      if(!lb||days>=60)due60.push({pet:p,cli:cli,days:days,sent:alreadySent});
-      else if(days>=35)due35.push({pet:p,cli:cli,days:days,sent:alreadySent});
-      else if(days>=28)due28.push({pet:p,cli:cli,days:days,sent:alreadySent});
-      else if(days>=22&&days<28)preSoon.push({pet:p,cli:cli,days:days,sent:alreadySent});
+      if(!hasUpcomingAppt&&!alreadySent){
+      if(!lb||days>=60)due60.push({pet:p,cli:cli,days:days});
+      else if(days>=35)due35.push({pet:p,cli:cli,days:days});
+      else if(days>=28)due28.push({pet:p,cli:cli,days:days});
+      else if(days>=22&&days<28)preSoon.push({pet:p,cli:cli,days:days});
       }
     }catch(e){}
   });
