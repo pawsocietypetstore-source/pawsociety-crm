@@ -7432,14 +7432,55 @@ function FinanzasScreen(_ref40) {
   }))));
 }
 function AlertasScreen(_ref42) {
-  var pets=_ref42.pets,clients=_ref42.clients,appts=_ref42.appts,sales=_ref42.sales||[],lastBath=_ref42.lastBath,toast=_ref42.toast;
-  var _st=useState({}),_sta=_slicedToArray(_st,2),sent=_st[0],setSent=_sta[1];
+  var pets=_ref42.pets,clients=_ref42.clients,appts=_ref42.appts,sales=_ref42.sales||[],lastBath=_ref42.lastBath,toast=_ref42.toast,db=_ref42.db||null;
+  var _initSent=(function(){try{return JSON.parse(localStorage.getItem("paws_alertas_sent")||"{}");}catch(e){return{};}})();
+  var _st=useState(_initSent),_sta=_slicedToArray(_st,2),sent=_st[0],setSent=_sta[1];
+  var _mdp=useState(null),_mdpa=_slicedToArray(_mdp,2),manualPid=_mdpa[0],setManualPid=_mdpa[1];
+  var _mdd=useState(today()),_mdda=_slicedToArray(_mdd,2),manualDate=_mdda[0],setManualDate=_mdda[1];
 
-  // Load sent status from localStorage
+  // Load sent status from Firebase (shared) + localStorage (fallback)
   var SENT_KEY="paws_alertas_sent";
   var loadSent=function(){try{return JSON.parse(localStorage.getItem(SENT_KEY)||"{}");}catch(e){return{};}};
-  var markSent=function(pid){var s=Object.assign({},loadSent());s[pid]=today();localStorage.setItem(SENT_KEY,JSON.stringify(s));setSent(s);toast("Marcado como enviado \xe2\x9c\x93");};
-  
+  var markSent=function(pid){
+    var dateStr=today();
+    var s=Object.assign({},sent);s[pid]=dateStr;
+    setSent(s);
+    localStorage.setItem(SENT_KEY,JSON.stringify(s));
+    if(db){try{db.collection("config").doc("alertas_sent").get().then(function(doc){var existing=doc.exists?doc.data():{};existing[pid]={sentDate:dateStr,sentBy:(window.__pawUser||"equipo")};db.collection("config").doc("alertas_sent").set(existing);}).catch(function(e){});}catch(e){}}
+    toast("\u2705 Alerta enviada el "+dateStr);
+  };
+  useEffect(function(){
+    if(!db)return;
+    var unsub=db.collection("config").doc("alertas_sent")
+      .onSnapshot(function(doc){
+        if(!doc.exists)return;
+        var data=doc.data();
+        var map={};
+        Object.keys(data).forEach(function(pid){
+          var v=data[pid];
+          if(typeof v==="string") map[pid]={sentDate:v,sentBy:"equipo"};
+          else if(v&&v.sentDate) map[pid]={sentDate:v.sentDate,sentBy:v.sentBy||"equipo"};
+        });
+        setSent(map);
+        localStorage.setItem(SENT_KEY,JSON.stringify(map));
+      },function(e){console.warn("alertas_sent:",e);});
+    return function(){unsub();};
+  },[]);
+  var markSentManual=function(pid,dateStr){
+    var s=Object.assign({},sent);
+    s[pid]={sentDate:dateStr,sentBy:(window.__pawUser||"equipo")};
+    setSent(s);
+    localStorage.setItem(SENT_KEY,JSON.stringify(s));
+    if(db){try{
+      db.collection("config").doc("alertas_sent").get().then(function(doc){
+        var existing=doc.exists?doc.data():{};
+        existing[pid]={sentDate:dateStr,sentBy:(window.__pawUser||"equipo")};
+        db.collection("config").doc("alertas_sent").set(existing);
+      }).catch(function(e){});
+    }catch(e){}}
+    setManualPid(null);
+    toast("\u2705 Marcado como enviado el "+dateStr);
+  };
   var sentMap=loadSent();
 
   var msgSuave=function(cli,pet,days){return "Hola "+cli.name+"! "+String.fromCodePoint(128062)+"\n\n"+pet.name+" ya lleva "+days+" d\u00EDas desde su \u00FAltimo ba\u00F1o y en PawSociety queremos que siga sintie\u0301ndose como la realeza que es "+String.fromCodePoint(128081)+String.fromCodePoint(128054)+"\n\n\u00BFLo agendamos esta semana? Tenemos horarios disponibles y estamos listos para mimarlo como se merece \u2728"+String.fromCodePoint(128705)+"\n\n"+String.fromCodePoint(128205)+" Cra 19 #22N-23, Local 4 \u00B7 Armenia\n\u00A1Respondenos y lo separamos! "+String.fromCodePoint(128154)
@@ -7471,14 +7512,23 @@ function AlertasScreen(_ref42) {
       if(!cli||!cli.phone)return;
       var days=lb?dBetween(lb,today()):999;
       var loy=getLoyalty(p.id,appts);
-      var alreadySent=sentMap[p.id]===today();
+      var alreadySent=!!(sent[p.id]);
+      // Check if pet has upcoming appointment (pending or scheduled, today or future)
+      var todayStr=today();
+      var hasUpcomingAppt=appts.some(function(a){
+        return a.petId===p.id
+          && (a.status==="pendiente"||a.estado==="pendiente"||a.status==="agendado"||a.estado==="agendado")
+          && (a.date||a.fecha||"")>=todayStr;
+      });
       
-      if(loy.hasFree&&!alreadySent)loyal.push({pet:p,cli:cli,days:days});
+      if(loy.hasFree&&!alreadySent&&!hasUpcomingAppt)loyal.push({pet:p,cli:cli,days:days});
       if(p.birthday&&isBdayToday(p.birthday))bday.push({pet:p,cli:cli});
+      if(!hasUpcomingAppt){
       if(!lb||days>=60)due60.push({pet:p,cli:cli,days:days,sent:alreadySent});
       else if(days>=35)due35.push({pet:p,cli:cli,days:days,sent:alreadySent});
       else if(days>=28)due28.push({pet:p,cli:cli,days:days,sent:alreadySent});
       else if(days>=22&&days<28)preSoon.push({pet:p,cli:cli,days:days,sent:alreadySent});
+      }
     }catch(e){}
   });
 
@@ -7486,7 +7536,7 @@ function AlertasScreen(_ref42) {
     var item=_ref_alc.item,msg=_ref_alc.msg,color=_ref_alc.color,label=_ref_alc.label,icon=_ref_alc.icon,urgent=_ref_alc.urgent;
     var p=item.pet,c=item.cli,days=item.days;
     var waNum=c&&c.phone?"57"+c.phone.replace(/[^0-9]/g,""):"";
-    var isSent=sentMap[p.id]===today();
+    var _sentRec=sent[p.id]||null; var sentDate=_sentRec&&typeof _sentRec==="object"?_sentRec.sentDate:_sentRec||null; var sentBy=_sentRec&&typeof _sentRec==="object"?(_sentRec.sentBy||"equipo"):null; var isSent=!!sentDate;
     return /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1.5px solid "+(isSent?"#E5E7EB":color),padding:"12px 14px",marginBottom:10,opacity:isSent?0.6:1,boxShadow:isSent?"none":"0 2px 8px rgba(0,0,0,.06)"}},
       /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:8}},
         /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:"50%",background:color+"22",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}},icon),
@@ -7507,10 +7557,16 @@ function AlertasScreen(_ref42) {
             });
             markSent(p.id);
           },style:{flex:1,padding:"9px 14px",background:isSent?"#D1FAE5":"#25D366",color:isSent?"#065F46":"#fff",border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}},
-          /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:18}}),isSent?"Reenviar":"Enviar por WhatsApp"
+          /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:18}}),isSent?"\uD83D\uDCE4 Reenviar":"\uD83D\uDCE4 Enviar por WhatsApp"
         ),
-        /*#__PURE__*/React.createElement("button",{onClick:function(){markSent(p.id);},style:{padding:"9px 14px",background:"#F3F4F6",color:"#6B7280",border:"none",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer"}},"\xbf Ya agend\xf3?")
-      )    );
+        /*#__PURE__*/React.createElement("button",{onClick:function(){setManualPid(p.id);setManualDate(today());},style:{padding:"9px 14px",background:"#EFF6FF",color:"#1D4ED8",border:"1px solid #BFDBFE",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}},"\uD83D\uDDD3\uFE0F Marcar enviado"),
+        /*#__PURE__*/React.createElement("button",{onClick:function(){markSent(p.id);},style:{padding:"9px 14px",background:"#F3F4F6",color:"#6B7280",border:"none",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer"}},"\u00BF Ya agend\u00F3?")
+      ),
+      isSent&&sentDate&&/*#__PURE__*/React.createElement("div",{style:{marginTop:8,padding:"5px 10px",background:"#ECFDF5",borderRadius:8,display:"flex",alignItems:"center",gap:6,fontSize:11,color:"#065F46"}},
+        /*#__PURE__*/React.createElement("i",{className:"ti ti-check",style:{fontSize:12,color:"#059669"}}),
+        "Enviado el "+sentDate+(sentDate===today()?" (hoy)":"")+(sentBy?" \u00B7 "+sentBy:"")
+      )
+    );
   };
 
   var Section=function(_ref_sec){
@@ -7530,7 +7586,18 @@ function AlertasScreen(_ref42) {
 
   var totalPendiente=due28.length+due35.length+due60.length+loyal.length+bday.length;
 
-  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+  var ManualDateModal=manualPid?/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"},onClick:function(){setManualPid(null);}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:16,padding:24,width:300,boxShadow:"0 20px 60px rgba(0,0,0,.3)"},onClick:function(e){e.stopPropagation();}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:16,fontWeight:700,marginBottom:4}},"\uD83D\uDDD3\uFE0F Marcar como enviado"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280",marginBottom:16}},"\u00BFCu\u00E1ndo se envi\u00F3 el mensaje?"),
+      /*#__PURE__*/React.createElement("input",{type:"date",value:manualDate,max:today(),onChange:function(e){setManualDate(e.target.value);},style:{width:"100%",padding:"10px 12px",border:"1.5px solid #E5E7EB",borderRadius:10,fontSize:14,marginBottom:16,boxSizing:"border-box"}}),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8}},
+        /*#__PURE__*/React.createElement("button",{onClick:function(){setManualPid(null);},style:{flex:1,padding:"10px",background:"#F3F4F6",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer"}},"Cancelar"),
+        /*#__PURE__*/React.createElement("button",{onClick:function(){if(manualDate)markSentManual(manualPid,manualDate);},style:{flex:1,padding:"10px",background:"#1A5C47",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:700,cursor:"pointer"}},"\u2705 Confirmar")
+      )
+    )
+  ):null;
+    return /*#__PURE__*/React.createElement(React.Fragment,null,ManualDateModal,/*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
     /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#071e14,#0D3D2E)",borderRadius:20,padding:20,marginBottom:16,color:"#fff",boxShadow:"0 8px 32px rgba(13,61,46,.35)"}},
       /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"rgba(242,196,206,.6)",marginBottom:4,letterSpacing:"1px",textTransform:"uppercase"}},"Centro de"),
       /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:800,fontFamily:"Georgia,serif"}},"Alertas & Mensajes"),
@@ -7600,7 +7667,7 @@ function AlertasScreen(_ref42) {
       /*#__PURE__*/React.createElement("div",{style:{fontSize:16,fontWeight:600,color:"#374151",marginBottom:8}},"Todo al d\xeda"),
       /*#__PURE__*/React.createElement("div",{style:{fontSize:13}},"No hay alertas pendientes por ahora.")
     )
-  );
+  ));
 }
 
 
@@ -8920,7 +8987,7 @@ function App() {
     toast = _useState190[0],
     setToast = _useState190[1];
   useEffect(function () {
-    var unsub=firebase.auth().onAuthStateChanged(function(user){if(user){setCurrentUser(user);setLogged(true);}else{setCurrentUser(null);setLogged(false);}});
+    var unsub=firebase.auth().onAuthStateChanged(function(user){if(user){setCurrentUser(user);setLogged(true);window.__pawUser=user&&(user.displayName||user.email||"equipo");}else{setCurrentUser(null);setLogged(false);}});
     return unsub;
   }, []);
   useEffect(function () {
@@ -9222,7 +9289,8 @@ function App() {
     appts: appts,
     sales: sales,
     lastBath: lastBath,
-    toast: showToast
+    toast: showToast,
+    db: db
   }), view === "campanas" && /*#__PURE__*/React.createElement(CampanasScreen, {
     clients: clients,
     pets: pets,
