@@ -77,7 +77,7 @@ var DEF_PRICES = [{
   name: "Perfume y acabado",
   price: 5000
 }];
-var EXPENSE_CATS = ["Arriendo", "Servicios públicos", "Salario", "Internet", "Insumos spa", "Compra inventario", "Marketing", "Transporte", "Contador", "Otros"];
+var EXPENSE_CATS = ["Arriendo","Servicios p\u00FAblicos","Salario / n\u00F3mina","Internet y tel\u00E9fono","Insumos spa","Compra inventario","Productos de limpieza","Marketing y publicidad","Transporte y domicilios","Contador / honorarios","Mantenimiento local","Empaques y bolsas","Gastos financieros","Imprevistos","Otros"];
 var NAV = [{
   id: "dashboard",
   icon: "home",
@@ -647,9 +647,9 @@ var SC = function SC(_ref0) {
   return /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
-      borderRadius: 14,
-      border: "1px solid #E5E7EB",
-      padding: 14,
+      borderRadius: 16,
+      border: "1px solid #F0F0F0",
+      padding: "16px 14px",
       borderLeft: "4px solid " + (accent || color)
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -3165,7 +3165,8 @@ function DashboardScreen(_ref22) {
     setView = _ref22.setView,
     openSale = _ref22.openSale,
     openAppt = _ref22.openAppt,
-    commission = _ref22.commission;
+    commission = _ref22.commission,
+    alertCount = _ref22.alertCount || 0;
   var _useState65 = useState(10),
     _useState66 = _slicedToArray(_useState65, 2),
     weekGoalBaths = _useState66[0],
@@ -3221,8 +3222,20 @@ function DashboardScreen(_ref22) {
   });
   var be = calcBE(mExp, spaI, storeI);
   var due = pets.filter(function (p) {
-    var lb = lastBath(p.id);
-    return !lb || dBetween(lb, today()) >= 28;
+    try{
+      var lb=lastBath(p.id);
+      if(lb&&dBetween(lb,today())<28)return false;
+      var _st={};
+      try{_st=JSON.parse(localStorage.getItem("paws_alertas_sent")||"{}");}catch(e){}
+      if(_st[p.id])return false;
+      var _td=today();
+      var _ha=appts.some(function(a){
+        return a.petId===p.id
+          &&(a.status==="pendiente"||a.estado==="pendiente"||a.status==="agendado"||a.estado==="agendado")
+          &&(a.date||a.fecha||"")>=_td;
+      });
+      return !_ha;
+    }catch(e){return false;}
   });
   var preSoon = pets.filter(function (p) {
     var lb = lastBath(p.id);
@@ -3236,9 +3249,9 @@ function DashboardScreen(_ref22) {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       background: "linear-gradient(135deg,#0D3D2E,#1A5C47)",
-      borderRadius: 16,
-      padding: 20,
-      marginBottom: 16,
+      borderRadius: 20,
+      padding: "24px 20px",
+      marginBottom: 20,
       color: "#fff"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -3255,10 +3268,10 @@ function DashboardScreen(_ref22) {
     }
   }, /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
     "PawSociety CRM",
-    due.length>0&&/*#__PURE__*/React.createElement("span",{
+    alertCount>0&&/*#__PURE__*/React.createElement("span",{
       onClick:function(){setView("alertas");},
       style:{background:"#EF4444",color:"#fff",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:800,cursor:"pointer",display:"flex",alignItems:"center",gap:5,boxShadow:"0 2px 8px rgba(239,68,68,.4)"}
-    },/*#__PURE__*/React.createElement("i",{className:"ti ti-bell-ringing",style:{fontSize:13}}),due.length+" alertas")
+    },/*#__PURE__*/React.createElement("i",{className:"ti ti-bell-ringing",style:{fontSize:13}}),alertCount+" alertas")
   )), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -3314,24 +3327,24 @@ function DashboardScreen(_ref22) {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
-      gap: 10,
-      marginTop: 12,
-      marginBottom: 14
+      gap: 12,
+      marginTop: 0,
+      marginBottom: 24
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: openSale,
     style: {
-      padding: "14px",
+      padding: "16px 14px",
       background: "#1A5C47",
       color: "#fff",
-      borderRadius: 12,
+      borderRadius: 14,
       border: "none",
-      fontSize: 13,
+      fontSize: 14,
       fontWeight: 700,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 7,
+      gap: 8,
       cursor: "pointer"
     }
   }, /*#__PURE__*/React.createElement("i", {
@@ -3524,7 +3537,7 @@ function DashboardScreen(_ref22) {
         marginTop: 3
       }
     }, salesPct >= 100 ? "Meta lograda!" : "Meta: " + fmtM(goalSales))))),
-    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #E5E7EB",padding:14,borderLeft:"4px solid #F2C4CE",marginTop:12}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:18,border:"1px solid #F0F0F0",padding:"20px 16px",borderLeft:"4px solid #F2C4CE",marginTop:0,marginBottom:4}},
       /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10,fontWeight:700}},"META DE HOY"),
       /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,alignItems:"start"}},
         /*#__PURE__*/React.createElement("div",null,
@@ -3601,12 +3614,12 @@ function DashboardScreen(_ref22) {
       fontSize: 12,
       color: "#065F46"
     }
-  }, "Estas metas aparecen en el dashboard cada semana para que puedas hacer seguimiento diario.")), /*#__PURE__*/React.createElement("div", {
+  }, "Estas metas aparecen en el dashboard cada semana para que puedas hacer seguimiento diario.")), /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:8,marginTop:4}},"Negocio"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
-      gap: 10,
-      marginBottom: 14
+      gap: 12,
+      marginBottom: 20
     }
   }, /*#__PURE__*/React.createElement(SC, {
     icon: "users",
@@ -3712,12 +3725,12 @@ function DashboardScreen(_ref22) {
       return s + Number(x.total || 0);
     }, 0);
     var ticketProm = clients.length > 0 ? Math.round(allSpend / clients.length) : 0;
-    return /*#__PURE__*/React.createElement("div", {
+    return /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:8,marginTop:4}},"An\u00E1lisis"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
-        gap: 10,
-        marginBottom: 14
+        gap: 12,
+        marginBottom: 20
       }
     }, /*#__PURE__*/React.createElement(SC, {
       icon: "repeat",
@@ -4048,7 +4061,24 @@ function ClientsScreen(_ref24) {
       }
     }, /*#__PURE__*/React.createElement("i", {
       className: "ti ti-arrow-left"
-    }), "Volver"), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    }), "Volver"), /*#__PURE__*/React.createElement("div",{style:{background:"#FFFBEB",borderRadius:14,border:"1.5px solid #F59E0B",padding:14,marginBottom:12}},
+  /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#92400E",fontWeight:700,textTransform:"uppercase",letterSpacing:"1px",marginBottom:8}},
+    "\uD83D\uDECD\uFE0F Oportunidades de venta"
+  ),
+  (function(){
+    var _cats=cs.map(function(s){return (s.category||s.tipo||"").toLowerCase();});
+    var _nBanos=ca.filter(function(a){return a.status==="completado"||a.estado==="completado";}).length;
+    var _tips=[];
+    if(!_cats.some(function(c){return c.indexOf("concentrado")>=0||c.indexOf("alimento")>=0;})) _tips.push("\uD83C\uDF56 Nunca ha comprado concentrado \u2014 ofr\u00E9celo despu\u00E9s del ba\u00F1o");
+    if(!_cats.some(function(c){return c.indexOf("shampoo")>=0||c.indexOf("grooming")>=0;})) _tips.push("\uD83E\uDDF4 Sin productos de grooming \u2014 muestra el shampoo premium");
+    if(!_cats.some(function(c){return c.indexOf("accesorio")>=0||c.indexOf("ropa")>=0;})) _tips.push("\uD83D\uDC5A Sin accesorios \u2014 muestra la colecci\u00F3n nueva");
+    if(_nBanos>=3&&cs.length===0) _tips.push("\uD83C\uDF81 "+_nBanos+" ba\u00F1os y nunca compra en tienda \u2014 momento ideal para combo spa+tienda");
+    if(_tips.length===0) return /*#__PURE__*/React.createElement("p",{style:{fontSize:12,color:"#6B7280",margin:0}},"\u2705 Activo en spa y tienda \u2014 \u00A1sigue as\u00ED!");
+    return /*#__PURE__*/React.createElement("div",null,
+      _tips.map(function(t,i){return /*#__PURE__*/React.createElement("div",{key:i,style:{fontSize:12,color:"#92400E",marginBottom:6,paddingLeft:4}},t);})
+    );
+  })()
+), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         alignItems: "center",
@@ -6696,7 +6726,7 @@ function FinanzasScreen(_ref40) {
     tab = _useState128[0],
     setTab = _useState128[1];
   var _cd=useState(today()),_cda=_slicedToArray(_cd,2),cashDate=_cda[0],setCashDate=_cda[1];
-  var _fMon=useState(finMes),_fMona=_slicedToArray(_fMon,2),finMes=_fMona[0],setFinMes=_fMona[1];
+  var _fMon=useState(thisM()),_fMona=_slicedToArray(_fMon,2),finMes=_fMona[0],setFinMes=_fMona[1];
   var _useState129 = useState(false),
     _useState130 = _slicedToArray(_useState129, 2),
     showE = _useState130[0],
@@ -6747,7 +6777,8 @@ function FinanzasScreen(_ref40) {
     }
   }, (function(){
     var _months=[];var _n=new Date();
-    for(var _i=0;_i<6;_i++){var _d=new Date(_n.getFullYear(),_n.getMonth()-_i,1);_months.push(_d.toISOString().slice(0,7));}
+    // 2 future + current + 5 past = 8 months total
+    for(var _i=2;_i>=-5;_i--){var _d=new Date(_n.getFullYear(),_n.getMonth()+_i,1);_months.push(_d.toISOString().slice(0,7));}
     return /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginBottom:10,overflowX:"auto",paddingBottom:4}},
       _months.map(function(m){return /*#__PURE__*/React.createElement("span",{key:m,onClick:function(){setFinMes(m);},
         style:{padding:"5px 12px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,
@@ -6787,7 +6818,7 @@ function FinanzasScreen(_ref40) {
       return s.date === cashDate;
     });
     var todayExp = expenses.filter(function (e) {
-      return e.date === today();
+      return e.date === cashDate;
     });
     var mesSpa=appts.filter(function(a){return (a.status==="completado"||a.estado==="completado")&&(a.date||a.fecha||"").startsWith(finMes);});
   var mesStore=sales.filter(function(s){return (s.date||"").startsWith(finMes);});
@@ -7098,7 +7129,25 @@ function FinanzasScreen(_ref40) {
     }
   }, /*#__PURE__*/React.createElement("i", {
     className: "ti ti-plus"
-  }), "Registrar gasto"), /*#__PURE__*/React.createElement("div", {
+  }), "Registrar gasto"),
+  /*#__PURE__*/React.createElement("button",{
+    onClick:function(){
+      // Copy fixed expenses from prev month to finMes
+      var _prevM=(function(){var p=finMes.split("-");var yr=Number(p[0]);var mo=Number(p[1])-1;if(mo<1){mo=12;yr--;}return yr+"-"+(mo<10?"0":"")+mo;})();
+      var _fixedPrev=expenses.filter(function(e){return e.type==="fijo"&&e.date&&e.date.startsWith(_prevM);});
+      var _alreadyHas=expenses.filter(function(e){return e.date&&e.date.startsWith(finMes);});
+      if(_fixedPrev.length===0){toast("No hay gastos fijos en el mes anterior");return;}
+      if(_alreadyHas.length>0&&!window.confirm("Ya hay gastos en "+finMes+". \u00BFCopiar igualmente los fijos del mes anterior?")){return;}
+      var _day1=finMes+"-01";
+      var _promises=_fixedPrev.map(function(e){
+        return fadd("expenses",{name:e.name,amount:e.amount,type:"fijo",category:e.category||"Otros",date:_day1,notes:"Copiado de "+_prevM});
+      });
+      Promise.all(_promises).then(function(){toast("\u2705 "+_fixedPrev.length+" gastos fijos copiados a "+finMes);});
+    },
+    style:{width:"100%",padding:"11px",background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"center",gap:6}
+  },/*#__PURE__*/React.createElement("i",{className:"ti ti-copy"}),
+  "Copiar gastos fijos del mes anterior"),
+  /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -7393,7 +7442,7 @@ function FinanzasScreen(_ref40) {
       opacity: .75,
       marginTop: 4
     }
-  }, be.total - be.fix - be.vari >= 0 ? "Utilidad" : "Pérdida")), /*#__PURE__*/React.createElement("div", {
+  }, be.total - be.fix - be.vari >= 0 ? "Utilidad" : "P\u00E9rdida")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -7504,6 +7553,9 @@ function AlertasScreen(_ref42) {
   // Compute alert lists
   var due28=[],due35=[],due60=[];
   var preSoon=[],loyal=[],bday=[];
+  var seguimiento=[],enRiesgo=[];
+  var ayer=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  var dosAyer=new Date(Date.now()-2*86400000).toISOString().slice(0,10);
   
   pets.forEach(function(p){
     try{
@@ -7523,6 +7575,10 @@ function AlertasScreen(_ref42) {
       
       if(loy.hasFree&&!alreadySent&&!hasUpcomingAppt)loyal.push({pet:p,cli:cli,days:days});
       if(p.birthday&&isBdayToday(p.birthday))bday.push({pet:p,cli:cli});
+      // F2: seguimiento (1-2 dias post bano)
+      if(lb&&days>=0&&days<=2&&!sent["seg_"+p.id]&&!alreadySent)seguimiento.push({pet:p,cli:cli,days:days});
+      // F4: en riesgo
+      if(days>=60&&!alreadySent&&!hasUpcomingAppt&&!enRiesgo.find(function(r){return r.cli.id===cli.id;}))enRiesgo.push({pet:p,cli:cli,days:days});
       if(!hasUpcomingAppt&&!alreadySent){
       if(!lb||days>=60)due60.push({pet:p,cli:cli,days:days});
       else if(days>=35)due35.push({pet:p,cli:cli,days:days});
@@ -7531,6 +7587,8 @@ function AlertasScreen(_ref42) {
       }
     }catch(e){}
   });
+
+  var msgSeguimiento=function(cli,pet){return "Hola "+cli.name+"! "+String.fromCodePoint(128054)+"\n\n\u00BFC\u00F3mo amaneci\u00F3 "+pet.name+" despu\u00E9s de su ba\u00F1o? "+String.fromCodePoint(129395)+"\u2728\n\nEn PawSociety queremos saber que nuestros peluditos quedaron felices "+String.fromCodePoint(128081)+"\n\n\u00BFNos cuentas c\u00F3mo qued\u00F3?\n\nSi quieren agendar el pr\u00F3ximo ba\u00F1o los esperamos "+String.fromCodePoint(128149)+"\n\n"+String.fromCodePoint(128205)+" Cra 19 #22N-23, Local 4 \u00B7 Armenia\nLittle kings, big love "+String.fromCodePoint(128154);};
 
   var AlCard=function(_ref_alc){
     var item=_ref_alc.item,msg=_ref_alc.msg,color=_ref_alc.color,label=_ref_alc.label,icon=_ref_alc.icon,urgent=_ref_alc.urgent;
@@ -7584,7 +7642,7 @@ function AlertasScreen(_ref42) {
     );
   };
 
-  var totalPendiente=due28.length+due35.length+due60.length+loyal.length+bday.length;
+  var totalPendiente=due28.length+due35.length+due60.length+loyal.length+bday.length+seguimiento.length+enRiesgo.length;
 
   var ManualDateModal=manualPid?/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"},onClick:function(){setManualPid(null);}},
     /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:16,padding:24,width:300,boxShadow:"0 20px 60px rgba(0,0,0,.3)"},onClick:function(e){e.stopPropagation();}},
@@ -7607,7 +7665,8 @@ function AlertasScreen(_ref42) {
       )
     ),
 
-    bday.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Cumplea\xf1os hoy",items:bday,color:"#7C3AED",icon:String.fromCodePoint(127874),msgFn:function(c,p){return msgBday(c,p);},label:"Cumplea\xf1os",desc:"Env\xedales un saludo especial hoy"}),
+    bday.length>0&&/*#__PURE__*/seguimiento.length>0&&/*#__PURE__*/React.createElement(Section,{title:"\uD83D\uDE0A Seguimiento post-ba\u00F1o",items:seguimiento,color:"#7C3AED",icon:String.fromCodePoint(129395),msgFn:function(c,p){return msgSeguimiento(c,p);},label:"Ba\u00F1o ayer",desc:"Pregunta c\u00F3mo amaneci\u00F3 la mascota"}),
+    React.createElement(Section,{title:"Cumplea\xf1os hoy",items:bday,color:"#7C3AED",icon:String.fromCodePoint(127874),msgFn:function(c,p){return msgBday(c,p);},label:"Cumplea\xf1os",desc:"Env\xedales un saludo especial hoy"}),
     
     loyal.length>0&&/*#__PURE__*/React.createElement(Section,{title:"Ba\xf1o gratis desbloqueado",items:loyal,color:"#D4945A",icon:String.fromCodePoint(127873),msgFn:function(c,p){return msgFree(c,p);},label:"6/6 completados",desc:"\xa1Tienen un ba\xf1o gratis esperando!"}),
 
@@ -7666,7 +7725,8 @@ function AlertasScreen(_ref42) {
       /*#__PURE__*/React.createElement("div",{style:{fontSize:48,marginBottom:12}},String.fromCodePoint(128062)),
       /*#__PURE__*/React.createElement("div",{style:{fontSize:16,fontWeight:600,color:"#374151",marginBottom:8}},"Todo al d\xeda"),
       /*#__PURE__*/React.createElement("div",{style:{fontSize:13}},"No hay alertas pendientes por ahora.")
-    )
+    ),
+    enRiesgo.length>0&&/*#__PURE__*/React.createElement(Section,{title:"\uD83D\uDEA8 Clientes en riesgo (+60 d\u00EDas)",items:enRiesgo,color:"#DC2626",icon:String.fromCodePoint(128680),msgFn:function(c,p,d){return msgReact(c,p,d);},label:"Sin visita +60 d\u00EDas",desc:"Reactiva con oferta especial"})
   ));
 }
 
@@ -9068,28 +9128,37 @@ function App() {
       return _done.length > 0 ? (_done[0].date || _done[0].fecha || null) : null;
     } catch(e) { return null; }
   };
-  var alertCount = function () {
+  var alertCount = (function () {
     try {
-      return pets.filter(function (p) {
-        var lb = lastBath(p.id);
-        return !lb || dBetween(lb, today()) >= 28;
-      }).length + pets.filter(function (p) {
-        try {
-          return getLoyalty(p.id, appts).hasFree;
-        } catch (e) {
-          return false;
-        }
-      }).length + pets.filter(function (p) {
-        try {
-          return p.birthday && isBdayToday(p.birthday);
-        } catch (e) {
-          return false;
-        }
-      }).length;
-    } catch (e) {
-      return 0;
-    }
-  }();
+      var _sent={};
+      try{_sent=JSON.parse(localStorage.getItem("paws_alertas_sent")||"{}");}catch(e){}
+      var _td=today();
+      // Misma logica que AlertasScreen
+      var _cnt=0;
+      pets.forEach(function(p){
+        try{
+          var lb=lastBath(p.id);
+          var days=lb?dBetween(lb,_td):999;
+          if(_sent[p.id])return; // ya enviado
+          var cli=clients.find(function(c){return c.id===p.clientId;});
+          if(!cli||!cli.phone)return;
+          // Excluir si tiene cita pendiente/agendada futura
+          var _ha=appts.some(function(a){
+            return a.petId===p.id
+              &&(a.status==="pendiente"||a.estado==="pendiente"||a.status==="agendado"||a.estado==="agendado")
+              &&(a.date||a.fecha||"")>=_td;
+          });
+          if(_ha)return;
+          // Contar si cumple criterio de alerta
+          var _loy=getLoyalty(p.id,appts);
+          if(_loy.hasFree){_cnt++;return;}
+          if(p.birthday&&isBdayToday(p.birthday)){_cnt++;return;}
+          if(days>=28)_cnt++;
+        }catch(e){}
+      });
+      return _cnt;
+    } catch(e){return 0;}
+  })();
   var handleLogin = function handleLogin(user) {
     setCurrentUser(user);
     setLogged(true);
@@ -9243,7 +9312,8 @@ function App() {
     openAppt: function openAppt() {
       return setMod("appt");
     },
-    commission: commission
+    commission: commission,
+    alertCount: alertCount
   }), view === "clientes" && /*#__PURE__*/React.createElement(ClientsScreen, {
     clients: clients,
     pets: pets,
