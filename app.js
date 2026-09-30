@@ -3856,6 +3856,8 @@ function ClientsScreen(_ref24) {
     _useState80 = _slicedToArray(_useState79, 2),
     segF = _useState80[0],
     setSegF = _useState80[1];
+  var _va=useState(false),_vaa=_slicedToArray(_va,2),vistaOpen=_vaa[0],setVistaOpen=_vaa[1];
+  var _vs=useState(null),_vsa=_slicedToArray(_vs,2),vistaSeg=_vsa[0],setVistaSeg=_vsa[1];
   var _useState81 = useState(null),
     _useState82 = _slicedToArray(_useState81, 2),
     etCli = _useState82[0],
@@ -4614,7 +4616,12 @@ function ClientsScreen(_ref24) {
       color: "#9CA3AF",
       marginBottom: 12
     }
-  }, fil.length, " cliente", fil.length !== 1 ? "s" : ""), /*#__PURE__*/React.createElement("button", {
+  }, fil.length, " cliente", fil.length !== 1 ? "s" : ""),
+  /*#__PURE__*/React.createElement("button",{
+    onClick:function(){setVistaOpen(function(o){return !o;});setVistaSeg(null);},
+    style:{padding:"7px 14px",background:"#F0FDF4",color:"#1A5C47",border:"1.5px solid #1A5C47",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:5,flexShrink:0}
+  },/*#__PURE__*/React.createElement("i",{className:"ti ti-chart-donut-2",style:{fontSize:13}}),"\uD83D\uDCCA An\u00E1lisis"),
+  /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       setEtCli(null);
       setShowCM(true);
@@ -4718,7 +4725,19 @@ function ClientsScreen(_ref24) {
         color: "#D1D5DB"
       }
     }));
-  })), showCM && /*#__PURE__*/React.createElement(ClientModal, {
+  })),
+  vistaOpen&&/*#__PURE__*/React.createElement("div",{
+    style:{position:"fixed",inset:0,zIndex:250,background:"#F5F6F8",overflowY:"auto",paddingBottom:80}
+  },
+    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",padding:"14px 16px",borderBottom:"1px solid #E5E7EB",display:"flex",alignItems:"center",gap:10,position:"sticky",top:0,zIndex:251}},
+      /*#__PURE__*/React.createElement("button",{onClick:function(){setVistaOpen(false);setVistaSeg(null);},style:{width:34,height:34,background:"#F3F4F6",border:"none",borderRadius:10,cursor:"pointer",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}},String.fromCodePoint(8592)),
+      /*#__PURE__*/React.createElement("span",{style:{fontSize:15,fontWeight:700,color:"#111"}},"\uD83D\uDCCA An\u00E1lisis de clientes")
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{padding:"14px 16px"}},
+      /*#__PURE__*/React.createElement(ClientHealthTab,{clients:clients,appts:appts,selSeg:vistaSeg,setSelSeg:setVistaSeg,onSelectClient:function(c){setSel(c);setVistaOpen(false);}})
+    )
+  ),
+  showCM && /*#__PURE__*/React.createElement(ClientModal, {
     et: etCli,
     onClose: function onClose() {
       setShowCM(false);
@@ -6739,6 +6758,20 @@ function FinanzasScreen(_ref40) {
     _useState134 = _slicedToArray(_useState133, 2),
     meta = _useState134[0],
     setMeta = _useState134[1];
+  var _gf=useState({name:"",amount:"",type:"fijo",category:"Arriendo",date:today(),notes:""}),_gfa=_slicedToArray(_gf,2),gForm=_gfa[0],setGForm=_gfa[1];
+  var _gsv=useState(false),_gsva=_slicedToArray(_gsv,2),gSaving=_gsva[0],setGSaving=_gsva[1];
+  var ugf=function(k,v){setGForm(function(prev){return Object.assign({},prev,_defineProperty({},k,v));});};
+  var resetGForm=function(){setGForm({name:"",amount:"",type:"fijo",category:"Arriendo",date:today(),notes:""});setShowE(false);setEditE(null);};
+  var saveGasto=function(){
+    if(!gForm.name.trim()||!gForm.amount){toast("\u26A0\uFE0F Nombre y monto obligatorios");return;}
+    setGSaving(true);
+    var data=Object.assign({},gForm,{amount:Number(gForm.amount),date:gForm.date||today()});
+    if(editE&&editE.id){
+      fupd("expenses",editE.id,data).then(function(){toast("\u2705 Gasto actualizado");resetGForm();setGSaving(false);}).catch(function(e){toast("Error: "+e.message);setGSaving(false);});
+    }else{
+      fadd("expenses",data).then(function(){toast("\u2705 Gasto registrado");resetGForm();setGSaving(false);}).catch(function(e){toast("Error: "+e.message);setGSaving(false);});
+    }
+  };
   var mExp = expenses.filter(function (e) {
     return e.date && e.date.startsWith(finMes);
   });
@@ -6753,6 +6786,25 @@ function FinanzasScreen(_ref40) {
     return s + Number(x.total || 0);
   }, 0);
   var be = calcBE(mExp, spaI, storeI);
+  var _prevMes=(function(){var p=finMes.split("-");var yr=Number(p[0]);var mo=Number(p[1])-1;if(mo<1){mo=12;yr--;}return yr+"-"+(mo<10?"0":"")+mo;})();
+  var _prevExp=expenses.filter(function(e){return e.date&&e.date.startsWith(_prevMes);});
+  var _prevSpa=appts.filter(function(a){return(a.status==="completado"||a.estado==="completado")&&(a.date||a.fecha||"").startsWith(_prevMes);}).reduce(function(s,a){return s+Number(a.price||a.precio||0);},0);
+  var _prevStore=sales.filter(function(s){return s.date&&s.date.startsWith(_prevMes);}).reduce(function(s,x){return s+Number(x.total||0);},0);
+  var _prevBe=calcBE(_prevExp,_prevSpa,_prevStore);
+  var _currUtil=be.total-be.fix-be.vari;
+  var _prevUtil=_prevBe.total-_prevBe.fix-_prevBe.vari;
+  var _daysInMes=(function(){var p=finMes.split("-");return new Date(Number(p[0]),Number(p[1]),0).getDate();})();
+  var _dayOfMes=finMes===thisM()?new Date().getDate():_daysInMes;
+  var _pct=Math.max(0.01,_dayOfMes/_daysInMes);
+  var _projIncome=Math.round(be.total/_pct);
+  var _projUtil=Math.round(_currUtil/_pct);
+  var _byDay=(function(){var d={0:0,1:0,2:0,3:0,4:0,5:0,6:0};appts.filter(function(a){return(a.status==="completado"||a.estado==="completado")&&(a.date||a.fecha||"").startsWith(finMes);}).forEach(function(a){try{var dt=new Date((a.date||a.fecha)+"T12:00:00");d[dt.getDay()]+=Number(a.price||a.precio||0);}catch(e){}});return d;})();
+  var _dayNames=["Dom","Lun","Mar","Mi\u00E9","Jue","Vie","S\u00E1b"];
+  var _maxDay=Math.max(1,_byDay[0],_byDay[1],_byDay[2],_byDay[3],_byDay[4],_byDay[5],_byDay[6]);
+  var _byCat=(function(){var m={};mExp.forEach(function(e){var c=e.category||"Otros";m[c]=(m[c]||0)+Number(e.amount||0);});return Object.keys(m).sort(function(a,b){return m[b]-m[a];}).slice(0,5).map(function(c){return{cat:c,amt:m[c]};});})();
+  var _maxCat=_byCat.length>0?_byCat[0].amt:1;
+  var _nBanos=appts.filter(function(a){return(a.status==="completado"||a.estado==="completado")&&(a.date||a.fecha||"").startsWith(finMes);}).length;
+  var _ticketProm=_nBanos>0?Math.round(spaI/_nBanos):0;
   var tabS = function tabS(a) {
     return {
       padding: "8px 16px",
@@ -7106,47 +7158,56 @@ function FinanzasScreen(_ref40) {
     /*#__PURE__*/React.createElement("button",{onClick:function(){generarReportePDF(finMes,appts,sales,expenses,clients,pets);},style:{width:"100%",padding:13,marginTop:10,background:"#DC2626",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
       /*#__PURE__*/React.createElement("i",{className:"ti ti-file-description",style:{fontSize:18}}),"Generar Reporte PDF del mes"
     )
-  )), tab === "gastos" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      setEditE(null);
-      setShowE(true);
-    },
-    style: {
-      width: "100%",
-      padding: 13,
-      background: "#1A5C47",
-      color: "#fff",
-      border: "none",
-      borderRadius: 12,
-      fontSize: 14,
-      fontWeight: 700,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-      marginBottom: 14
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-plus"
-  }), "Registrar gasto"),
-  /*#__PURE__*/React.createElement("button",{
+  )), tab === "gastos" && /*#__PURE__*/React.createElement("div", null,
+  !showE&&/*#__PURE__*/React.createElement("button",{
+    onClick:function(){setEditE(null);setGForm({name:"",amount:"",type:"fijo",category:"Arriendo",date:today(),notes:""});setShowE(true);},
+    style:{width:"100%",padding:"14px",background:"#1A5C47",color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:12}
+  },/*#__PURE__*/React.createElement("i",{className:"ti ti-plus"}),"\u2795 Registrar gasto"),
+  !showE&&/*#__PURE__*/React.createElement("button",{
     onClick:function(){
-      // Copy fixed expenses from prev month to finMes
       var _prevM=(function(){var p=finMes.split("-");var yr=Number(p[0]);var mo=Number(p[1])-1;if(mo<1){mo=12;yr--;}return yr+"-"+(mo<10?"0":"")+mo;})();
       var _fixedPrev=expenses.filter(function(e){return e.type==="fijo"&&e.date&&e.date.startsWith(_prevM);});
-      var _alreadyHas=expenses.filter(function(e){return e.date&&e.date.startsWith(finMes);});
       if(_fixedPrev.length===0){toast("No hay gastos fijos en el mes anterior");return;}
-      if(_alreadyHas.length>0&&!window.confirm("Ya hay gastos en "+finMes+". \u00BFCopiar igualmente los fijos del mes anterior?")){return;}
-      var _day1=finMes+"-01";
-      var _promises=_fixedPrev.map(function(e){
-        return fadd("expenses",{name:e.name,amount:e.amount,type:"fijo",category:e.category||"Otros",date:_day1,notes:"Copiado de "+_prevM});
-      });
-      Promise.all(_promises).then(function(){toast("\u2705 "+_fixedPrev.length+" gastos fijos copiados a "+finMes);});
+      Promise.all(_fixedPrev.map(function(e){return fadd("expenses",{name:e.name,amount:e.amount,type:"fijo",category:e.category||"Otros",date:finMes+"-01",notes:"Copiado de "+_prevM});})).then(function(){toast("\u2705 "+_fixedPrev.length+" gastos fijos copiados a "+finMes);});
     },
     style:{width:"100%",padding:"11px",background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"center",gap:6}
-  },/*#__PURE__*/React.createElement("i",{className:"ti ti-copy"}),
-  "Copiar gastos fijos del mes anterior"),
+  },/*#__PURE__*/React.createElement("i",{className:"ti ti-copy"}),"Copiar gastos fijos del mes anterior"),
+  showE&&/*#__PURE__*/React.createElement("div",{style:{background:"#F0FDF4",borderRadius:16,border:"2px solid #86EFAC",padding:16,marginBottom:16}},
+    /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,color:"#1A5C47",marginBottom:12}},editE?"\u270F\uFE0F Editar gasto":"\u2795 Nuevo gasto"),
+    /*#__PURE__*/React.createElement("div",{style:{marginBottom:12}},
+      /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",display:"block",marginBottom:4}},"Descripci\u00F3n *"),
+      /*#__PURE__*/React.createElement("input",{type:"text",value:gForm.name,onChange:function(e){ugf("name",e.target.value);},placeholder:"Ej: Arriendo octubre",autoFocus:true,style:{width:"100%",padding:"12px 14px",fontSize:15,border:"1.5px solid #BBF7D0",borderRadius:10,outline:"none",boxSizing:"border-box",background:"#fff",fontFamily:"Inter,sans-serif"}})
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}},
+      /*#__PURE__*/React.createElement("div",null,
+        /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",display:"block",marginBottom:4}},"Monto (COP) *"),
+        /*#__PURE__*/React.createElement("input",{type:"number",value:gForm.amount,onChange:function(e){ugf("amount",e.target.value);},placeholder:"0",min:"0",style:{width:"100%",padding:"12px 14px",fontSize:15,border:"1.5px solid #BBF7D0",borderRadius:10,outline:"none",boxSizing:"border-box",background:"#fff",fontFamily:"Inter,sans-serif"}})
+      ),
+      /*#__PURE__*/React.createElement("div",null,
+        /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",display:"block",marginBottom:4}},"Fecha"),
+        /*#__PURE__*/React.createElement("input",{type:"date",value:gForm.date,onChange:function(e){ugf("date",e.target.value);},style:{width:"100%",padding:"12px 14px",fontSize:14,border:"1.5px solid #BBF7D0",borderRadius:10,outline:"none",boxSizing:"border-box",background:"#fff",fontFamily:"Inter,sans-serif"}})
+      )
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}},
+      /*#__PURE__*/React.createElement("div",null,
+        /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",display:"block",marginBottom:4}},"Tipo"),
+        /*#__PURE__*/React.createElement("select",{value:gForm.type,onChange:function(e){ugf("type",e.target.value);},style:{width:"100%",padding:"12px 14px",fontSize:14,border:"1.5px solid #BBF7D0",borderRadius:10,outline:"none",background:"#fff",boxSizing:"border-box",fontFamily:"Inter,sans-serif"}},
+          /*#__PURE__*/React.createElement("option",{value:"fijo"},"\uD83D\uDD12 Fijo (mensual)"),
+          /*#__PURE__*/React.createElement("option",{value:"variable"},"\uD83D\uDD01 Variable")
+        )
+      ),
+      /*#__PURE__*/React.createElement("div",null,
+        /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",display:"block",marginBottom:4}},"Categor\u00EDa"),
+        /*#__PURE__*/React.createElement("select",{value:gForm.category,onChange:function(e){ugf("category",e.target.value);},style:{width:"100%",padding:"12px 14px",fontSize:14,border:"1.5px solid #BBF7D0",borderRadius:10,outline:"none",background:"#fff",boxSizing:"border-box",fontFamily:"Inter,sans-serif"}},
+          EXPENSE_CATS.map(function(cat){return /*#__PURE__*/React.createElement("option",{key:cat,value:cat},cat);})
+        )
+      )
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:10}},
+      /*#__PURE__*/React.createElement("button",{onClick:resetGForm,style:{flex:1,padding:"12px",background:"#F3F4F6",color:"#6B7280",border:"none",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}},"Cancelar"),
+      /*#__PURE__*/React.createElement("button",{onClick:saveGasto,disabled:gSaving,style:{flex:2,padding:"12px",background:gSaving?"#9CA3AF":"#1A5C47",color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:700,cursor:gSaving?"not-allowed":"pointer"}},gSaving?"Guardando...":"\u2705 Guardar gasto")
+    )
+  ),
   /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
@@ -7430,55 +7491,38 @@ function FinanzasScreen(_ref40) {
       opacity: .75,
       marginBottom: 4
     }
-  }, "Resultado " + finMes), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 36,
-      fontWeight: 800,
-      color: be.total - be.fix - be.vari >= 0 ? "#86EFAC" : "#FCA5A5"
-    }
-  }, fmtM(be.total - be.fix - be.vari)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      opacity: .75,
-      marginTop: 4
-    }
-  }, be.total - be.fix - be.vari >= 0 ? "Utilidad" : "P\u00E9rdida")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: 10
-    }
-  }, /*#__PURE__*/React.createElement(SC, {
-    icon: "arrow-up-circle",
-    label: "Total ingresos",
-    value: fmtM(be.total),
-    color: "#059669"
-  }), /*#__PURE__*/React.createElement(SC, {
-    icon: "arrow-down-circle",
-    label: "Total gastos",
-    value: fmtM(be.fix + be.vari),
-    color: "#DC2626"
-  }), /*#__PURE__*/React.createElement(SC, {
-    icon: "bath",
-    label: "Spa",
-    value: fmtM(spaI),
-    color: "#1A5C47"
-  }), /*#__PURE__*/React.createElement(SC, {
-    icon: "shopping-bag",
-    label: "Tienda",
-    value: fmtM(storeI),
-    color: "#1A5C47"
-  }), /*#__PURE__*/React.createElement(SC, {
-    icon: "lock",
-    label: "Gastos fijos",
-    value: fmtM(be.fix),
-    color: "#DC2626"
-  }), /*#__PURE__*/React.createElement(SC, {
-    icon: "arrows-shuffle",
-    label: "Gastos variables",
-    value: fmtM(be.vari),
-    color: "#F59E0B"
-  }))));
+  },"Resultado "+finMes),
+  /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}},
+    /*#__PURE__*/React.createElement("div",{style:{fontSize:36,fontWeight:900,color:_currUtil>=0?"#86EFAC":"#FCA5A5"}},fmtM(_currUtil)),
+    /*#__PURE__*/React.createElement("span",{style:{fontSize:13,fontWeight:700,color:_currUtil>=0?"#86EFAC":"#FCA5A5"}},_currUtil>=0?"\uD83D\uDFE2 Utilidad":"\uD83D\uDD34 P\u00E9rdida")
+  ),
+  _prevBe.total>0&&/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"rgba(255,255,255,.55)",marginBottom:6}},"vs mes anterior: ",/*#__PURE__*/React.createElement("span",{style:{fontWeight:700,color:(_currUtil-_prevUtil)>=0?"#86EFAC":"#FCA5A5"}},(_currUtil-_prevUtil)>=0?"+":"",fmtM(_currUtil-_prevUtil)))), /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
+    [["Ingresos",be.total,_prevBe.total],["Gastos",be.fix+be.vari,_prevBe.fix+_prevBe.vari],["Margen",be.total>0?Math.round(_currUtil/be.total*100)+"%":"0%",_prevBe.total>0?Math.round(_prevUtil/_prevBe.total*100)+"%":"0%"]].map(function(row){return /*#__PURE__*/React.createElement("div",{key:row[0],style:{background:"rgba(255,255,255,.12)",borderRadius:12,padding:"10px 8px",textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"rgba(255,255,255,.55)",marginBottom:2}},row[0]),/*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:800}},typeof row[1]==="number"?fmtM(row[1]):row[1]),_prevBe.total>0&&/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"rgba(255,255,255,.35)",marginTop:1}},"ant: ",typeof row[2]==="number"?fmtM(row[2]):row[2]));})  
+  )
+),
+finMes===thisM()&&/*#__PURE__*/React.createElement("div",{style:{background:"#FFF7ED",borderRadius:14,border:"1.5px solid #FED7AA",padding:"14px 16px",marginBottom:12}},
+  /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10}},"\uD83D\uDD2E Proyecci\u00F3n fin de mes"),
+  /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
+    /*#__PURE__*/React.createElement("div",{style:{textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:900,color:"#1A5C47"}},fmtM(_projIncome)),/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#92400E",marginTop:2}},"Ingresos proy.")),
+    /*#__PURE__*/React.createElement("div",{style:{textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:900,color:_projUtil>=0?"#1A5C47":"#DC2626"}},fmtM(_projUtil)),/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#92400E",marginTop:2}},"Utilidad proy."))
+  ),
+  /*#__PURE__*/React.createElement("div",{style:{marginTop:8,fontSize:11,color:"#78350F"}},"D\u00EDa ",_dayOfMes," de ",_daysInMes," \u2014 ",Math.round(_pct*100),"% del mes")
+),
+/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:"14px 16px",marginBottom:12}},
+  /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1px",marginBottom:12}},"\uD83D\uDCCA Desglose de ingresos"),
+  [["\uD83D\uDEC1 Spa",spaI,"#1A5C47"],["\uD83D\uDED2 Tienda",storeI,"#D4945A"]].map(function(row){var pct=be.total>0?Math.min(100,Math.round(row[1]/be.total*100)):0;return /*#__PURE__*/React.createElement("div",{key:row[0],style:{marginBottom:10}},/*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},/*#__PURE__*/React.createElement("span",{style:{fontSize:13,fontWeight:600}},row[0]),/*#__PURE__*/React.createElement("span",{style:{fontSize:13,fontWeight:700,color:row[2]}},fmtM(row[1])," (",pct,"%)")),/*#__PURE__*/React.createElement("div",{style:{background:"#F3F4F6",borderRadius:6,height:8,overflow:"hidden"}},/*#__PURE__*/React.createElement("div",{style:{width:pct+"%",height:"100%",background:row[2],borderRadius:6}})));  }),
+  /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:10,borderTop:"1px solid #F3F4F6"}},/*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"Ba\u00F1os: ",/*#__PURE__*/React.createElement("b",null,_nBanos)),/*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"Ticket prom.: ",/*#__PURE__*/React.createElement("b",null,fmtM(_ticketProm))))
+),
+_byCat.length>0&&/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:"14px 16px",marginBottom:12}},
+  /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1px",marginBottom:10}},"\uD83D\uDCB8 Gastos por categor\u00EDa"),
+  _byCat.map(function(item){var pct=Math.round(item.amt/_maxCat*100);return /*#__PURE__*/React.createElement("div",{key:item.cat,style:{marginBottom:8}},/*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:3}},/*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#374151"}},item.cat),/*#__PURE__*/React.createElement("span",{style:{fontSize:12,fontWeight:700,color:"#DC2626"}},fmtM(item.amt))),/*#__PURE__*/React.createElement("div",{style:{background:"#FEE2E2",borderRadius:4,height:5,overflow:"hidden"}},/*#__PURE__*/React.createElement("div",{style:{width:pct+"%",height:"100%",background:"#DC2626",borderRadius:4}})));})  
+),
+_nBanos>0&&/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:"14px 16px",marginBottom:4}},
+  /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1px",marginBottom:12}},"\uD83D\uDCC5 Ingresos por d\u00EDa"),
+  /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:4,alignItems:"flex-end",height:64}},
+    [1,2,3,4,5,6,0].map(function(d){var v=_byDay[d]||0;var h=v>0?Math.max(8,Math.round(v/_maxDay*52)):4;var top=v>0&&v===_maxDay;return /*#__PURE__*/React.createElement("div",{key:d,style:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}},/*#__PURE__*/React.createElement("div",{style:{width:"100%",height:h+"px",background:top?"#1A5C47":"#E5E7EB",borderRadius:"4px 4px 0 0"}}),/*#__PURE__*/React.createElement("div",{style:{fontSize:9,color:top?"#1A5C47":"#9CA3AF",fontWeight:top?800:400}},_dayNames[d]));})  
+  )
+));
 }
 function AlertasScreen(_ref42) {
   var pets=_ref42.pets,clients=_ref42.clients,appts=_ref42.appts,sales=_ref42.sales||[],lastBath=_ref42.lastBath,toast=_ref42.toast,db=_ref42.db||null;
@@ -8548,10 +8592,102 @@ function ConfigScreen(_ref44) {
     }
   }, "Guardar precios")));
 }
+function ClientHealthTab(_ref_cht){
+  var clients=_ref_cht.clients,appts=_ref_cht.appts,selSeg=_ref_cht.selSeg,setSelSeg=_ref_cht.setSelSeg,onSelectClient=_ref_cht.onSelectClient||null;
+  var _td=today();
+  var _segs={nuevos:[],frecuentes:[],regulares:[],riesgo:[],perdidos:[]};
+  clients.forEach(function(cli){
+    var _ca=appts.filter(function(a){return a.clientId===cli.id&&(a.status==="completado"||a.estado==="completado");}).sort(function(a,b){return (b.date||b.fecha||"").localeCompare(a.date||a.fecha||"");});
+    if(!_ca.length)return;
+    var _last=_ca[0].date||_ca[0].fecha||"";
+    var _days=_last?dBetween(_last,_td):999;
+    var _obj={cli:cli,days:_days,total:_ca.length,last:_last};
+    if(_days<=30&&_ca.length===1)_segs.nuevos.push(_obj);
+    else if(_days<=35&&_ca.length>=2)_segs.frecuentes.push(_obj);
+    else if(_days>35&&_days<=60)_segs.regulares.push(_obj);
+    else if(_days>60&&_days<=90)_segs.riesgo.push(_obj);
+    else if(_days>90)_segs.perdidos.push(_obj);
+  });
+  var _tot=clients.filter(function(c){return appts.some(function(a){return a.clientId===c.id&&(a.status==="completado"||a.estado==="completado");});}).length;
+  var _cats=[
+    {key:"frecuentes",label:"Frecuentes",icon:"\uD83D\uDC9A",color:"#1A5C47",bg:"#ECFDF5",border:"#6EE7B7",items:_segs.frecuentes},
+    {key:"nuevos",label:"Nuevos",icon:"\uD83C\uDF31",color:"#059669",bg:"#D1FAE5",border:"#6EE7B7",items:_segs.nuevos},
+    {key:"regulares",label:"Regulares",icon:"\uD83D\uDFE1",color:"#D97706",bg:"#FEF3C7",border:"#FCD34D",items:_segs.regulares},
+    {key:"riesgo",label:"En riesgo",icon:"\uD83D\uDFE0",color:"#EA580C",bg:"#FFF7ED",border:"#FED7AA",items:_segs.riesgo},
+    {key:"perdidos",label:"Perdidos",icon:"\uD83D\uDD34",color:"#DC2626",bg:"#FEF2F2",border:"#FECACA",items:_segs.perdidos}
+  ];
+  var _active=_cats.find(function(c){return c.key===selSeg;})||_cats[0];
+  return /*#__PURE__*/React.createElement("div",null,
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginBottom:14,overflowX:"auto",paddingBottom:2}},
+      _cats.map(function(cat){
+        var isActive=selSeg===cat.key||(!selSeg&&cat.key==="frecuentes");
+        return /*#__PURE__*/React.createElement("div",{
+          key:cat.key,
+          onClick:function(){setSelSeg(cat.key===selSeg?null:cat.key);},
+          style:{flex:"0 0 auto",minWidth:80,background:isActive?cat.color:"#fff",border:"2px solid "+(isActive?cat.color:cat.border),borderRadius:14,padding:"10px 12px",cursor:"pointer",textAlign:"center",transition:"all .15s"}
+        },
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:20,marginBottom:2}},cat.icon),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:900,color:isActive?"#fff":cat.color,lineHeight:1}},cat.items.length),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:600,color:isActive?"rgba(255,255,255,.8)":cat.color,marginTop:2,whiteSpace:"nowrap"}},cat.label)
+        );
+      })
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}},
+      /*#__PURE__*/React.createElement("div",null,
+        /*#__PURE__*/React.createElement("span",{style:{fontSize:15,fontWeight:800,color:_active.color}},_active.icon+" ",_active.label),
+        /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#9CA3AF",marginLeft:8}},_active.items.length," clientes")
+      ),
+      _active.items.length>0&&/*#__PURE__*/React.createElement("button",{
+        onClick:function(){
+          var txt=_active.icon+" "+_active.label.toUpperCase()+" \u2014 PawSociety\n\n";
+          txt+=_active.items.map(function(x,i){return (i+1)+". "+x.cli.name+" | "+(x.cli.phone||"sin tel")+" | "+x.days+"d sin visita";}).join("\n");
+          txt+="\n\nTotal: "+_active.items.length+" clientes";
+          navigator.clipboard.writeText(txt).then(function(){alert("\u2705 Lista copiada!");}).catch(function(){alert(txt);});
+        },
+        style:{padding:"7px 14px",background:_active.color,color:"#fff",border:"none",borderRadius:10,fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:5}
+      },/*#__PURE__*/React.createElement("i",{className:"ti ti-download"}),"Exportar")
+    ),
+    _active.items.length===0
+      ?/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px",background:"#F9FAFB",borderRadius:14,color:"#9CA3AF"}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:32,marginBottom:8}},_active.icon),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:600}},"Sin clientes en este segmento"),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,marginTop:4}},"\uD83C\uDF89 \u00A1Buenas noticias!")
+        )
+      :/*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+          _active.items.map(function(x){
+            var waNum=x.cli.phone?"https://wa.me/57"+x.cli.phone.replace(/[^0-9]/g,""):""
+            return /*#__PURE__*/React.createElement("div",{key:x.cli.id,
+              onClick:onSelectClient?function(){onSelectClient(x.cli);}:null,
+              style:{background:"#fff",borderRadius:14,border:"1.5px solid "+(x.days>90?"#FECACA":x.days>60?"#FED7AA":x.days>35?"#FEF3C7":"#D1FAE5"),padding:"12px 14px",display:"flex",alignItems:"center",gap:12,cursor:onSelectClient?"pointer":"default"}},
+              /*#__PURE__*/React.createElement("div",{style:{width:40,height:40,borderRadius:"50%",background:_active.color,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:800,fontSize:15,flexShrink:0}},
+                x.cli.name.charAt(0).toUpperCase()
+              ),
+              /*#__PURE__*/React.createElement("div",{style:{flex:1,minWidth:0}},
+                /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,color:"#111",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},x.cli.name),
+                /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginTop:3,flexWrap:"wrap"}},
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#6B7280"}},x.days," d\u00EDas sin visita"),
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#9CA3AF"}},"\u00B7"),
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#6B7280"}},x.total," visita"+(x.total!==1?"s":""))
+                )
+              ),
+              /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6,flexShrink:0}},
+                /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:800,color:_active.color}},"+"+x.days+"d"),
+                waNum&&/*#__PURE__*/React.createElement("a",{href:waNum,target:"_blank",
+                  style:{width:34,height:34,background:"#25D366",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",textDecoration:"none"}},
+                  /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:18,color:"#fff"}})
+                )
+              )
+            );
+          })
+        )
+  );
+}
+
 function RendimientoScreen(_ref_rend) {
   var appts=_ref_rend.appts,clients=_ref_rend.clients,pets=_ref_rend.pets,commission=_ref_rend.commission||0;
   var _m=useState(thisM()),_ma=_slicedToArray(_m,2),mth=_ma[0],setMth=_ma[1];
   var _t=useState("proyeccion"),_ta=_slicedToArray(_t,2),tab=_ta[0],setTab=_ta[1];
+  var _sel=useState(null),_sela=_slicedToArray(_sel,2),selSeg=_sela[0],setSelSeg=_sela[1];
   var HOLIDAYS=["2026-01-01","2026-01-12","2026-03-23","2026-04-02","2026-04-03","2026-05-01","2026-05-25","2026-06-15","2026-06-22","2026-06-29","2026-07-20","2026-08-07","2026-08-17","2026-10-12","2026-11-02","2026-11-17","2026-12-08","2026-12-25","2027-01-01","2027-01-11","2027-03-22","2027-03-25","2027-03-26","2027-05-01","2027-05-17","2027-06-07","2027-06-14","2027-07-05","2027-07-20","2027-08-07","2027-08-16","2027-10-18","2027-11-01","2027-11-15","2027-12-08","2027-12-25"];
   var isWorkDay=function(ds){var d=new Date(ds+"T12:00:00");if(d.getDay()===0)return false;return HOLIDAYS.indexOf(ds)<0;};
   var workDaysInMonth=function(ym){var p=ym.split("-");var yr=Number(p[0]);var mo=Number(p[1]);var days=[];var dim=new Date(yr,mo,0).getDate();for(var i=1;i<=dim;i++){var ds=yr+"-"+(mo<10?"0":"")+mo+"-"+(i<10?"0":"")+i;if(isWorkDay(ds))days.push(ds);}return days;};
@@ -8595,7 +8731,8 @@ function RendimientoScreen(_ref_rend) {
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginBottom:14,overflowX:"auto",paddingBottom:4}},months.map(function(m){return /*#__PURE__*/React.createElement("span",{key:m,onClick:function(){setMth(m);},style:tabS(mth===m)},m);})),
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginBottom:16}},
       /*#__PURE__*/React.createElement("span",{onClick:function(){setTab("proyeccion");},style:tabS(tab==="proyeccion")},String.fromCodePoint(128200)+" Proyecci\u00F3n"),
-      /*#__PURE__*/React.createElement("span",{onClick:function(){setTab("equipo");},style:tabS(tab==="equipo")},String.fromCodePoint(128101)+" Equipo")
+      /*#__PURE__*/React.createElement("span",{onClick:function(){setTab("equipo");},style:tabS(tab==="equipo")},String.fromCodePoint(128101)+" Equipo"),
+      /*#__PURE__*/React.createElement("span",{onClick:function(){setTab("clientes");setSelSeg(null);},style:tabS(tab==="clientes")},String.fromCodePoint(128200)+" Clientes")
     ),
     tab==="proyeccion"&&/*#__PURE__*/React.createElement("div",null,
       /*#__PURE__*/React.createElement("div",{style:{background:isAhead?"linear-gradient(135deg,#064E3B,#1A5C47)":"linear-gradient(135deg,#7F1D1D,#991B1B)",borderRadius:20,padding:20,marginBottom:14,color:"#fff",boxShadow:"0 8px 24px rgba(0,0,0,.2)"}},
@@ -8692,6 +8829,7 @@ function RendimientoScreen(_ref_rend) {
       })()
     )
     ,
+    tab==="clientes"&&/*#__PURE__*/React.createElement(ClientHealthTab,{clients:clients,appts:appts,selSeg:selSeg,setSelSeg:setSelSeg}),
     tab==="equipo"&&/*#__PURE__*/React.createElement("div",null,
       commission>0&&/*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#92400E,#D4945A)",borderRadius:16,padding:16,marginBottom:14,color:"#fff"}},
         /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
