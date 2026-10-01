@@ -8237,36 +8237,48 @@ function RedesScreen(_ref_redes){
     // POSTS
     data&&tab==="publicaciones"&&/*#__PURE__*/React.createElement("div",null,
       data.igMedia&&data.igMedia.length>0&&/*#__PURE__*/React.createElement("div",{style:{marginBottom:16}},
-        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"\uD83D\uDCF8 Instagram"),
-        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1px",marginBottom:8}},"\uD83D\uDCF8 Instagram \u00B7 "+data.igMedia.length+" publicaciones"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:2}},
           data.igMedia.map(function(post){
             var isVid=post.media_type==="VIDEO"||post.media_type==="REEL";
-            return /*#__PURE__*/React.createElement("div",{key:post.id,style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",overflow:"hidden"}},
-              post.media_url&&/*#__PURE__*/React.createElement("img",{src:isVid?(post.thumbnail_url||""):post.media_url,style:{width:"100%",height:160,objectFit:"cover",display:"block"},onError:function(e){e.target.style.display="none";}}),
-              /*#__PURE__*/React.createElement("div",{style:{padding:"10px 12px"}},
-                post.caption&&/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#374151",marginBottom:6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}},post.caption),
-                /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center"}},
-                  /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\u2764\uFE0F ",(post.like_count||0)),
-                  /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\uD83D\uDCAC ",(post.comments_count||0)),
-                  /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#9CA3AF",marginLeft:"auto"}},fmtDate(post.timestamp)),
-                  post.permalink&&/*#__PURE__*/React.createElement("a",{href:post.permalink,target:"_blank",style:{fontSize:11,color:"#833AB4",fontWeight:700,textDecoration:"none"}},"Ver \u2197")
-                )
+            var imgSrc=isVid?(post.thumbnail_url||""):post.media_url;
+            return /*#__PURE__*/React.createElement("a",{key:post.id,href:post.permalink||"#",target:"_blank",
+              style:{display:"block",position:"relative",paddingBottom:"100%",background:"#E5E7EB",overflow:"hidden",borderRadius:4,textDecoration:"none"}
+            },
+              imgSrc&&/*#__PURE__*/React.createElement("img",{
+                src:imgSrc,
+                style:{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover"},
+                onError:function(e){e.target.style.display="none";}
+              }),
+              (post.media_type==="REEL"||post.media_type==="VIDEO")&&/*#__PURE__*/React.createElement("div",{style:{position:"absolute",top:3,right:3,fontSize:10}},
+                post.media_type==="REEL"?"\uD83C\uDFA6":"\uD83C\uDFA5"
+              ),
+              /*#__PURE__*/React.createElement("div",{style:{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(0,0,0,.55))",padding:"10px 4px 3px",display:"flex",justifyContent:"center",gap:6}},
+                /*#__PURE__*/React.createElement("span",{style:{fontSize:9,color:"#fff",fontWeight:700}},"\u2665"+(post.like_count||0)),
+                /*#__PURE__*/React.createElement("span",{style:{fontSize:9,color:"#fff"}},"\uD83D\uDCAC"+(post.comments_count||0))
               )
             );
           })
         )
       ),
       data.fbPosts&&data.fbPosts.length>0&&/*#__PURE__*/React.createElement("div",null,
-        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"\uD83D\uDC4D Facebook"),
-        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"1px",marginBottom:8}},"\uD83D\uDC4D Facebook"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:6}},
           data.fbPosts.map(function(post){
-            return /*#__PURE__*/React.createElement("div",{key:post.id,style:{background:"#fff",borderRadius:12,border:"1px solid #F0F0F0",padding:"10px 12px"}},
-              post.full_picture&&/*#__PURE__*/React.createElement("img",{src:post.full_picture,style:{width:"100%",height:120,objectFit:"cover",borderRadius:8,marginBottom:8,display:"block"},onError:function(e){e.target.style.display="none";}}),
-              post.message&&/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#374151",marginBottom:6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}},post.message),
-              /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:12}},
-                /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\u2764\uFE0F ",((post.likes&&post.likes.summary&&post.likes.summary.total_count)||0)),
-                /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\uD83D\uDCAC ",((post.comments&&post.comments.summary&&post.comments.summary.total_count)||0)),
-                /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#9CA3AF",marginLeft:"auto"}},fmtDate(post.created_time))
+            return /*#__PURE__*/React.createElement("div",{key:post.id,
+              style:{background:"#fff",borderRadius:10,border:"1px solid #F0F0F0",padding:"8px 10px",display:"flex",gap:8,alignItems:"center"}},
+              post.full_picture&&/*#__PURE__*/React.createElement("img",{
+                src:post.full_picture,
+                style:{width:44,height:44,borderRadius:6,objectFit:"cover",flexShrink:0},
+                onError:function(e){e.target.style.display="none";}
+              }),
+              /*#__PURE__*/React.createElement("div",{style:{flex:1,minWidth:0}},
+                post.message&&/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#374151",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",marginBottom:2}},post.message),
+                /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8}},
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:10,color:"#9CA3AF"}},"\u2665 "+((post.likes&&post.likes.summary&&post.likes.summary.total_count)||0)),
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:10,color:"#9CA3AF"}},"\uD83D\uDCAC "+((post.comments&&post.comments.summary&&post.comments.summary.total_count)||0)),
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:10,color:"#D1D5DB",marginLeft:"auto"}},fmtDate(post.created_time))
+                )
               )
             );
           })
