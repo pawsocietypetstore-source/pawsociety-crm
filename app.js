@@ -123,6 +123,10 @@ var NAV = [{
   icon: "package",
   label: "\uD83C\uDF81 Paquetes"
 }, {
+  id: "redes",
+  icon: "brand-instagram",
+  label: "\uD83D\uDCF1 Redes"
+}, {
   id: "_divider",
   icon: "",
   label: ""
@@ -5446,6 +5450,7 @@ function SpaScreen(_ref31) {
     commission = _ref31.commission,
     toast = _ref31.toast;
   var _spaMes=useState(""),_spaMesa=_slicedToArray(_spaMes,2),spaMes=_spaMesa[0],setSpaMes=_spaMesa[1];
+  var _agDate=useState(today()),_agDatea=_slicedToArray(_agDate,2),agDate=_agDatea[0],setAgDate=_agDatea[1];
   var _useState105 = useState("proximas"),
     _useState106 = _slicedToArray(_useState105, 2),
     filter = _useState106[0],
@@ -5868,9 +5873,82 @@ function SpaScreen(_ref31) {
     onClick: function onClick() {
       return setFilter("fecha");
     }
-  }, "Por fecha"), /*#__PURE__*/React.createElement("span",{style:tabS(filter==="semana"),onClick:function(){return setFilter("semana");}}, "Semana")
+  }, "Por fecha"), /*#__PURE__*/React.createElement("span",{style:tabS(filter==="semana"),onClick:function(){return setFilter("semana");}}, "Semana"),
+  /*#__PURE__*/React.createElement("span",{style:tabS(filter==="agenda"),onClick:function(){return setFilter("agenda");}},
+    String.fromCodePoint(128197)," Agenda del d\u00EDa")
   ),
-  filter==="completado"&&/*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginTop:8,overflowX:"auto",paddingBottom:4}},
+  filter==="agenda"&&/*#__PURE__*/React.createElement("div",null,
+  /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:14}},
+    /*#__PURE__*/React.createElement("button",{onClick:function(){var d=new Date(agDate+"T12:00:00");d.setDate(d.getDate()-1);setAgDate(d.toISOString().slice(0,10));},style:{width:34,height:34,background:"#F3F4F6",border:"none",borderRadius:10,cursor:"pointer",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}},String.fromCodePoint(8592)),
+    /*#__PURE__*/React.createElement("div",{style:{flex:1,textAlign:"center"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:800,color:"#111"}},
+        agDate===today()?"\uD83D\uDCCC Hoy \u2014 "+fmt(agDate):fmt(agDate)
+      )
+    ),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){var d=new Date(agDate+"T12:00:00");d.setDate(d.getDate()+1);setAgDate(d.toISOString().slice(0,10));},style:{width:34,height:34,background:"#F3F4F6",border:"none",borderRadius:10,cursor:"pointer",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}},String.fromCodePoint(8594)),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){setAgDate(today());},style:{padding:"6px 12px",background:agDate===today()?"#1A5C47":"#F3F4F6",color:agDate===today()?"#fff":"#374151",border:"none",borderRadius:10,cursor:"pointer",fontSize:12,fontWeight:700}},"Hoy")
+  ),
+  (function(){
+    var HOURS=[7,8,9,10,11,12,13,14,15,16,17,18,19];
+    var dayAppts=appts.filter(function(a){return (a.date||a.fecha||"")===agDate;}).sort(function(a,b){return (a.time||"00:00").localeCompare(b.time||"00:00");});
+    var _now=new Date();
+    var _nowMins=agDate===today()?(_now.getHours()*60+_now.getMinutes()):null;
+    return /*#__PURE__*/React.createElement("div",{style:{position:"relative"}},
+      HOURS.map(function(h){
+        var hStr=(h<10?"0":"")+h+":00";
+        var hAppts=dayAppts.filter(function(a){var t=a.time||"00:00";return parseInt(t.split(":")[0])===h;});
+        var isNowHour=_nowMins!==null&&Math.floor(_nowMins/60)===h;
+        return /*#__PURE__*/React.createElement("div",{key:h,style:{display:"flex",gap:0,minHeight:64,borderBottom:"1px solid #F3F4F6",position:"relative"}},
+          /*#__PURE__*/React.createElement("div",{style:{width:44,flexShrink:0,paddingTop:8,fontSize:11,fontWeight:700,color:isNowHour?"#1A5C47":"#9CA3AF",textAlign:"right",paddingRight:10}},hStr),
+          isNowHour&&/*#__PURE__*/React.createElement("div",{style:{position:"absolute",left:44,right:0,top:((_nowMins%60)/60*64)+"px",height:2,background:"#1A5C47",zIndex:5}},
+            /*#__PURE__*/React.createElement("div",{style:{width:8,height:8,background:"#1A5C47",borderRadius:"50%",marginTop:-3}})
+          ),
+          /*#__PURE__*/React.createElement("div",{style:{flex:1,padding:"4px 4px 4px 8px",display:"flex",flexDirection:"column",gap:4}},
+            hAppts.length===0
+              ?/*#__PURE__*/React.createElement("div",{style:{height:4}})
+              :hAppts.map(function(a){
+                  var pet=pets.find(function(p){return p.id===a.petId;});
+                  var cli=clients.find(function(c){return c.id===a.clientId;});
+                  var isDone=a.status==="completado"||a.estado==="completado";
+                  var isCan=a.status==="cancelado"||a.estado==="cancelado";
+                  var bg=isDone?"#ECFDF5":isCan?"#FEF2F2":"#EFF6FF";
+                  var border=isDone?"#10B981":isCan?"#DC2626":"#3B82F6";
+                  return /*#__PURE__*/React.createElement("div",{key:a.id,
+                    style:{background:bg,borderLeft:"4px solid "+border,borderRadius:"0 10px 10px 0",padding:"8px 10px",cursor:"pointer"}
+                  },
+                    /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:6}},
+                      /*#__PURE__*/React.createElement("div",{style:{flex:1,minWidth:0}},
+                        /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:800,color:"#111",display:"flex",alignItems:"center",gap:5}},
+                          /*#__PURE__*/React.createElement("span",{style:{fontSize:16}},pet&&pet.species==="gato"?String.fromCodePoint(128049):String.fromCodePoint(128054)),
+                          pet?pet.name:"Mascota"
+                        ),
+                        cli&&/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginTop:1}},cli.name),
+                        a.service&&/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:border,fontWeight:600,marginTop:2}},a.service)
+                      ),
+                      /*#__PURE__*/React.createElement("div",{style:{textAlign:"right",flexShrink:0}},
+                        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:border}},a.time||""),
+                        a.price&&/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginTop:1}},fmtM(Number(a.price)))
+                      )
+                    ),
+                    /*#__PURE__*/React.createElement("div",{style:{marginTop:4,display:"flex",alignItems:"center",gap:4}},
+                      /*#__PURE__*/React.createElement("span",{style:{fontSize:10,padding:"2px 8px",background:border+"22",color:border,borderRadius:20,fontWeight:700}},
+                        isDone?"\u2705 Completado":isCan?"\u274C Cancelado":"\uD83D\uDD52 Pendiente"
+                      )
+                    )
+                  );
+                })
+          )
+        );
+      }),
+      dayAppts.length===0&&/*#__PURE__*/React.createElement("div",{style:{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",color:"#9CA3AF",pointerEvents:"none"}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:32,marginBottom:8}},String.fromCodePoint(128197)),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:600}},"Sin citas para este d\u00EDa"),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,marginTop:4}},"Toca + para agregar una cita")
+      )
+    );
+  })()
+),
+filter==="completado"&&/*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginTop:8,overflowX:"auto",paddingBottom:4}},
     /*#__PURE__*/React.createElement("span",{onClick:function(){setSpaMes("");},style:{padding:"4px 10px",borderRadius:16,fontSize:11,fontWeight:700,cursor:"pointer",background:spaMes===""?"#1A5C47":"#F3F4F6",color:spaMes===""?"#fff":"#6B7280",border:"1.5px solid "+(spaMes===""?"#1A5C47":"#E5E7EB"),whiteSpace:"nowrap",flexShrink:0}},"Todos"),
     (function(){var _mos=[];var _n=new Date();for(var _i=0;_i<6;_i++){var _d=new Date(_n.getFullYear(),_n.getMonth()-_i,1);_mos.push(_d.toISOString().slice(0,7));}return _mos.map(function(m){return /*#__PURE__*/React.createElement("span",{key:m,onClick:function(){setSpaMes(m);},style:{padding:"4px 10px",borderRadius:16,fontSize:11,fontWeight:700,cursor:"pointer",background:spaMes===m?"#1A5C47":"#F3F4F6",color:spaMes===m?"#fff":"#6B7280",border:"1.5px solid "+(spaMes===m?"#1A5C47":"#E5E7EB"),whiteSpace:"nowrap",flexShrink:0}},m);});})()),
   filter === "fecha" && /*#__PURE__*/React.createElement("div", {
@@ -7892,6 +7970,316 @@ function CampanasScreen(_ref43) {
 }
 
 
+
+function RedesScreen(_ref_redes){
+  var db=_ref_redes.db,toast=_ref_redes.toast;
+  var _tk=useState(""),_tka=_slicedToArray(_tk,2),token=_tka[0],setToken=_tka[1];
+  var _pages=useState([]),_pagesa=_slicedToArray(_pages,2),pages=_pagesa[0],setPages=_pagesa[1];
+  var _selPage=useState(null),_selPagea=_slicedToArray(_selPage,2),selPage=_selPagea[0],setSelPage=_selPagea[1];
+  var _data=useState(null),_dataa=_slicedToArray(_data,2),data=_dataa[0],setData=_dataa[1];
+  var _load=useState(false),_loada=_slicedToArray(_load,2),loading=_loada[0],setLoading=_loada[1];
+  var _step=useState("token"),_stepa=_slicedToArray(_step,2),step=_step[0],setStep=_stepa[1];
+  var _tab=useState("resumen"),_taba=_slicedToArray(_tab,2),tab=_taba[0],setTab=_taba[1];
+  var tabS=function(a){return{padding:"8px 14px",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer",border:"none",background:a?"#1A5C47":"#F3F4F6",color:a?"#fff":"#6B7280"};};
+  var fmtNum=function(n){return n>=1000000?(n/1000000).toFixed(1)+"M":n>=1000?(n/1000).toFixed(1)+"K":String(n||0);};
+  var fmtDate=function(s){if(!s)return "";var d=new Date(s);return d.getDate()+"/"+(d.getMonth()+1);};
+  var sumInsight=function(arr,name){if(!arr)return 0;var m=arr.find(function(x){return x.name===name;});if(!m||!m.values)return 0;return m.values.reduce(function(s,v){return s+(v.value||0);},0);};
+
+  // Load saved config
+  useEffect(function(){
+    if(!db)return;
+    db.collection("config").doc("meta_credentials").get().then(function(doc){
+      if(doc.exists){
+        var d=doc.data();
+        if(d.token){setToken(d.token);}
+        if(d.selPage){setSelPage(d.selPage);setStep("panel");}
+      }
+    }).catch(function(){});
+  },[]);
+
+  var connectToken=function(){
+    if(!token.trim()){toast("\u26A0\uFE0F Pega el token primero");return;}
+    setLoading(true);
+    fetch("https://graph.facebook.com/v19.0/me/accounts?access_token="+token.trim())
+      .then(function(r){return r.json();})
+      .then(function(d){
+        setLoading(false);
+        if(d.error){toast("Token inv\u00E1lido: "+d.error.message);return;}
+        if(!d.data||d.data.length===0){toast("No se encontraron p\u00E1ginas vinculadas");return;}
+        setPages(d.data);
+        setStep("selectPage");
+      })
+      .catch(function(){setLoading(false);toast("Error de conexi\u00F3n");});
+  };
+
+  var selectPage=function(page){
+    setLoading(true);
+    // Get Instagram account linked to this page
+    fetch("https://graph.facebook.com/v19.0/"+page.id+"?fields=instagram_business_account,name,fan_count,followers_count&access_token="+token.trim())
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var enriched=Object.assign({},page,{fan_count:d.fan_count,followers_count:d.followers_count,igId:d.instagram_business_account?d.instagram_business_account.id:null});
+        setSelPage(enriched);
+        if(db){
+          db.collection("config").doc("meta_credentials").set({token:token.trim(),selPage:enriched});
+        }
+        setStep("panel");
+        setLoading(false);
+        fetchMetrics(token.trim(),enriched);
+      })
+      .catch(function(){setLoading(false);setSelPage(page);setStep("panel");});
+  };
+
+  var fetchMetrics=function(tk,pg){
+    if(!tk||!pg)return;
+    setLoading(true);
+    var results={page:{name:pg.name,fan_count:pg.fan_count||0,followers_count:pg.followers_count||0}};
+    var promises=[];
+    var since=Math.floor(Date.now()/1000)-30*86400;
+    var until=Math.floor(Date.now()/1000);
+
+    // FB Insights
+    promises.push(
+      fetch("https://graph.facebook.com/v19.0/"+pg.id+"/insights?metric=page_impressions,page_reach,page_engaged_users&period=month&since="+since+"&until="+until+"&access_token="+tk)
+        .then(function(r){return r.json();})
+        .then(function(d){if(!d.error&&d.data)results.fbInsights=d.data;})
+        .catch(function(){})
+    );
+    // FB Posts
+    promises.push(
+      fetch("https://graph.facebook.com/v19.0/"+pg.id+"/posts?fields=message,created_time,full_picture,likes.summary(true),comments.summary(true),shares&limit=5&access_token="+pg.access_token)
+        .then(function(r){return r.json();})
+        .then(function(d){if(!d.error&&d.data)results.fbPosts=d.data;})
+        .catch(function(){})
+    );
+    // IG
+    if(pg.igId){
+      promises.push(
+        fetch("https://graph.facebook.com/v19.0/"+pg.igId+"?fields=username,followers_count,follows_count,media_count&access_token="+tk)
+          .then(function(r){return r.json();})
+          .then(function(d){if(!d.error)results.ig=d;})
+          .catch(function(){})
+      );
+      var sinceD=new Date();sinceD.setDate(sinceD.getDate()-30);
+      promises.push(
+        fetch("https://graph.facebook.com/v19.0/"+pg.igId+"/insights?metric=impressions,reach,profile_views&period=day&since="+Math.floor(sinceD.getTime()/1000)+"&until="+until+"&access_token="+tk)
+          .then(function(r){return r.json();})
+          .then(function(d){if(!d.error&&d.data)results.igInsights=d.data;})
+          .catch(function(){})
+      );
+      promises.push(
+        fetch("https://graph.facebook.com/v19.0/"+pg.igId+"/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,permalink&limit=9&access_token="+tk)
+          .then(function(r){return r.json();})
+          .then(function(d){if(!d.error&&d.data)results.igMedia=d.data;})
+          .catch(function(){})
+      );
+    }
+    Promise.all(promises).then(function(){setData(results);setLoading(false);});
+  };
+
+  // STEP: TOKEN INPUT
+  if(step==="token") return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#1877F2,#833AB4)",borderRadius:20,padding:"20px 18px",marginBottom:20,color:"#fff"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:22,fontWeight:900,marginBottom:4}},"\uD83D\uDCF1 Conectar Redes Sociales"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:12,opacity:.75}},"Facebook \u00B7 Instagram")
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:16,border:"1.5px solid #E5E7EB",padding:16,marginBottom:14}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:800,color:"#111",marginBottom:4}},"\uD83D\uDD11 Pega tu token de acceso"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280",marginBottom:12}},"El token que copiaste del Graph API Explorer"),
+      /*#__PURE__*/React.createElement("textarea",{value:token,onChange:function(e){setToken(e.target.value);},placeholder:"EAABwzLixnjY...",rows:3,style:{width:"100%",padding:"10px 12px",fontSize:12,border:"1.5px solid #E5E7EB",borderRadius:10,boxSizing:"border-box",fontFamily:"monospace",resize:"vertical"}}),
+      /*#__PURE__*/React.createElement("button",{onClick:connectToken,disabled:loading,style:{width:"100%",marginTop:12,padding:"13px",background:loading?"#9CA3AF":"#1877F2",color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}},
+        loading?"Verificando...":"\uD83D\uDD17 Conectar con Meta"
+      )
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{background:"#EFF6FF",borderRadius:14,border:"1.5px solid #BFDBFE",padding:14}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,color:"#1D4ED8",marginBottom:8}},"\u2139\uFE0F C\u00F3mo obtener el token"),
+      ["1. Ve a: developers.facebook.com/tools/explorer","2. Selecciona la app PawSociety CRM","3. Clic en \"Generate Access Token\"","4. Acepta los permisos","5. Copia el token y p\u00E9galo arriba"].map(function(s,i){
+        return /*#__PURE__*/React.createElement("div",{key:i,style:{fontSize:12,color:"#1E40AF",marginBottom:4,paddingLeft:4}},s);
+      })
+    )
+  );
+
+  // STEP: SELECT PAGE
+  if(step==="selectPage") return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#1877F2,#833AB4)",borderRadius:20,padding:"20px 18px",marginBottom:20,color:"#fff"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:900,marginBottom:4}},"\u2705 Token conectado"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:12,opacity:.8}},"Selecciona la p\u00E1gina de PawSociety")
+    ),
+    /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,color:"#374151",marginBottom:10}},"P\u00E1ginas encontradas:"),
+    pages.map(function(pg){
+      return /*#__PURE__*/React.createElement("div",{key:pg.id,onClick:function(){if(!loading)selectPage(pg);},
+        style:{background:"#fff",borderRadius:14,border:"1.5px solid #E5E7EB",padding:"14px 16px",marginBottom:10,cursor:"pointer",display:"flex",alignItems:"center",gap:12}},
+        /*#__PURE__*/React.createElement("div",{style:{width:44,height:44,borderRadius:10,background:"#1877F2",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:800,fontSize:18,flexShrink:0}},
+          pg.name.charAt(0)
+        ),
+        /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700}},pg.name),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},"ID: "+pg.id)
+        ),
+        loading?/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#9CA3AF"}},"Cargando..."):/*#__PURE__*/React.createElement("span",{style:{fontSize:20}},"\u2192")
+      );
+    }),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){setStep("token");},style:{marginTop:10,padding:"10px",background:"#F3F4F6",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,color:"#6B7280",width:"100%"}},"\u2190 Cambiar token")
+  );
+
+  // STEP: PANEL (metrics)
+  return /*#__PURE__*/React.createElement("div",{style:{padding:"16px 16px 80px"}},
+    // Header
+    /*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#1877F2,#833AB4)",borderRadius:20,padding:"16px 18px",marginBottom:14,color:"#fff"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:11,opacity:.65,textTransform:"uppercase",letterSpacing:"1px",marginBottom:2}},"Panel de Redes Sociales"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:900,marginBottom:2}},selPage?selPage.name:"PawSociety"),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginTop:6}},
+        /*#__PURE__*/React.createElement("button",{onClick:function(){if(selPage)fetchMetrics(token,selPage);},disabled:loading,style:{padding:"6px 14px",background:"rgba(255,255,255,.2)",color:"#fff",border:"none",borderRadius:20,fontSize:12,fontWeight:700,cursor:"pointer"}},loading?"Cargando...":"\uD83D\uDD04 Actualizar"),
+        /*#__PURE__*/React.createElement("button",{onClick:function(){setStep("token");setData(null);setSelPage(null);setPages([]);},style:{padding:"6px 14px",background:"rgba(255,255,255,.15)",color:"#fff",border:"none",borderRadius:20,fontSize:12,cursor:"pointer"}},"Cambiar cuenta")
+      )
+    ),
+    // Tabs
+    /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:6,marginBottom:14,overflowX:"auto",paddingBottom:2}},
+      [["resumen","\uD83D\uDCCA Resumen"],["facebook","\uD83D\uDC4D Facebook"],["instagram","\uD83D\uDCF8 Instagram"],["publicaciones","\uD83D\uDDBC\uFE0F Posts"]].map(function(t){
+        return /*#__PURE__*/React.createElement("span",{key:t[0],onClick:function(){setTab(t[0]);if(!data&&selPage)fetchMetrics(token,selPage);},style:tabS(tab===t[0])},t[1]);
+      })
+    ),
+    // No data yet
+    !data&&!loading&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px 20px"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:40,marginBottom:12}},"\uD83D\uDCF1"),
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:600,color:"#374151",marginBottom:8}},"Toca \"Actualizar\" para cargar las m\u00E9tricas"),
+      /*#__PURE__*/React.createElement("button",{onClick:function(){if(selPage)fetchMetrics(token,selPage);},style:{padding:"12px 24px",background:"#1877F2",color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}},"\uD83D\uDD04 Cargar m\u00E9tricas")
+    ),
+    loading&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px"}},
+      /*#__PURE__*/React.createElement("div",{style:{fontSize:14,color:"#6B7280"}},"Cargando datos de Meta...")
+    ),
+    // RESUMEN
+    data&&tab==="resumen"&&/*#__PURE__*/React.createElement("div",null,
+      /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}},
+        data.page&&/*#__PURE__*/React.createElement("div",{style:{background:"#EFF6FF",borderRadius:14,border:"1.5px solid #BFDBFE",padding:14}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#1D4ED8",textTransform:"uppercase",marginBottom:4}},"\uD83D\uDC4D Facebook"),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:28,fontWeight:900,color:"#1877F2"}},fmtNum(data.page.fan_count||0)),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280"}},"seguidores")
+        ),
+        data.ig&&/*#__PURE__*/React.createElement("div",{style:{background:"#FDF4FF",borderRadius:14,border:"1.5px solid #E9D5FF",padding:14}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#7C3AED",textTransform:"uppercase",marginBottom:4}},"\uD83D\uDCF8 Instagram"),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:28,fontWeight:900,color:"#7C3AED"}},fmtNum(data.ig.followers_count||0)),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280"}},"seguidores")
+        )
+      ),
+      data.fbInsights&&/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:14,marginBottom:12}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"Facebook \u00FAltimos 30 d\u00EDas"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
+          [["Impresiones","page_impressions","#1877F2"],["Alcance","page_reach","#059669"],["Engagement","page_engaged_users","#D97706"]].map(function(m){
+            return /*#__PURE__*/React.createElement("div",{key:m[0],style:{textAlign:"center",background:"#F9FAFB",borderRadius:10,padding:"10px 4px"}},
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:900,color:m[2]}},fmtNum(sumInsight(data.fbInsights,m[1]))),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",marginTop:2}},m[0])
+            );
+          })
+        )
+      ),
+      data.igInsights&&/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:14}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"Instagram \u00FAltimos 30 d\u00EDas"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
+          [["Impresiones","impressions","#7C3AED"],["Alcance","reach","#DB2777"],["Visitas perfil","profile_views","#0891B2"]].map(function(m){
+            return /*#__PURE__*/React.createElement("div",{key:m[0],style:{textAlign:"center",background:"#F9FAFB",borderRadius:10,padding:"10px 4px"}},
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:18,fontWeight:900,color:m[2]}},fmtNum(sumInsight(data.igInsights,m[1]))),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",marginTop:2}},m[0])
+            );
+          })
+        )
+      )
+    ),
+    // FACEBOOK
+    data&&tab==="facebook"&&/*#__PURE__*/React.createElement("div",null,
+      data.page&&/*#__PURE__*/React.createElement("div",{style:{background:"#1877F2",borderRadius:16,padding:"16px 18px",marginBottom:12,color:"#fff"}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:12,opacity:.8,marginBottom:4}},data.page.name||""),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:20}},
+          [["Me gusta",data.page.fan_count],["Seguidores",data.page.followers_count]].map(function(s){
+            return /*#__PURE__*/React.createElement("div",{key:s[0]},
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:26,fontWeight:900}},fmtNum(s[1]||0)),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:11,opacity:.75}},s[0])
+            );
+          })
+        )
+      ),
+      data.fbInsights&&/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:14}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"\u00DAltimos 30 d\u00EDas"),
+        [["\uD83D\uDC41\uFE0F Impresiones","page_impressions","#1877F2"],["\uD83C\uDFAF Alcance","page_reach","#059669"],["\uD83D\uDC4D Engagement","page_engaged_users","#D97706"]].map(function(m){
+          return /*#__PURE__*/React.createElement("div",{key:m[0],style:{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid #F3F4F6"}},
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:13}},m[0]),
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:16,fontWeight:800,color:m[2]}},fmtNum(sumInsight(data.fbInsights,m[1])))
+          );
+        })
+      )
+    ),
+    // INSTAGRAM
+    data&&tab==="instagram"&&/*#__PURE__*/React.createElement("div",null,
+      data.ig&&/*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#833AB4,#E1306C,#F77737)",borderRadius:16,padding:"16px 18px",marginBottom:12,color:"#fff"}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:12,opacity:.8,marginBottom:4}},"@"+(data.ig.username||"")+" \u00B7 "+fmtNum(data.ig.media_count||0)+" publicaciones"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:20}},
+          [["Seguidores",data.ig.followers_count],["Siguiendo",data.ig.follows_count]].map(function(s){
+            return /*#__PURE__*/React.createElement("div",{key:s[0]},
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:26,fontWeight:900}},fmtNum(s[1]||0)),
+              /*#__PURE__*/React.createElement("div",{style:{fontSize:11,opacity:.75}},s[0])
+            );
+          })
+        )
+      ),
+      data.igInsights&&/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",padding:14}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"\u00DAltimos 30 d\u00EDas"),
+        [["\uD83D\uDC41\uFE0F Impresiones","impressions","#833AB4"],["\uD83C\uDFAF Alcance","reach","#E1306C"],["\uD83D\uDC64 Visitas al perfil","profile_views","#F77737"]].map(function(m){
+          return /*#__PURE__*/React.createElement("div",{key:m[0],style:{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid #F3F4F6"}},
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:13}},m[0]),
+            /*#__PURE__*/React.createElement("span",{style:{fontSize:16,fontWeight:800,color:m[2]}},fmtNum(sumInsight(data.igInsights,m[1])))
+          );
+        })
+      ),
+      !data.ig&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"30px",color:"#9CA3AF"}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:13}},"No se encontr\u00F3 cuenta de Instagram Business vinculada a esta p\u00E1gina")
+      )
+    ),
+    // POSTS
+    data&&tab==="publicaciones"&&/*#__PURE__*/React.createElement("div",null,
+      data.igMedia&&data.igMedia.length>0&&/*#__PURE__*/React.createElement("div",{style:{marginBottom:16}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"\uD83D\uDCF8 Instagram"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:10}},
+          data.igMedia.map(function(post){
+            var isVid=post.media_type==="VIDEO"||post.media_type==="REEL";
+            return /*#__PURE__*/React.createElement("div",{key:post.id,style:{background:"#fff",borderRadius:14,border:"1px solid #F0F0F0",overflow:"hidden"}},
+              post.media_url&&/*#__PURE__*/React.createElement("img",{src:isVid?(post.thumbnail_url||""):post.media_url,style:{width:"100%",height:160,objectFit:"cover",display:"block"},onError:function(e){e.target.style.display="none";}}),
+              /*#__PURE__*/React.createElement("div",{style:{padding:"10px 12px"}},
+                post.caption&&/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#374151",marginBottom:6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}},post.caption),
+                /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:12,alignItems:"center"}},
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\u2764\uFE0F ",(post.like_count||0)),
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\uD83D\uDCAC ",(post.comments_count||0)),
+                  /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#9CA3AF",marginLeft:"auto"}},fmtDate(post.timestamp)),
+                  post.permalink&&/*#__PURE__*/React.createElement("a",{href:post.permalink,target:"_blank",style:{fontSize:11,color:"#833AB4",fontWeight:700,textDecoration:"none"}},"Ver \u2197")
+                )
+              )
+            );
+          })
+        )
+      ),
+      data.fbPosts&&data.fbPosts.length>0&&/*#__PURE__*/React.createElement("div",null,
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",marginBottom:10}},"\uD83D\uDC4D Facebook"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+          data.fbPosts.map(function(post){
+            return /*#__PURE__*/React.createElement("div",{key:post.id,style:{background:"#fff",borderRadius:12,border:"1px solid #F0F0F0",padding:"10px 12px"}},
+              post.full_picture&&/*#__PURE__*/React.createElement("img",{src:post.full_picture,style:{width:"100%",height:120,objectFit:"cover",borderRadius:8,marginBottom:8,display:"block"},onError:function(e){e.target.style.display="none";}}),
+              post.message&&/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#374151",marginBottom:6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}},post.message),
+              /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:12}},
+                /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\u2764\uFE0F ",((post.likes&&post.likes.summary&&post.likes.summary.total_count)||0)),
+                /*#__PURE__*/React.createElement("span",{style:{fontSize:12,color:"#6B7280"}},"\uD83D\uDCAC ",((post.comments&&post.comments.summary&&post.comments.summary.total_count)||0)),
+                /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#9CA3AF",marginLeft:"auto"}},fmtDate(post.created_time))
+              )
+            );
+          })
+        )
+      ),
+      (!data.igMedia||data.igMedia.length===0)&&(!data.fbPosts||data.fbPosts.length===0)&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:"40px",color:"#9CA3AF"}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:32,marginBottom:8}},"\uD83D\uDDBC\uFE0F"),
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:600}},"Sin publicaciones recientes")
+      )
+    )
+  );
+}
+
 function ConfigScreen(_ref44) {
   var toast = _ref44.toast,
     commission = _ref44.commission,
@@ -9499,7 +9887,8 @@ function App() {
     lastBath: lastBath,
     toast: showToast,
     db: db
-  }), view === "campanas" && /*#__PURE__*/React.createElement(CampanasScreen, {
+  }), view === "redes" && /*#__PURE__*/React.createElement(RedesScreen, {db:db,toast:showToast}),
+  view === "campanas" && /*#__PURE__*/React.createElement(CampanasScreen, {
     clients: clients,
     pets: pets,
     appts: appts,
