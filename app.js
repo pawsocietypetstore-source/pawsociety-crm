@@ -3158,6 +3158,31 @@ function PhotoShare(_ref21) {
     }
   }, "Tomar otra foto")));
 }
+function MetasBar(_r){
+  var mM=_r.mM,mEd=_r.mEd,setMEd=_r.setMEd,spaI=_r.spaI,storeI=_r.storeI,appts=_r.appts;
+  var nB=appts.filter(function(a){return(a.status==="completado"||a.estado==="completado")&&(a.date||"").startsWith(thisM());}).length;
+  var dInM=(function(){var p=thisM().split("-");return new Date(Number(p[0]),Number(p[1]),0).getDate();})();
+  var dLeft=dInM-new Date().getDate();
+  var items=[mM.spa>0&&{k:"spa",label:"\uD83D\uDCB0 Spa",cur:spaI,meta:mM.spa,fv:fmtM},mM.ban>0&&{k:"ban",label:"\uD83D\uDEC0 Ba\u00F1os",cur:nB,meta:mM.ban,fv:function(v){return v+""}},mM.tda>0&&{k:"tda",label:"\uD83D\uDED2 Tienda",cur:storeI,meta:mM.tda,fv:fmtM}].filter(Boolean);
+  if(!items.length) return /*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,border:"1.5px dashed #D1D5DB",padding:"14px",textAlign:"center"}},
+    /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginBottom:8}},"Sin metas configuradas"),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){setMEd(true);},style:{padding:"6px 16px",background:"#1A5C47",color:"#fff",border:"none",borderRadius:10,fontSize:12,fontWeight:700,cursor:"pointer"}},"Configurar")
+  );
+  return /*#__PURE__*/React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8}},items.map(function(item){
+    var pct=Math.min(100,item.meta>0?Math.round(item.cur/item.meta*100):0);
+    var falta=Math.max(0,item.meta-item.cur);
+    var col=pct>=100?"#10B981":pct>=70?"#F59E0B":pct>=40?"#3B82F6":"#EF4444";
+    var emo=pct>=100?"\uD83C\uDFC6":pct>=70?"\uD83D\uDD25":pct>=40?"\uD83D\uDCCA":"\uD83D\uDED1";
+    return /*#__PURE__*/React.createElement("div",{key:item.k,style:{background:"#fff",borderRadius:12,border:"1px solid #F0F0F0",padding:"10px 12px"}},
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:5}},/*#__PURE__*/React.createElement("span",{style:{fontSize:12,fontWeight:700,color:"#374151"}},item.label),/*#__PURE__*/React.createElement("span",{style:{fontSize:11,fontWeight:800,color:col}},emo+" "+pct+"%")),
+      /*#__PURE__*/React.createElement("div",{style:{height:8,background:"#F3F4F6",borderRadius:10,overflow:"hidden",marginBottom:5}},/*#__PURE__*/React.createElement("div",{style:{height:"100%",width:pct+"%",background:col,borderRadius:10}})),
+      /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between"}},
+        /*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:"#6B7280"}},item.fv(item.cur)+" / "+item.fv(item.meta)),
+        falta>0&&/*#__PURE__*/React.createElement("span",{style:{fontSize:11,color:col,fontWeight:600}},"Faltan "+item.fv(falta)+(dLeft>0?" \u00B7 "+dLeft+"d":""))
+      )
+    );
+  }));
+}
 function DashboardScreen(_ref22) {
   var clients = _ref22.clients,
     pets = _ref22.pets,
@@ -3171,6 +3196,12 @@ function DashboardScreen(_ref22) {
     openAppt = _ref22.openAppt,
     commission = _ref22.commission,
     alertCount = _ref22.alertCount || 0;
+  var _mM=useState({spa:0,ban:0,tda:0}),_mMa=_slicedToArray(_mM,2),mM=_mMa[0],setMM=_mMa[1];
+  var _mEd=useState(false),_mEda=_slicedToArray(_mEd,2),mEd=_mEda[0],setMEd=_mEda[1];
+  var _mF=useState({spa:"",ban:"",tda:""}),_mFa=_slicedToArray(_mF,2),mF=_mFa[0],setMF=_mFa[1];
+  var _db22=_ref22.db||null;
+  useEffect(function(){if(!_db22)return;_db22.collection("config").doc("metas").get().then(function(doc){if(doc.exists){var d=doc.data();setMM({spa:d.spa||0,ban:d.ban||0,tda:d.tda||0});setMF({spa:String(d.spa||""),ban:String(d.ban||""),tda:String(d.tda||"")});}}).catch(function(){});},[]); 
+  var saveM=function(){var m={spa:Number(mF.spa)||0,ban:Number(mF.ban)||0,tda:Number(mF.tda)||0};setMM(m);setMEd(false);if(_db22)_db22.collection("config").doc("metas").set(m);};
   var _useState65 = useState(10),
     _useState66 = _slicedToArray(_useState65, 2),
     weekGoalBaths = _useState66[0],
@@ -3264,7 +3295,23 @@ function DashboardScreen(_ref22) {
       opacity: .7,
       marginBottom: 4
     }
-  }, fmt(today())), /*#__PURE__*/React.createElement("div", {
+  }, fmt(today())), /*#__PURE__*/React.createElement("div",{style:{marginBottom:16}},
+  /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+    /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:800,color:"#111"}},"\uD83C\uDFAF Metas del mes"),
+    /*#__PURE__*/React.createElement("button",{onClick:function(){setMEd(function(v){return !v;});},style:{padding:"5px 12px",background:mEd?"#E5E7EB":"#F0FDF4",color:mEd?"#374151":"#1A5C47",border:"1.5px solid "+(mEd?"#D1D5DB":"#1A5C47"),borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer"}},mEd?"Cancelar":"\u270F\uFE0F Editar")
+  ),
+  mEd&&/*#__PURE__*/React.createElement("div",{style:{background:"#F0FDF4",borderRadius:14,border:"1.5px solid #D1FAE5",padding:"14px 16px",marginBottom:10}},
+    [["spa","\uD83D\uDCB0 Meta Spa ($/mes)"],["ban","\uD83D\uDEC0 Ba\u00F1os (cant.)"],["tda","\uD83D\uDED2 Tienda ($/mes)"]].map(function(f){
+      return /*#__PURE__*/React.createElement("div",{key:f[0],style:{display:"flex",alignItems:"center",gap:10,marginBottom:10}},
+        /*#__PURE__*/React.createElement("label",{style:{fontSize:12,fontWeight:700,color:"#374151",minWidth:150}},f[1]),
+        /*#__PURE__*/React.createElement("input",{type:"number",value:mF[f[0]],onChange:function(e){var k=f[0];var v=e.target.value;setMF(function(p){var n=Object.assign({},p);n[k]=v;return n;});},placeholder:"0",style:{flex:1,padding:"8px 10px",fontSize:14,border:"1.5px solid #D1FAE5",borderRadius:10,boxSizing:"border-box"}})
+      );
+    }),
+    /*#__PURE__*/React.createElement("button",{onClick:saveM,style:{width:"100%",padding:"11px",background:"#1A5C47",color:"#fff",border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}},"\u2705 Guardar")
+  ),
+  /*#__PURE__*/React.createElement(MetasBar,{mM:mM,mEd:mEd,setMEd:setMEd,spaI:spaI,storeI:storeI,appts:appts})
+),
+/*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 20,
       fontWeight: 800,
@@ -10088,6 +10135,7 @@ function App() {
     expenses: expenses,
     lastBath: lastBath,
     setView: setView,
+    db: db,
     openSale: function openSale() {
       return setMod("sale");
     },
