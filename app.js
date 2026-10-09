@@ -46,8 +46,8 @@ var WA = "573174699764",
   SESSION_KEY = "paws_crm_v1",
   SESSION_H = 10,
   DEFAULT_PIN = "1234";
-var PRODUCT_CATS = ["Concentrados", "Snacks", "Medicamentos", "Juguetería", "Accesorios", "Higiene", "Spa", "Otros"];
-var SVCS = ["Baño profundo", "Secado profesional", "Limpieza de oídos", "Corte de uñas", "Corte de pelo", "Deslanado", "Baño medicado", "Perfume"];
+var PRODUCT_CATS = ["Concentrados", "Snacks", "Medicamentos", "Jugueter\u00eda", "Accesorios", "Higiene", "Spa", "Otros"];
+var SVCS = ["Baño profundo", "Secado profesional", "Limpieza de o\u00eddos", "Corte de uñas", "Corte de pelo", "Deslanado", "Baño medicado", "Perfume"];
 var BDOGS = ["Schnauzer", "French Poodle", "Golden Retriever", "Labrador", "Chihuahua", "Bulldog", "Shih Tzu", "Yorkshire", "Beagle", "Bichon Frisé", "Pomerania", "Otra"];
 var BCATS = ["Persa", "Siamés", "Maine Coon", "Angora", "Mestizo", "Otra"];
 var CDOGS = ["Hills Science Diet Small & Mini Adult 1-6", "Hills Science Diet Small & Mini Adult 7+", "Purina Pro Plan", "Royal Canin Small", "Acana", "Nutre Barf", "Chunky", "Champion", "Otro"];
@@ -59,7 +59,7 @@ var DEF_PRICES = [{
   name: "Secado profesional",
   price: 15000
 }, {
-  name: "Limpieza de oídos",
+  name: "Limpieza de o\u00eddos",
   price: 10000
 }, {
   name: "Corte de uñas",
@@ -146,12 +146,12 @@ function thisM() {
   return today().slice(0, 7);
 }
 function fmt(d) {
-  if (!d) return "—";
+  if (!d) return "\u2014";
   var p = d.split("-");
   return p[2] + "/" + p[1] + "/" + p[0];
 }
 function fmtM(v) {
-  return v || v === 0 ? "$" + Number(v).toLocaleString("es-CO") : "—";
+  return v || v === 0 ? "$" + Number(v).toLocaleString("es-CO") : "\u2014";
 }
 function dBetween(a, b) {
   return Math.floor((new Date(b) - new Date(a)) / 86400000);
@@ -204,7 +204,7 @@ function bdayDays(b) {
   }
 }
 function fmtBday(b) {
-  if (!b) return "—";
+  if (!b) return "\u2014";
   var p = b.split("-");
   return p[2] + "/" + p[1];
 }
@@ -394,7 +394,7 @@ function waReceipt(cn, items, total) {
   return "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
 }
 function waReact(cn, days) {
-  var msg = "Hola " + cn + "! 🐾 Nos haces falta en PawSociety 😊\nHace " + days + " días que no nos visitas. Tenemos novedades para tu peludo esta semana 🛁\n📍 Cra 19 #22N-23 \u00B7 317 469 9764";
+  var msg = "Hola " + cn + "! 🐾 Nos haces falta en PawSociety 😊\nHace " + days + " d\u00edas que no nos visitas. Tenemos novedades para tu peludo esta semana 🛁\n📍 Cra 19 #22N-23 \u00B7 317 469 9764";
   return "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
 }
 function exportCSV(appts, sales, expenses, clients, pets) {
@@ -409,7 +409,7 @@ function exportCSV(appts, sales, expenses, clients, pets) {
     var pet = pets.find(function (p) {
       return p.id === a.petId;
     });
-    rows.push([a.date, "Spa", cli ? cli.name : "—", pet ? pet.name : "—", (a.services || []).join("|"), a.price || 0, "completado"]);
+    rows.push([a.date, "Spa", cli ? cli.name : "\u2014", pet ? pet.name : "\u2014", (a.services || []).join("|"), a.price || 0, "completado"]);
   });
   sales.forEach(function (s) {
     var cli = clients.find(function (c) {
@@ -420,7 +420,7 @@ function exportCSV(appts, sales, expenses, clients, pets) {
     }).join("|"), "", s.total || 0, "vendido"]);
   });
   expenses.forEach(function (e) {
-    rows.push([e.date, "Gasto", "—", e.name, "", "-" + e.amount, e.type]);
+    rows.push([e.date, "Gasto", "\u2014", e.name, "", "-" + e.amount, e.type]);
   });
   var esc = function esc(v) {
     return String(v).replace(/,/g, " ");
@@ -2986,7 +2986,7 @@ function PhotoShare(_ref21) {
     return share;
   }();
   return /*#__PURE__*/React.createElement(Modal, {
-    title: "Foto — " + pet.name,
+    title: "Foto \u2014 " + pet.name,
     onClose: onClose,
     footer: /*#__PURE__*/React.createElement(BtnS, {
       onClick: onClose
@@ -4264,7 +4264,7 @@ function ClientsScreen(_ref24) {
         fontWeight: 700,
         color: "#92400E"
       }
-    }, lastAct ? fmt(lastAct.date) : "—"), /*#__PURE__*/React.createElement("div", {
+    }, lastAct ? fmt(lastAct.date) : "\u2014"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 10,
         color: "#6B7280",
@@ -5539,6 +5539,21 @@ function SpaScreen(_ref31) {
     _useState112 = _slicedToArray(_useState111, 2),
     photoTgt = _useState112[0],
     setPhotoTgt = _useState112[1];
+  var _useStateSW = useState([]),
+    _useStateSWa = _slicedToArray(_useStateSW, 2),
+    solicWeb = _useStateSWa[0],
+    setSolicWeb = _useStateSWa[1];
+  var _useStateSWconv = useState(null),
+    _useStateSWconva = _slicedToArray(_useStateSWconv, 2),
+    convSW = _useStateSWconva[0],
+    setConvSW = _useStateSWconva[1];
+  useEffect(function(){
+    if(!db) return;
+    var unsub = db.collection("solicitudes_web").orderBy("creadoEn","desc").onSnapshot(function(snap){
+      setSolicWeb(snap.docs.map(function(d){return Object.assign({id:d.id},d.data());}));
+    },function(){});
+    return unsub;
+  },[]);
   var upd = /*#__PURE__*/function () {
     var _upd = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee13(id, status) {
       return _regenerator().w(function (_context15) {
@@ -5947,7 +5962,10 @@ function SpaScreen(_ref31) {
     }
   }, "Por fecha"), /*#__PURE__*/React.createElement("span",{style:tabS(filter==="semana"),onClick:function(){return setFilter("semana");}}, "Semana"),
   /*#__PURE__*/React.createElement("span",{style:tabS(filter==="agenda"),onClick:function(){return setFilter("agenda");}},
-    String.fromCodePoint(128197)," Agenda del d\u00EDa")
+    String.fromCodePoint(128197)," Agenda del d\u00EDa"),
+  /*#__PURE__*/React.createElement("span",{style:Object.assign({},tabS(filter==="solicweb"),solicWeb.filter(function(s){return s.estado==="pendiente";}).length>0?{background:"#D4945A",borderColor:"#D4945A",color:"#fff"}:{}),onClick:function(){return setFilter("solicweb");}},
+    String.fromCodePoint(127760)," Web",(function(){var _pend=solicWeb.filter(function(s){return s.estado==="pendiente";}).length;return _pend>0?" ("+_pend+")":"";})()
+  )
   ),
   filter==="agenda"&&/*#__PURE__*/React.createElement("div",null,
   /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:14}},
@@ -6130,7 +6148,66 @@ filter==="completado"&&/*#__PURE__*/React.createElement("div",{style:{display:"f
         )
       )
     );
-  }), etA && /*#__PURE__*/React.createElement(ApptModal, {
+  }),
+  filter==="solicweb"&&React.createElement("div",null,
+    React.createElement("div",{style:{fontSize:13,color:"#6B7280",marginBottom:12}},
+      "Solicitudes desde la p\u00e1gina web. Convierte en cita para agregarlas al CRM."
+    ),
+    solicWeb.length===0&&React.createElement("div",{style:{textAlign:"center",padding:"48px",color:"#9CA3AF"}},
+      React.createElement("i",{className:"ti ti-world",style:{fontSize:44,display:"block",marginBottom:12}}),
+      React.createElement("p",{style:{margin:0}},"Sin solicitudes web todav\u00eda.")
+    ),
+    solicWeb.map(function(sw){
+      var esPend=sw.estado==="pendiente";
+      var dueno=sw["due\u00f1o"]||{};
+      var masct=sw.mascota||{};
+      return React.createElement("div",{key:sw.id,style:{background:"#fff",border:"1.5px solid "+(esPend?"#D4945A":"#E5E7EB"),borderRadius:12,padding:"14px 16px",marginBottom:10}},
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}},
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:700,fontSize:14}},dueno.nombre||"Sin nombre"),
+            React.createElement("div",{style:{fontSize:12,color:"#6B7280"}},dueno.telefono||"")
+          ),
+          React.createElement("span",{style:{fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:20,background:esPend?"#FEF3C7":"#F3F4F6",color:esPend?"#92400E":"#6B7280"}},
+            esPend?"PENDIENTE":"GESTIONADA"
+          )
+        ),
+        React.createElement("div",{style:{fontSize:12,marginBottom:6,display:"flex",flexWrap:"wrap",gap:6}},
+          masct.nombre&&React.createElement("span",{style:{background:"#E8F5EB",color:"#065F46",padding:"2px 8px",borderRadius:10,fontWeight:600}},
+            String.fromCodePoint(128054)+" "+(masct.nombre||"")+(masct.raza?" \u00b7 "+masct.raza:"")+(masct["tama\u00f1o"]?" ("+masct["tama\u00f1o"]+")":"")
+          ),
+          sw.servicio&&React.createElement("span",{style:{background:"#EDE9FE",color:"#5B21B6",padding:"2px 8px",borderRadius:10,fontWeight:600}},sw.servicio)
+        ),
+        (sw.fecha||sw.horario)&&React.createElement("div",{style:{fontSize:12,color:"#6B7280",marginBottom:8}},
+          String.fromCodePoint(128197)+" "+(sw.fecha||"")+(sw.horario?" \u2022 "+sw.horario:"")+(sw.notas?" \u2014 "+sw.notas:"")
+        ),
+        esPend&&React.createElement("div",{style:{display:"flex",gap:8,marginTop:4}},
+          React.createElement("button",{
+            onClick:function(){
+              var tel=dueno.telefono||"";
+              var msg=encodeURIComponent("Hola "+(dueno.nombre||"")+", somos PawSociety "+String.fromCodePoint(128054)+" recibimos tu solicitud para "+(sw.servicio||"el servicio")+" de "+(masct.nombre||"tu mascota")+". Te confirmamos tu cita el "+(sw.fecha||"")+" "+(sw.horario||"")+". \u00bfEst\u00e1 bien?");
+              window.open("https://wa.me/57"+tel.replace(/\D/g,"")+"?text="+msg,"_blank");
+            },
+            style:{padding:"6px 12px",background:"#25D366",color:"#fff",border:"none",borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4}
+          },String.fromCodePoint(128172)+" WhatsApp"),
+          React.createElement("button",{
+            onClick:function(){
+              setConvSW(sw);
+              setEtA({petId:"",clientId:"",services:sw.servicio?[sw.servicio]:[],price:"",time:sw.horario&&sw.horario.includes("8")?"09:00":"14:00",date:sw.fecha||today(),notes:sw.notas||"",assignedTo:"",metodoPago:"efectivo"});
+            },
+            style:{padding:"6px 12px",background:"#1A5C47",color:"#fff",border:"none",borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4}
+          },String.fromCodePoint(128197)+" Crear cita"),
+          React.createElement("button",{
+            onClick:function(){
+              if(!db)return;
+              db.collection("solicitudes_web").doc(sw.id).update({estado:"gestionada"});
+            },
+            style:{padding:"6px 10px",background:"#F3F4F6",color:"#6B7280",border:"none",borderRadius:8,fontSize:12,cursor:"pointer"}
+          },"Archivar")
+        )
+      );
+    })
+  ),
+  etA && /*#__PURE__*/React.createElement(ApptModal, {
     et: etA,
     appts: appts,
     clients: clients,
@@ -6138,6 +6215,7 @@ filter==="completado"&&/*#__PURE__*/React.createElement("div",{style:{display:"f
     spaprices: spaprices,
     cSvcs: cSvcs,
     onClose: function onClose() {
+      if(convSW&&convSW.id&&db){db.collection("solicitudes_web").doc(convSW.id).update({estado:"gestionada"});setConvSW(null);}
       return setEtA(null);
     },
     toast: toast
@@ -6581,7 +6659,7 @@ function CatalogoScreen(_ref37) {
     Concentrados: String.fromCodePoint(129716),
     Snacks: "🍖",
     Medicamentos: "💊",
-    "Juguetería": "🎾",
+    "Jugueter\u00eda": "🎾",
     Accesorios: "🎀",
     Higiene: "🧴",
     Spa: "🛁",
@@ -8745,7 +8823,7 @@ function ConfigScreen(_ref44) {
               _context21.n = 2;
               break;
             }
-            setPinMsg("Nuevo PIN debe ser 4 dígitos.");
+            setPinMsg("Nuevo PIN debe ser 4 d\u00edgitos.");
             return _context21.a(2);
           case 2:
             _context21.p = 2;
@@ -10470,7 +10548,21 @@ function App() {
     style: {
       height: "calc(60px + env(safe-area-inset-bottom))"
     }
-  }), toast && /*#__PURE__*/React.createElement(Toast, {
+  }),
+  /*#__PURE__*/React.createElement("a",{
+    href:"https://claude.ai/artifact/Cinf9h3WAHCcLQokmvsEAV",
+    target:"_blank",
+    title:"Ver p\u00e1gina web",
+    style:{
+      position:"fixed",bottom:"calc(72px + env(safe-area-inset-bottom))",right:16,
+      background:"#1A5C47",color:"#fff",borderRadius:24,
+      padding:"8px 14px",fontSize:12,fontWeight:700,
+      textDecoration:"none",display:"flex",alignItems:"center",gap:6,
+      boxShadow:"0 2px 12px rgba(0,0,0,.25)",zIndex:200,
+      letterSpacing:.3
+    }
+  },String.fromCodePoint(127760)," Web"),
+  toast && /*#__PURE__*/React.createElement(Toast, {
     msg: toast
   }), mod === "client" && /*#__PURE__*/React.createElement(ClientModal, {
     et: null,
