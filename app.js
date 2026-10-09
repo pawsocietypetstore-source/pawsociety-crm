@@ -3910,7 +3910,8 @@ function ClientsScreen(_ref24) {
     appts = _ref24.appts,
     sales = _ref24.sales,
     lastBath = _ref24.lastBath,
-    toast = _ref24.toast;
+    toast = _ref24.toast,
+    db = _ref24.db||null;
   var _useState71 = useState(""),
     _useState72 = _slicedToArray(_useState71, 2),
     search = _useState72[0],
@@ -4809,7 +4810,7 @@ function ClientsScreen(_ref24) {
       /*#__PURE__*/React.createElement("span",{style:{fontSize:15,fontWeight:700,color:"#111"}},"\uD83D\uDCCA An\u00E1lisis de clientes")
     ),
     /*#__PURE__*/React.createElement("div",{style:{padding:"14px 16px"}},
-      /*#__PURE__*/React.createElement(ClientHealthTab,{clients:clients,appts:appts,selSeg:vistaSeg,setSelSeg:setVistaSeg,onSelectClient:function(c){setSel(c);setVistaOpen(false);}})
+      /*#__PURE__*/React.createElement(ClientHealthTab,{clients:clients,appts:appts,selSeg:vistaSeg,setSelSeg:setVistaSeg,onSelectClient:function(c){setSel(c);setVistaOpen(false);},db:db})
     )
   ),
   showCM && /*#__PURE__*/React.createElement(ClientModal, {
@@ -7695,6 +7696,7 @@ function AlertasScreen(_ref42) {
   var _initSent=(function(){try{return JSON.parse(localStorage.getItem("paws_alertas_sent")||"{}");}catch(e){return{};}})();
   var _st=useState(_initSent),_sta=_slicedToArray(_st,2),sent=_st[0],setSent=_sta[1];
   var _mdp=useState(null),_mdpa=_slicedToArray(_mdp,2),manualPid=_mdpa[0],setManualPid=_mdpa[1];
+  var _hcl=useState(null),_hcla=_slicedToArray(_hcl,2),histAlCli=_hcla[0],setHistAlCli=_hcla[1];
   var _mdd=useState(today()),_mdda=_slicedToArray(_mdd,2),manualDate=_mdda[0],setManualDate=_mdda[1];
 
   // Load sent status from Firebase (shared) + localStorage (fallback)
@@ -7707,6 +7709,16 @@ function AlertasScreen(_ref42) {
     localStorage.setItem(SENT_KEY,JSON.stringify(s));
     if(db){try{db.collection("config").doc("alertas_sent").get().then(function(doc){var existing=doc.exists?doc.data():{};existing[pid]={sentDate:dateStr,sentBy:(window.__pawUser||"equipo")};db.collection("config").doc("alertas_sent").set(existing);}).catch(function(e){});}catch(e){}}
     toast("\u2705 Alerta enviada el "+dateStr);
+    if(db){try{
+      var _now2=new Date();var _fs=_now2.toISOString().slice(0,10)+" "+_now2.toTimeString().slice(0,5);
+      db.collection("historial_gestion").doc(pid).get().then(function(doc){
+        var arr=doc.exists?(doc.data().entries||[]):[];
+        arr.unshift({fecha:_fs,tipo:"mensaje_wa",nota:"Alerta enviada autom\u00E1ticamente",user:(window.__pawUser||"equipo")});
+        var petForCli=pets.find(function(pt){return pt.id===pid;})||{name:"?"};
+        var cliName=petForCli.ownerName||petForCli.name||"cliente";
+        db.collection("historial_gestion").doc(pid).set({entries:arr,clientName:cliName,updated:_fs});
+      }).catch(function(){});
+    }catch(e){}}
   };
   useEffect(function(){
     if(!db)return;
@@ -7830,6 +7842,7 @@ function AlertasScreen(_ref42) {
         /*#__PURE__*/React.createElement("button",{onClick:function(){setManualPid(p.id);setManualDate(today());},style:{padding:"9px 14px",background:"#EFF6FF",color:"#1D4ED8",border:"1px solid #BFDBFE",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}},"\uD83D\uDDD3\uFE0F Marcar enviado"),
         /*#__PURE__*/React.createElement("button",{onClick:function(){markSent(p.id);},style:{padding:"9px 14px",background:"#F3F4F6",color:"#6B7280",border:"none",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer"}},"\u00BF Ya agend\u00F3?")
       ),
+      /*#__PURE__*/React.createElement("button",{onClick:function(){var _cliForPet=clients.find(function(c){return c.id===p.id;})||clients.find(function(c){return p.ownerPhone&&c.phone===p.ownerPhone;})||null;setHistAlCli({id:p.id,name:p.name+(p.ownerName?" ("+p.ownerName+")":" ")});},style:{padding:"9px 12px",background:"#F0FDF4",color:"#065F46",border:"1px solid #BBF7D0",borderRadius:10,fontSize:12,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}},"\uD83D\uDCCB Historial"),
       isSent&&sentDate&&/*#__PURE__*/React.createElement("div",{style:{marginTop:8,padding:"5px 10px",background:"#ECFDF5",borderRadius:8,display:"flex",alignItems:"center",gap:6,fontSize:11,color:"#065F46"}},
         /*#__PURE__*/React.createElement("i",{className:"ti ti-check",style:{fontSize:12,color:"#059669"}}),
         "Enviado el "+sentDate+(sentDate===today()?" (hoy)":"")+(sentBy?" \u00B7 "+sentBy:"")
@@ -7937,7 +7950,8 @@ function AlertasScreen(_ref42) {
       /*#__PURE__*/React.createElement("div",{style:{fontSize:13}},"No hay alertas pendientes por ahora.")
     ),
     enRiesgo.length>0&&/*#__PURE__*/React.createElement(Section,{title:"\uD83D\uDEA8 Clientes en riesgo (+60 d\u00EDas)",items:enRiesgo,color:"#DC2626",icon:String.fromCodePoint(128680),msgFn:function(c,p,d){return msgReact(c,p,d);},label:"Sin visita +60 d\u00EDas",desc:"Reactiva con oferta especial"})
-  ));
+  ,
+  histAlCli&&/*#__PURE__*/React.createElement(GestionHistorialModal,{clientId:histAlCli.id,clientName:histAlCli.name,db:db,onClose:function(){setHistAlCli(null);}})));
 }
 
 
@@ -9344,8 +9358,101 @@ function ConfigScreen(_ref44) {
     }
   }, "Guardar precios")));
 }
+
+function GestionHistorialModal(_ref_ghm){
+  var clientId=_ref_ghm.clientId,clientName=_ref_ghm.clientName,db=_ref_ghm.db,onClose=_ref_ghm.onClose;
+  var _he=useState([]),_hea=_slicedToArray(_he,2),entries=_hea[0],setEntries=_hea[1];
+  var _hl=useState(true),_hla=_slicedToArray(_hl,2),loading=_hla[0],setLoading=_hla[1];
+  var _ht=useState("mensaje_wa"),_hta=_slicedToArray(_ht,2),tipo=_hta[0],setTipo=_hta[1];
+  var _hn=useState(""),_hna=_slicedToArray(_hn,2),nota=_hna[0],setNota=_hna[1];
+  var _hs=useState(false),_hsa=_slicedToArray(_hs,2),saving=_hsa[0],setSaving=_hsa[1];
+  var TIPOS={
+    "mensaje_wa":{label:"Mensaje WhatsApp",icon:"\uD83D\uDCAC",color:"#25D366"},
+    "llamada":{label:"Llamada telef\u00F3nica",icon:"\uD83D\uDCDE",color:"#3B82F6"},
+    "cita_agendada":{label:"Cita agendada",icon:"\uD83D\uDCC5",color:"#8B5CF6"},
+    "sin_respuesta":{label:"Sin respuesta",icon:"\uD83D\uDD07",color:"#F59E0B"},
+    "cliente_perdido":{label:"Raz\u00F3n p\u00E9rdida",icon:"\u26A0\uFE0F",color:"#EF4444"},
+    "nota":{label:"Nota interna",icon:"\uD83D\uDCDD",color:"#6B7280"}
+  };
+  var loadEntries=function(){
+    if(!db){setLoading(false);return;}
+    setLoading(true);
+    db.collection("historial_gestion").doc(clientId).get().then(function(doc){
+      if(doc.exists){var arr=(doc.data().entries||[]).slice().sort(function(a,b){return (b.fecha||"")>(a.fecha||"")?1:-1;});setEntries(arr);}
+      else{setEntries([]);}
+      setLoading(false);
+    }).catch(function(){setLoading(false);});
+  };
+  useEffect(function(){loadEntries();},[clientId]);
+  var saveEntry=function(){
+    if(!db)return;
+    setSaving(true);
+    var now=new Date();
+    var fechaStr=now.toISOString().slice(0,10)+" "+now.toTimeString().slice(0,5);
+    var newEntry={fecha:fechaStr,tipo:tipo,nota:nota.trim(),user:(window.__pawUser||"equipo")};
+    db.collection("historial_gestion").doc(clientId).get().then(function(doc){
+      var arr=(doc.exists?(doc.data().entries||[]):[]);
+      arr.unshift(newEntry);
+      return db.collection("historial_gestion").doc(clientId).set({entries:arr,clientName:clientName,updated:fechaStr});
+    }).then(function(){setEntries(function(prev){return [newEntry].concat(prev);});setNota("");setSaving(false);})
+    .catch(function(){setSaving(false);});
+  };
+  return /*#__PURE__*/React.createElement("div",{
+    style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:380,display:"flex",alignItems:"flex-end",justifyContent:"center"},
+    onClick:function(e){if(e.target===e.currentTarget)onClose();}
+  },
+    /*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:480,maxHeight:"85vh",display:"flex",flexDirection:"column",overflow:"hidden"}},
+      /*#__PURE__*/React.createElement("div",{style:{padding:"16px 18px 12px",display:"flex",alignItems:"center",gap:10,background:"#0D3D2E"}},
+        /*#__PURE__*/React.createElement("button",{onClick:onClose,style:{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:10,width:34,height:34,cursor:"pointer",color:"#fff",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}},
+          "\u2190"),
+        /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:700,color:"#fff"}},"\uD83D\uDCCB Historial de Gesti\u00F3n"),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#A7C4B5"}},clientName)
+        )
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{padding:"14px 16px",background:"#F9FAFB",borderBottom:"1px solid #E5E7EB"}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:600,color:"#6B7280",marginBottom:8,letterSpacing:"0.05em"}},"REGISTRAR ACCI\u00D3N"),
+        /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:5,flexWrap:"wrap",marginBottom:10}},
+          Object.entries(TIPOS).map(function(kv){var k=kv[0],v=kv[1];
+            return /*#__PURE__*/React.createElement("button",{key:k,onClick:function(){setTipo(k);},
+              style:{padding:"5px 10px",background:tipo===k?v.color:"#fff",color:tipo===k?"#fff":v.color,
+                border:"1.5px solid "+v.color,borderRadius:20,fontSize:11,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:4}
+            },v.icon," ",v.label);
+          })
+        ),
+        /*#__PURE__*/React.createElement("textarea",{value:nota,onChange:function(e){setNota(e.target.value);},
+          placeholder:"Agrega una nota... (ej: No contest\u00F3, dijo que viene la pr\u00F3xima semana)",
+          style:{width:"100%",padding:"10px 12px",border:"1.5px solid #E5E7EB",borderRadius:12,fontSize:13,resize:"none",height:70,fontFamily:"inherit",outline:"none"}}),
+        /*#__PURE__*/React.createElement("button",{onClick:saveEntry,disabled:saving,
+          style:{marginTop:8,width:"100%",padding:"10px",background:saving?"#9CA3AF":"#0D3D2E",color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:700,cursor:saving?"not-allowed":"pointer"}
+        },saving?"Guardando...":"\uD83D\uDCBE Guardar en historial")
+      ),
+      /*#__PURE__*/React.createElement("div",{style:{flex:1,overflowY:"auto",padding:"14px 16px"}},
+        /*#__PURE__*/React.createElement("div",{style:{fontSize:11,fontWeight:600,color:"#6B7280",marginBottom:10,letterSpacing:"0.05em"}},
+          "HISTORIAL ("+(entries.length)+" entradas)"),
+        loading&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:20,color:"#9CA3AF"}},"\u23F3 Cargando..."),
+        !loading&&entries.length===0&&/*#__PURE__*/React.createElement("div",{style:{textAlign:"center",padding:20,color:"#9CA3AF",fontSize:13}},
+          "\uD83D\uDCED A\u00FAn no hay registros para este cliente."),
+        !loading&&entries.map(function(ent,i){
+          var t=TIPOS[ent.tipo]||TIPOS["nota"];
+          return /*#__PURE__*/React.createElement("div",{key:i,style:{background:"#fff",borderRadius:12,border:"1px solid #E5E7EB",padding:"10px 12px",marginBottom:8}},
+            /*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:ent.nota?4:0}},
+              /*#__PURE__*/React.createElement("span",{style:{fontSize:15}},t.icon),
+              /*#__PURE__*/React.createElement("span",{style:{fontSize:12,fontWeight:600,color:t.color,flex:1}},t.label),
+              /*#__PURE__*/React.createElement("span",{style:{fontSize:10,color:"#9CA3AF"}},ent.fecha),
+              ent.user&&/*#__PURE__*/React.createElement("span",{style:{fontSize:10,background:"#F3F4F6",padding:"2px 6px",borderRadius:6,color:"#6B7280"}},ent.user)
+            ),
+            ent.nota&&/*#__PURE__*/React.createElement("div",{style:{fontSize:12,color:"#374151",paddingLeft:26,lineHeight:1.5}},ent.nota)
+          );
+        })
+      )
+    )
+  );
+}
+
 function ClientHealthTab(_ref_cht){
-  var clients=_ref_cht.clients,appts=_ref_cht.appts,selSeg=_ref_cht.selSeg,setSelSeg=_ref_cht.setSelSeg,onSelectClient=_ref_cht.onSelectClient||null;
+  var clients=_ref_cht.clients,appts=_ref_cht.appts,selSeg=_ref_cht.selSeg,setSelSeg=_ref_cht.setSelSeg,onSelectClient=_ref_cht.onSelectClient||null,db=_ref_cht.db||null;
+  var _hst=useState(null),_hsta=_slicedToArray(_hst,2),histCli=_hsta[0],setHistCli=_hsta[1];
   var _td=today();
   var _segs={nuevos:[],frecuentes:[],regulares:[],riesgo:[],perdidos:[]};
   clients.forEach(function(cli){
@@ -9369,7 +9476,7 @@ function ClientHealthTab(_ref_cht){
     {key:"perdidos",label:"Perdidos",icon:"\uD83D\uDD34",color:"#DC2626",bg:"#FEF2F2",border:"#FECACA",items:_segs.perdidos}
   ];
   var _active=_cats.find(function(c){return c.key===selSeg;})||_cats[0];
-  return /*#__PURE__*/React.createElement("div",null,
+  return /*#__PURE__*/React.createElement(React.Fragment,null,/*#__PURE__*/React.createElement("div",null,
     /*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8,marginBottom:14,overflowX:"auto",paddingBottom:2}},
       _cats.map(function(cat){
         var isActive=selSeg===cat.key||(!selSeg&&cat.key==="frecuentes");
@@ -9427,16 +9534,25 @@ function ClientHealthTab(_ref_cht){
                 waNum&&/*#__PURE__*/React.createElement("a",{href:waNum,target:"_blank",
                   style:{width:34,height:34,background:"#25D366",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",textDecoration:"none"}},
                   /*#__PURE__*/React.createElement("i",{className:"ti ti-brand-whatsapp",style:{fontSize:18,color:"#fff"}})
-                )
+                ),
+                /*#__PURE__*/React.createElement("button",{
+                  onClick:function(ev){ev.stopPropagation();setHistCli({id:x.cli.id,name:x.cli.name});},
+                  style:{width:34,height:34,background:"#F3F4F6",border:"none",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:14,flexShrink:0}
+                },"\uD83D\uDCCB")
               )
             );
           })
         )
+  ),
+  histCli&&/*#__PURE__*/React.createElement(GestionHistorialModal,{
+    clientId:histCli.id,clientName:histCli.name,db:db,
+    onClose:function(){setHistCli(null);}
+  })
   );
 }
 
 function RendimientoScreen(_ref_rend) {
-  var appts=_ref_rend.appts,clients=_ref_rend.clients,pets=_ref_rend.pets,commission=_ref_rend.commission||0;
+  var appts=_ref_rend.appts,clients=_ref_rend.clients,pets=_ref_rend.pets,commission=_ref_rend.commission||0,db=_ref_rend.db||null;
   var _m=useState(thisM()),_ma=_slicedToArray(_m,2),mth=_ma[0],setMth=_ma[1];
   var _t=useState("proyeccion"),_ta=_slicedToArray(_t,2),tab=_ta[0],setTab=_ta[1];
   var _sel=useState(null),_sela=_slicedToArray(_sel,2),selSeg=_sela[0],setSelSeg=_sela[1];
@@ -9581,7 +9697,7 @@ function RendimientoScreen(_ref_rend) {
       })()
     )
     ,
-    tab==="clientes"&&/*#__PURE__*/React.createElement(ClientHealthTab,{clients:clients,appts:appts,selSeg:selSeg,setSelSeg:setSelSeg}),
+    tab==="clientes"&&/*#__PURE__*/React.createElement(ClientHealthTab,{clients:clients,appts:appts,selSeg:selSeg,setSelSeg:setSelSeg,db:db}),
     tab==="equipo"&&/*#__PURE__*/React.createElement("div",null,
       commission>0&&/*#__PURE__*/React.createElement("div",{style:{background:"linear-gradient(135deg,#92400E,#D4945A)",borderRadius:16,padding:16,marginBottom:14,color:"#fff"}},
         /*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
@@ -10211,7 +10327,8 @@ function App() {
     appts: appts,
     sales: sales,
     lastBath: lastBath,
-    toast: showToast
+    toast: showToast,
+    db: db
   }), view === "mascotas" && /*#__PURE__*/React.createElement(MascotasScreen, {
     pets: pets,
     clients: clients,
@@ -10243,7 +10360,7 @@ function App() {
     pets: pets
   }), view === "paquetes" && /*#__PURE__*/React.createElement(PaquetesScreen,{clients:clients,appts:appts,toast:showToast}),
   view === "proveedores" && /*#__PURE__*/React.createElement(ProveedoresScreen,{toast:showToast}),
-  view === "rendimiento" && /*#__PURE__*/React.createElement(RendimientoScreen,{appts:appts,clients:clients,pets:pets,commission:commission}),
+  view === "rendimiento" && /*#__PURE__*/React.createElement(RendimientoScreen,{appts:appts,clients:clients,pets:pets,commission:commission,db:db}),
   view === "alertas" && /*#__PURE__*/React.createElement(AlertasScreen, {
     pets: pets,
     clients: clients,
