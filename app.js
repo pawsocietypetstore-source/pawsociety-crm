@@ -817,13 +817,47 @@ function Sidebar(_ref11) {
     setView(id);
     onClose();
   };
+  function renderGroup(title, items) {
+    return /*#__PURE__*/React.createElement(React.Fragment, null,
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:9,fontWeight:800,color:"rgba(242,196,206,.35)",textTransform:"uppercase",letterSpacing:"1.8px",padding:"14px 16px 6px",marginTop:4}}, title),
+      items.map(function(n) {
+        var active = view === n.id;
+        return /*#__PURE__*/React.createElement("button", {
+          key: n.id,
+          onClick: function() { return go(n.id); },
+          style: {
+            width:"100%",display:"flex",alignItems:"center",gap:11,
+            padding:"10px 12px",borderRadius:10,border:"none",
+            background: active ? "rgba(242,196,206,.15)" : "transparent",
+            color: active ? "#F2C4CE" : "rgba(242,196,206,.6)",
+            fontSize:13,fontWeight:active?700:400,cursor:"pointer",
+            marginBottom:1,textAlign:"left",position:"relative"
+          }
+        },
+          active && /*#__PURE__*/React.createElement("div", {style:{position:"absolute",left:0,top:"20%",height:"60%",width:3,background:"linear-gradient(180deg,#F2C4CE,#D4945A)",borderRadius:"0 3px 3px 0"}}),
+          /*#__PURE__*/React.createElement("div", {style:{
+            width:32,height:32,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",
+            background: active ? "rgba(242,196,206,.2)" : "rgba(255,255,255,.05)",
+            flexShrink:0
+          }},
+            /*#__PURE__*/React.createElement("i", {className:"ti ti-"+n.icon, style:{fontSize:16,opacity:active?1:0.8}})
+          ),
+          /*#__PURE__*/React.createElement("span", {style:{flex:1,fontSize:13}}, n.label),
+          n.id === "alertas" && alertCount > 0 && /*#__PURE__*/React.createElement("span", {
+            style:{background:"#EF4444",color:"#fff",borderRadius:10,padding:"2px 7px",fontSize:10,fontWeight:700,minWidth:18,textAlign:"center"}
+          }, alertCount)
+        );
+      })
+    );
+  }
   return /*#__PURE__*/React.createElement(React.Fragment, null, open && /*#__PURE__*/React.createElement("div", {
     onClick: onClose,
     style: {
       position: "fixed",
       inset: 0,
-      background: "rgba(0,0,0,.5)",
-      zIndex: 200
+      background: "rgba(0,0,0,.55)",
+      zIndex: 200,
+      backdropFilter: "blur(2px)"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -831,118 +865,64 @@ function Sidebar(_ref11) {
       top: 0,
       left: 0,
       bottom: 0,
-      width: 265,
-      background: "#0D3D2E",
+      width: 270,
+      background: "linear-gradient(180deg,#071e14 0%,#0D3D2E 50%,#0a2e22 100%)",
       zIndex: 300,
       transform: open ? "translateX(0)" : "translateX(-100%)",
       transition: "transform .28s cubic-bezier(.4,0,.2,1)",
       display: "flex",
       flexDirection: "column",
-      paddingBottom: "env(safe-area-inset-bottom)"
+      paddingBottom: "env(safe-area-inset-bottom)",
+      borderRight: "1px solid rgba(242,196,206,.08)",
+      boxShadow: "4px 0 32px rgba(0,0,0,.5)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      padding: "calc(env(safe-area-inset-top)+20px) 20px 16px"
+      padding: "calc(env(safe-area-inset-top)+24px) 20px 20px",
+      borderBottom: "1px solid rgba(242,196,206,.08)"
     }
+  }, /*#__PURE__*/React.createElement("div", {style:{display:"flex",alignItems:"center",gap:12}},
+    /*#__PURE__*/React.createElement("div", {
+      style: {
+        width:42,height:42,borderRadius:12,
+        background:"linear-gradient(135deg,rgba(242,196,206,.25),rgba(212,148,90,.2))",
+        display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,
+        border:"1px solid rgba(242,196,206,.2)",flexShrink:0
+      }
+    }, "\uD83D\uDC3E"),
+    /*#__PURE__*/React.createElement("div", null,
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:17,fontWeight:800,color:"#F2C4CE",letterSpacing:"-0.3px",lineHeight:1.2}}, "PawSociety"),
+      /*#__PURE__*/React.createElement("div", {style:{fontSize:10,color:"rgba(242,196,206,.4)",letterSpacing:"1.5px",textTransform:"uppercase",marginTop:2}}, "Pet Store")
+    )
+  ), /*#__PURE__*/React.createElement("div", {
+    style: {marginTop:14,padding:"8px 12px",borderRadius:8,background:"rgba(242,196,206,.06)",border:"1px solid rgba(242,196,206,.08)"}
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 20,
-      fontWeight: 800,
-      color: "#F2C4CE",
-      marginBottom: 4
-    }
-  }, "\uD83D\uDC3E PawSociety"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "rgba(242,196,206,.5)"
-    }
-  }, "Little kings, big love.")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      overflowY: "auto",
-      padding: "0 10px"
-    }
-  }, NAV.map(function (n) {
-    if(n.id==="_divider") return /*#__PURE__*/React.createElement("div",{key:"div",style:{height:1,background:"rgba(242,196,206,.1)",margin:"6px 14px"}});
-    var active = view === n.id;
-    return /*#__PURE__*/React.createElement("button", {
-      key: n.id,
-      onClick: function onClick() {
-        return go(n.id);
-      },
-      style: {
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "12px 14px",
-        borderRadius: 12,
-        border: "none",
-        borderLeft: active ? "3px solid #F2C4CE" : "3px solid transparent",
-        background: active ? "rgba(242,196,206,.18)" : "transparent",
-        color: active ? "#F2C4CE" : "rgba(242,196,206,.65)",
-        fontSize: 14,
-        fontWeight: active ? 700 : 400,
-        cursor: "pointer",
-        marginBottom: 2,
-        textAlign: "left"
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "ti ti-" + n.icon,
-      style: {
-        fontSize: 22,
-        flexShrink: 0,
-        opacity: 0.9
-      }
-    }), n.label, n.id === "alertas" && alertCount > 0 && /*#__PURE__*/React.createElement("span", {
-      style: {
-        marginLeft: "auto",
-        background: "#EF4444",
-        color: "#fff",
-        borderRadius: 8,
-        padding: "1px 7px",
-        fontSize: 11,
-        fontWeight: 700
-      }
-    }, alertCount), active && n.id !== "alertas" && /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginLeft: "auto",
-        width: 6,
-        height: 6,
-        borderRadius: "50%",
-        background: "#F2C4CE"
-      }
-    }));
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "12px 10px",
-      borderTop: "1px solid rgba(242,196,206,.1)"
-    }
+    style: {fontSize:11,color:"rgba(242,196,206,.45)",fontStyle:"italic",textAlign:"center",letterSpacing:"0.3px"}
+  }, "\u201CLittle kings, big love.\u201D")
+  )), /*#__PURE__*/React.createElement("div", {
+    style: {flex:1,overflowY:"auto",padding:"4px 8px 8px",scrollbarWidth:"none"}
+  },
+    renderGroup("Principal", NAV.filter(function(n){return["dashboard","clientes","mascotas","spa","tienda","catalogo"].indexOf(n.id)>-1;})),
+    renderGroup("Gesti\u00F3n", NAV.filter(function(n){return["finanzas","alertas","campanas","proveedores","paquetes"].indexOf(n.id)>-1;})),
+    renderGroup("An\u00E1lisis", NAV.filter(function(n){return["redes","rendimiento","config"].indexOf(n.id)>-1;}))
+  ), /*#__PURE__*/React.createElement("div", {
+    style: {padding:"12px 8px",borderTop:"1px solid rgba(242,196,206,.08)"}
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      if (window.confirm("Â\u00BFCerrar sesiÃ³n?")) onLogout();
-    },
+    onClick: function() { if(window.confirm("\u00BFCerrar sesi\u00F3n?")) onLogout(); },
     style: {
-      width: "100%",
-      display: "flex",
-      alignItems: "center",
-      gap: 12,
-      padding: "11px 14px",
-      borderRadius: 12,
-      border: "none",
-      background: "rgba(239,68,68,.1)",
-      color: "#FCA5A5",
-      fontSize: 14,
-      fontWeight: 600,
-      cursor: "pointer"
+      width:"100%",display:"flex",alignItems:"center",gap:11,padding:"10px 12px",
+      borderRadius:10,border:"none",
+      background:"rgba(239,68,68,.08)",color:"rgba(252,165,165,.8)",
+      fontSize:13,fontWeight:600,cursor:"pointer"
     }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "ti ti-logout",
-    style: {
-      fontSize: 20
-    }
-  }), "Cerrar sesi\xF3n"))));
+  },
+    /*#__PURE__*/React.createElement("div", {style:{width:32,height:32,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(239,68,68,.12)"}},
+      /*#__PURE__*/React.createElement("i", {className:"ti ti-logout",style:{fontSize:16}})
+    ),
+    "Cerrar sesi\u00F3n"
+  ))));
 }
+
 function Login(_ref12) {
   var onLogin = _ref12.onLogin;
   var _s1=useState(""),_s1a=_slicedToArray(_s1,2),email=_s1a[0],setEmail=_s1a[1];
@@ -5294,7 +5274,119 @@ function MascotasScreen(_ref26) {
     }, /*#__PURE__*/React.createElement("i", {
       className: "ti ti-trash"
     }))))));
-  }), selPet&&/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:300,display:"flex",flexDirection:"column",justifyContent:"flex-end"},onClick:function(){setSelPet(null);}},/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:"22px 22px 0 0",padding:"20px 18px 36px",maxHeight:"85vh",overflowY:"auto"},onClick:function(e){e.stopPropagation();}},/*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}},/*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12}},/*#__PURE__*/React.createElement("div",{style:{width:52,height:52,borderRadius:"50%",background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}},selPet.species==="gato"?String.fromCodePoint(128049):String.fromCodePoint(128054)),/*#__PURE__*/React.createElement("div",null,/*#__PURE__*/React.createElement("div",{style:{fontSize:20,fontWeight:800}},selPet.name),/*#__PURE__*/React.createElement("div",{style:{fontSize:13,color:"#6B7280"}},(selPet.breed||selPet.species||"")+(selPet.size?" \u00B7 "+selPet.size:"")))),/*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8}},/*#__PURE__*/React.createElement("button",{onClick:function(){setEditPet(selPet);setPetMod(true);setSelPet(null);},style:{padding:"8px 16px",background:"#1A5C47",color:"#fff",border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}},"Editar"),/*#__PURE__*/React.createElement("button",{onClick:function(){setSelPet(null);},style:{width:36,height:36,background:"#F3F4F6",border:"none",borderRadius:10,cursor:"pointer",fontSize:20,lineHeight:"36px",textAlign:"center"}},"\u00D7"))),/*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}},/*#__PURE__*/React.createElement("div",{style:{background:"#F0FDF4",borderRadius:12,padding:"12px",textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800,color:"#1A5C47"}},appts.filter(function(a){return a.petId===selPet.id&&(a.status==="completado"||a.estado==="completado");}).length),/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",textTransform:"uppercase",marginTop:2}},"Ba\u00F1os")),selPet.age?/*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:"12px",textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800}},selPet.age),/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",textTransform:"uppercase",marginTop:2}},"A\u00F1os")):/*#__PURE__*/React.createElement("div",null),selPet.weight?/*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:"12px",textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800}},selPet.weight+" kg"),/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",textTransform:"uppercase",marginTop:2}},"Peso")):/*#__PURE__*/React.createElement("div",null)),selPet.concentrado?/*#__PURE__*/React.createElement("div",{style:{background:"#F0FDF4",borderRadius:12,padding:"12px 14px",marginBottom:10}},/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginBottom:2}},"CONCENTRADO"),/*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,color:"#1A5C47"}},selPet.concentrado)):null,selPet.notes?/*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:"12px 14px"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginBottom:2}},"NOTAS"),/*#__PURE__*/React.createElement("div",{style:{fontSize:13,color:"#374151"}},selPet.notes)):null)), petMod && editPet && /*#__PURE__*/React.createElement(PetModal, {
+  }), selPet&&/*#__PURE__*/React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:300,display:"flex",flexDirection:"column",justifyContent:"flex-end"},onClick:function(){setSelPet(null);}},/*#__PURE__*/React.createElement("div",{style:{background:"#fff",borderRadius:"22px 22px 0 0",padding:"20px 18px 36px",maxHeight:"85vh",overflowY:"auto"},onClick:function(e){e.stopPropagation();}},/*#__PURE__*/React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}},/*#__PURE__*/React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12}},/*#__PURE__*/React.createElement("div",{style:{width:52,height:52,borderRadius:"50%",background:"linear-gradient(135deg,#1A5C47,#0D3D2E)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}},selPet.species==="gato"?String.fromCodePoint(128049):String.fromCodePoint(128054)),/*#__PURE__*/React.createElement("div",null,/*#__PURE__*/React.createElement("div",{style:{fontSize:20,fontWeight:800}},selPet.name),/*#__PURE__*/React.createElement("div",{style:{fontSize:13,color:"#6B7280"}},(selPet.breed||selPet.species||"")+(selPet.size?" \u00B7 "+selPet.size:"")))),/*#__PURE__*/React.createElement("div",{style:{display:"flex",gap:8}},/*#__PURE__*/React.createElement("button",{onClick:function(){setEditPet(selPet);setPetMod(true);setSelPet(null);},style:{padding:"8px 16px",background:"#1A5C47",color:"#fff",border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}},"Editar"),/*#__PURE__*/React.createElement("button",{onClick:function(){setSelPet(null);},style:{width:36,height:36,background:"#F3F4F6",border:"none",borderRadius:10,cursor:"pointer",fontSize:20,lineHeight:"36px",textAlign:"center"}},"\u00D7"))),/*#__PURE__*/React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}},/*#__PURE__*/React.createElement("div",{style:{background:"#F0FDF4",borderRadius:12,padding:"12px",textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800,color:"#1A5C47"}},appts.filter(function(a){return a.petId===selPet.id&&(a.status==="completado"||a.estado==="completado");}).length),/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",textTransform:"uppercase",marginTop:2}},"Ba\u00F1os")),selPet.age?/*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:"12px",textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800}},selPet.age),/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",textTransform:"uppercase",marginTop:2}},"A\u00F1os")):/*#__PURE__*/React.createElement("div",null),selPet.weight?/*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:"12px",textAlign:"center"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:24,fontWeight:800}},selPet.weight+" kg"),/*#__PURE__*/React.createElement("div",{style:{fontSize:10,color:"#6B7280",textTransform:"uppercase",marginTop:2}},"Peso")):/*#__PURE__*/React.createElement("div",null)),selPet.concentrado?/*#__PURE__*/React.createElement("div",{style:{background:"#F0FDF4",borderRadius:12,padding:"12px 14px",marginBottom:10}},/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginBottom:2}},"CONCENTRADO"),/*#__PURE__*/React.createElement("div",{style:{fontSize:14,fontWeight:700,color:"#1A5C47"}},selPet.concentrado)):null,(function(){
+  var bathCount=appts.filter(function(a){return a.petId===selPet.id&&(a.status==="completado"||a.estado==="completado");}).length;
+  var cycle=bathCount%6;
+  var totalFree=Math.floor(bathCount/6);
+  var isWon=bathCount>0&&cycle===0;
+  var filled=isWon?5:cycle;
+  var owner=clients.find(function(c){return c.id===selPet.clientId;})||{};
+  var metaParts=[(selPet.breed||(selPet.species||'')),selPet.size,owner.name].filter(Boolean);
+  var meta=metaParts.join(' \u00b7 ');
+  var icon=selPet.species==='gato'?'\uD83D\uDC31':'\uD83D\uDC36';
+  function openCard(){
+    var win=window.open('','_blank','width=390,height=740,scrollbars=yes');
+    if(!win)return;
+    var esc=function(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+    var petIconChar=selPet.species==='gato'?'&#128049;':'&#128054;';
+    var stampH='';
+    for(var si=1;si<=5;si++){
+      var son=si<=filled;
+      stampH+='<div class="sc '+(son?'on':'off')+'"><span class="sc-paw">&#128062;</span><span class="sc-num">'+si+'</span></div>';
+    }
+    var gratisClass=isWon?' won':'';
+    var gratisIcon=isWon?'&#127873;':'&#127942;';
+    var gratisText=isWon?'\u00a1GRATIS!':'GRATIS';
+    var css='.card{width:310px;position:relative;background:#F5F0E8;border-radius:12px;overflow:visible;box-shadow:0 20px 60px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.1);}.card-inner{border-radius:12px;overflow:hidden;}.corner{position:absolute;width:36px;height:36px;z-index:10;pointer-events:none;}.corner.tl{top:-1px;left:-1px;}.corner.tr{top:-1px;right:-1px;transform:scaleX(-1);}.corner.bl{bottom:-1px;left:-1px;transform:scaleY(-1);}.corner.br{bottom:-1px;right:-1px;transform:scale(-1,-1);}.photo-hdr{position:relative;width:100%;height:190px;overflow:hidden;background:linear-gradient(160deg,#1E5C3A 0%,#2D7A56 35%,#1A4F33 65%,#0F3524 100%);}.brand-strip{position:absolute;top:0;left:0;right:0;padding:14px 16px 20px;display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,rgba(10,35,20,.55) 0%,transparent 100%);z-index:2;}.brand-name-top{font-family:"Playfair Display",serif;font-size:21px;font-weight:800;color:#FAF6EE;letter-spacing:.5px;line-height:1;}.brand-sub-top{font-size:7.5px;letter-spacing:4.5px;text-transform:uppercase;color:rgba(250,246,238,.6);margin-top:2px;}.pet-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-48%);font-size:88px;z-index:1;line-height:1;}.body{background:#F5F0E8;padding:18px 20px 16px;text-align:center;}.sep-line{display:flex;align-items:center;gap:8px;margin-bottom:10px;}.sep-rule{flex:1;height:1px;background:linear-gradient(90deg,transparent,#A8936A,transparent);}.sep-paw{font-size:14px;color:#6B5A3E;}.card-title{font-family:"Playfair Display",serif;font-size:21px;font-weight:800;color:#1A3D2E;line-height:1.05;margin-bottom:5px;letter-spacing:.2px;}.card-sub{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:#8B7355;font-weight:700;margin-bottom:16px;}.pet-name{font-family:"Playfair Display",serif;font-size:30px;font-weight:800;color:#0D3D2E;line-height:1;margin-bottom:5px;}.pet-meta{font-size:11.5px;color:#6B5A3E;margin-bottom:10px;letter-spacing:.2px;}.instruction{font-family:"Playfair Display",serif;font-style:italic;font-size:11.5px;color:#4A5568;margin-bottom:16px;line-height:1.4;}.stamps-row{display:flex;gap:8px;justify-content:center;margin-bottom:12px;}.sc{width:48px;height:48px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}.sc.on{background:#1A5C47;border:2px solid #1A5C47;}.sc.off{background:transparent;border:2px solid #C4B49A;}.sc-paw{font-size:17px;line-height:1;}.sc.off .sc-paw{opacity:.25;}.sc-num{font-size:9px;font-weight:700;line-height:1;margin-top:1px;}.sc.on .sc-num{color:rgba(250,246,238,.65);}.sc.off .sc-num{color:#B8A882;}.gratis-wrap{display:flex;justify-content:center;margin-bottom:16px;}.gratis-badge{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#C8A84B,#E8C96A,#C8A84B);border-radius:30px;padding:8px 24px;box-shadow:0 4px 14px rgba(200,168,75,.35);border:1px solid rgba(255,220,100,.4);}.gratis-badge.won{background:linear-gradient(135deg,#D4A020,#F0D060,#D4A020);box-shadow:0 6px 22px rgba(212,160,32,.5);animation:pulse .8s ease-in-out alternate infinite;}@keyframes pulse{from{box-shadow:0 6px 22px rgba(212,160,32,.5);}to{box-shadow:0 8px 32px rgba(212,160,32,.7);}}.gratis-lbl{font-family:"Playfair Display",serif;font-size:15px;font-weight:800;color:#0D3D2E;letter-spacing:1.5px;}.gratis-icon{font-size:14px;}.card-footer{background:#1A3D2E;padding:11px 16px 12px;text-align:center;}.ftr-name{font-size:10px;font-weight:700;color:#FAF6EE;letter-spacing:1.5px;margin-bottom:3px;}.ftr-tag{font-size:9px;color:rgba(250,246,238,.45);margin-bottom:3px;font-style:italic;}.ftr-ig{font-size:9px;color:rgba(212,168,75,.75);letter-spacing:.8px;font-weight:600;}';
+    var svg='<svg viewBox=\"0 0 36 36\" fill=\"none\"><path d=\"M2 34 C2 16 16 2 34 2\" stroke=\"#A89060\" stroke-width=\"1.4\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M2 26 C2 16 12 6 22 2\" stroke=\"#A89060\" stroke-width=\".7\" fill=\"none\" stroke-linecap=\"round\" opacity=\".5\"/><circle cx=\"3\" cy=\"3\" r=\"1.5\" fill=\"#A89060\" opacity=\".6\"/><\/svg>';
+    var html='<!DOCTYPE html><html lang="es"><head>'
+      +'<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>'
+      +'<title>Tarjeta \u2014 '+esc(selPet.name)+'<\/title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>'
+      +'<style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#C9C3B7;font-family:Lato,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;gap:12px;}'
+      +css+'<\/style><\/head><body>'
+      +'<div class="card">'
+      +'<div class="corner tl">'+svg+'<\/div>'
+      +'<div class="corner tr">'+svg+'<\/div>'
+      +'<div class="corner bl">'+svg+'<\/div>'
+      +'<div class="corner br">'+svg+'<\/div>'
+      +'<div class="card-inner">'
+      +'<div class="photo-hdr"><div class="brand-strip"><div class="brand-name-top">PawSociety<\/div><div class="brand-sub-top">PET STORE<\/div><\/div>'
+      +'<div class="pet-center">'+petIconChar+'<\/div><\/div>'
+      +'<div class="body">'
+      +'<div class="sep-line"><div class="sep-rule"><\/div><div class="sep-paw">&#128062;<\/div><div class="sep-rule"><\/div><\/div>'
+      +'<div class="card-title">Tarjeta de Fidelizaci\u00f3n<\/div>'
+      +'<div class="card-sub">Spa &amp; Grooming<\/div>'
+      +'<div class="pet-name">'+esc(selPet.name)+'<\/div>'
+      +'<div class="pet-meta">'+esc(meta)+'<\/div>'
+      +'<div class="instruction">Completa 5 ba\u00f1os y el 6\u00b0 es gratis<\/div>'
+      +'<div class="stamps-row">'+stampH+'<\/div>'
+      +'<div class="gratis-wrap"><div class="gratis-badge'+gratisClass+'"><span class="gratis-icon">'+gratisIcon+'<\/span><span class="gratis-lbl">'+gratisText+'<\/span><\/div><\/div>'
+      +'<\/div>'
+      +'<div class="card-footer"><div class="ftr-name">PawSociety PET STORE<\/div>'
+      +'<div class="ftr-tag">Cuidamos los momentos que los hacen m\u00e1s felices<\/div>'
+      +'<div class="ftr-ig">@pawsociety_store<\/div><\/div>'
+      +'<\/div><\/div><\/body><\/html>';
+    win.document.open();win.document.write(html);win.document.close();
+  }
+  var cornerSVG=/*#__PURE__*/React.createElement('svg',{viewBox:'0 0 36 36',fill:'none',xmlns:'http://www.w3.org/2000/svg',style:{width:'100%',height:'100%'}},
+    /*#__PURE__*/React.createElement('path',{d:'M2 34 C2 16 16 2 34 2',stroke:'#A89060',strokeWidth:'1.4',fill:'none',strokeLinecap:'round'}),
+    /*#__PURE__*/React.createElement('path',{d:'M2 26 C2 16 12 6 22 2',stroke:'#A89060',strokeWidth:'.7',fill:'none',strokeLinecap:'round',opacity:'.5'}),
+    /*#__PURE__*/React.createElement('circle',{cx:'3',cy:'3',r:'1.5',fill:'#A89060',opacity:'.6'})
+  );
+  return /*#__PURE__*/React.createElement('div',{style:{marginBottom:16}},
+    /*#__PURE__*/React.createElement('div',{style:{position:'relative',background:'#F5F0E8',borderRadius:12,boxShadow:'0 20px 60px rgba(0,0,0,.22)',overflow:'visible',maxWidth:340,margin:'0 auto'}},
+      /*#__PURE__*/React.createElement('div',{style:{position:'absolute',width:36,height:36,top:-1,left:-1,zIndex:10,pointerEvents:'none'}},cornerSVG),
+      /*#__PURE__*/React.createElement('div',{style:{position:'absolute',width:36,height:36,top:-1,right:-1,zIndex:10,pointerEvents:'none',transform:'scaleX(-1)'}},cornerSVG),
+      /*#__PURE__*/React.createElement('div',{style:{position:'absolute',width:36,height:36,bottom:-1,left:-1,zIndex:10,pointerEvents:'none',transform:'scaleY(-1)'}},cornerSVG),
+      /*#__PURE__*/React.createElement('div',{style:{position:'absolute',width:36,height:36,bottom:-1,right:-1,zIndex:10,pointerEvents:'none',transform:'scale(-1,-1)'}},cornerSVG),
+      /*#__PURE__*/React.createElement('div',{style:{borderRadius:12,overflow:'hidden'}},
+        /*#__PURE__*/React.createElement('div',{style:{position:'relative',width:'100%',height:190,overflow:'hidden',background:'linear-gradient(160deg,#1E5C3A 0%,#2D7A56 35%,#1A4F33 65%,#0F3524 100%)'}},
+          /*#__PURE__*/React.createElement('div',{style:{position:'absolute',top:0,left:0,right:0,padding:'14px 16px 20px',display:'flex',flexDirection:'column',alignItems:'center',background:'linear-gradient(180deg,rgba(10,35,20,.55) 0%,transparent 100%)',zIndex:2}},
+            /*#__PURE__*/React.createElement('div',{style:{fontFamily:'"Playfair Display",Georgia,serif',fontSize:21,fontWeight:800,color:'#FAF6EE',letterSpacing:.5,lineHeight:1}},'PawSociety'),
+            /*#__PURE__*/React.createElement('div',{style:{fontSize:7.5,letterSpacing:4.5,textTransform:'uppercase',color:'rgba(250,246,238,.6)',marginTop:2}},'PET STORE')
+          ),
+          /*#__PURE__*/React.createElement('div',{style:{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-48%)',fontSize:88,zIndex:1,lineHeight:1}},icon)
+        ),
+        /*#__PURE__*/React.createElement('div',{style:{background:'#F5F0E8',padding:'18px 20px 16px',textAlign:'center'}},
+          /*#__PURE__*/React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:10}},
+            /*#__PURE__*/React.createElement('div',{style:{flex:1,height:1,background:'linear-gradient(90deg,transparent,#A8936A,transparent)'}}),
+            /*#__PURE__*/React.createElement('span',{style:{fontSize:14,color:'#6B5A3E'}},'\uD83D\uDC3E'),
+            /*#__PURE__*/React.createElement('div',{style:{flex:1,height:1,background:'linear-gradient(90deg,#A8936A,transparent)'}})
+          ),
+          /*#__PURE__*/React.createElement('div',{style:{fontFamily:'"Playfair Display",Georgia,serif',fontSize:21,fontWeight:800,color:'#1A3D2E',lineHeight:1.05,marginBottom:5,letterSpacing:.2}},'Tarjeta de Fidelizaci\u00f3n'),
+          /*#__PURE__*/React.createElement('div',{style:{fontSize:9,letterSpacing:3.5,textTransform:'uppercase',color:'#8B7355',fontWeight:700,marginBottom:16}},'Spa & Grooming'),
+          /*#__PURE__*/React.createElement('div',{style:{fontFamily:'"Playfair Display",Georgia,serif',fontSize:30,fontWeight:800,color:'#0D3D2E',lineHeight:1,marginBottom:5}},selPet.name),
+          /*#__PURE__*/React.createElement('div',{style:{fontSize:11.5,color:'#6B5A3E',marginBottom:10,letterSpacing:.2}},meta),
+          /*#__PURE__*/React.createElement('div',{style:{fontFamily:'"Playfair Display",Georgia,serif',fontStyle:'italic',fontSize:11.5,color:'#4A5568',marginBottom:16,lineHeight:1.4}},'Completa 5 ba\u00f1os y el 6\u00b0 es gratis'),
+          /*#__PURE__*/React.createElement('div',{style:{display:'flex',gap:8,justifyContent:'center',marginBottom:12}},
+            [1,2,3,4,5].map(function(i){
+              var on=i<=filled;
+              return /*#__PURE__*/React.createElement('div',{key:i,style:{width:48,height:48,borderRadius:'50%',background:on?'#1A5C47':'transparent',border:on?'2px solid #1A5C47':'2px solid #C4B49A',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',flexShrink:0}},
+                /*#__PURE__*/React.createElement('span',{style:{fontSize:17,lineHeight:1,opacity:on?1:.25}},'\uD83D\uDC3E'),
+                /*#__PURE__*/React.createElement('span',{style:{fontSize:9,fontWeight:700,lineHeight:1,marginTop:1,color:on?'rgba(250,246,238,.65)':'#B8A882'}},String(i))
+              );
+            })
+          ),
+          /*#__PURE__*/React.createElement('div',{style:{display:'flex',justifyContent:'center',marginBottom:16}},
+            /*#__PURE__*/React.createElement('div',{style:{display:'inline-flex',alignItems:'center',gap:7,background:isWon?'linear-gradient(135deg,#D4A020,#F0D060,#D4A020)':'linear-gradient(135deg,#C8A84B,#E8C96A,#C8A84B)',borderRadius:30,padding:'8px 24px',boxShadow:isWon?'0 6px 22px rgba(212,160,32,.5)':'0 4px 14px rgba(200,168,75,.35)',border:'1px solid rgba(255,220,100,.4)'}},
+              /*#__PURE__*/React.createElement('span',{style:{fontSize:14}},isWon?'\uD83C\uDF81':'\uD83C\uDFC6'),
+              /*#__PURE__*/React.createElement('span',{style:{fontFamily:'"Playfair Display",Georgia,serif',fontSize:15,fontWeight:800,color:'#0D3D2E',letterSpacing:1.5}},isWon?'\u00a1GRATIS!':'GRATIS')
+            )
+          )
+        ),
+        /*#__PURE__*/React.createElement('div',{style:{background:'#1A3D2E',padding:'11px 16px 12px',textAlign:'center'}},
+          /*#__PURE__*/React.createElement('div',{style:{fontSize:10,fontWeight:700,color:'#FAF6EE',letterSpacing:1.5,marginBottom:3}},'PawSociety PET STORE'),
+          /*#__PURE__*/React.createElement('div',{style:{fontSize:9,color:'rgba(250,246,238,.45)',marginBottom:3,fontStyle:'italic'}},'Cuidamos los momentos que los hacen m\u00e1s felices'),
+          /*#__PURE__*/React.createElement('div',{style:{fontSize:9,color:'rgba(212,168,75,.75)',letterSpacing:.8,fontWeight:600}},'@pawsociety_store')
+        )
+      )
+    ),
+    /*#__PURE__*/React.createElement('button',{onClick:openCard,style:{display:'flex',alignItems:'center',justifyContent:'center',gap:8,width:'100%',maxWidth:340,margin:'12px auto 0',padding:'11px 0',background:'#1A5C47',color:'#fff',border:'none',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',letterSpacing:.3}},
+      '\uD83D\uDCF2 Enviar tarjeta al cliente'
+    )
+  );
+})(),selPet.notes?/*#__PURE__*/React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:"12px 14px"}},/*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:"#6B7280",marginBottom:2}},"NOTAS"),/*#__PURE__*/React.createElement("div",{style:{fontSize:13,color:"#374151"}},selPet.notes)):null)), petMod && editPet && /*#__PURE__*/React.createElement(PetModal, {
     clientId: editPet.clientId,
     et: editPet,
     onClose: function onClose() {
